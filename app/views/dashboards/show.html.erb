@@ -3,6 +3,13 @@
   <table>
     <tbody>
       <tr>
+        <td>
+          <%= fa_icon "check-cirlce", class: "connect", text: "Netsuite" %>
+        </td>
+        <td>
+          <%= button_to t("dashboards.show.import_now"), netsuite_imports_path, class: '-n-btn' %>
+        </td>
+      </tr>
         <% if @jobvite_connection.connected? %>
           <td>
             <%= fa_icon "check-circle", class: "connected", text: "Jobvite" %>
