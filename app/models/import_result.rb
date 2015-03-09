@@ -15,9 +15,9 @@ class ImportResult
     end.join
   end
 
-  def to_a 
-    results.map do |candidate, result| 
-      {candidate: candidate, 
+  def to_a
+    results.map do |candidate, result|
+      {candidate: candidate,
        result: result}
     end
   end
