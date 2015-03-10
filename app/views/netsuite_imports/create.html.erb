@@ -1,8 +1,4 @@
 <%= render 'subnav' %>
 
 <h1>Netsuite</h1>
-<% if @netsuite_import.empty? %>
-  <strong><%= t(".empty_successful_imports") %></strong>
-<% else %>
-  <strong><%= t(".imported_successfully") %></strong>
-<% end %>
+<strong><%= t("status.imported_successfully") %></strong>

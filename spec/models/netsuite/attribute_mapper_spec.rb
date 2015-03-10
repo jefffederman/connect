@@ -14,15 +14,15 @@ describe Netsuite::AttributeMapper do
     )
     mapper = Netsuite::AttributeMapper.new
 
-    expect(mapper.call([netsuite_employee])).to eq(
-      [
+    expect(mapper.call(netsuite_employee)).to eq(
+      {
         first_name: "Brandy",
         last_name: "Dickens",
         email: "bdickens@ramsey.com",
         netsuite_id: "912",
         user_status: "active",
         gender: "female",
-      ]
+      }
     )
   end
 end
