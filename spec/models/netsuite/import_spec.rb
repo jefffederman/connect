@@ -8,15 +8,10 @@ describe Netsuite::Import do
           "user",
           namely_connection: double("Namely::Connection"),
         )
-        netsuite_employee = double(
-          :netsuite_employee,
-          email: "bdickens@ramsey.com",
-          first_name: "Brandy",
-          internal_id: "912",
-          last_name: "Dickens",
-          is_inactive: "false",
-          gender: "female",
+        netsuite_employee = JSON.parse(
+          File.read("spec/fixtures/api_responses/netsuite_employee.json")
         )
+
         expected_status = double("status")
         namely_importer = double("NamelyImporter", import: expected_status)
         netsuite_import = Netsuite::Import.new(
@@ -26,7 +21,9 @@ describe Netsuite::Import do
         allow(netsuite_import).to receive(:netsuite_employees).
           and_return([netsuite_employee])
 
-        expect(netsuite_import.import).to eq expected_status
+        status = netsuite_import.import
+
+        expect(status).to eq expected_status
         expect(namely_importer).to have_received(:import).with(
           recent_hires: [netsuite_employee],
           namely_connection: user.namely_connection,

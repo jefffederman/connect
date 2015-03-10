@@ -33,7 +33,9 @@ feature "User imports jobvite candidates" do
     )
 
     visit dashboard_path(as: user)
-    click_button t("dashboards.show.import_now")
+    within(".jobvite-import") do
+      click_button t("dashboards.show.import_now")
+    end
 
     expect(page).to have_content t("jobvite_imports.create.imported_successfully")
   end
@@ -51,7 +53,9 @@ feature "User imports jobvite candidates" do
     )
 
     visit dashboard_path(as: user)
-    click_button t("dashboards.show.import_now")
+    within(".jobvite-import") do
+      click_button t("dashboards.show.import_now")
+    end
 
     expect(page).to have_content t("jobvite_imports.create.not_imported_successfully")
   end

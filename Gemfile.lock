@@ -277,7 +277,6 @@ GEM
       kgio (~> 2.6)
       rack
       raindrops (~> 0.7)
-    vcr (2.9.3)
     wasabi (3.2.3)
       httpi (~> 2.0)
       mime-types (< 2.0.0)
@@ -333,5 +332,4 @@ DEPENDENCIES
   title
   uglifier
   unicorn
-  vcr
   webmock

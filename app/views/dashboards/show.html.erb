@@ -6,7 +6,7 @@
         <td>
           <%= fa_icon "check-cirlce", class: "connected", text: "Netsuite" %>
         </td>
-        <td>
+        <td class="netsuite-import">
           <%= button_to t("dashboards.show.import_now"), netsuite_imports_path, class: '-n-btn' %>
         </td>
       </tr>
@@ -22,14 +22,14 @@
           <% else %>
             <td></td>
           <% end %>
-          <td>
+          <td class="jobvite-import">
             <%= button_to t("dashboards.show.import_now"), jobvite_imports_path, class: '-n-btn' %>
           </td>
           <td>
-            <a href="<%= url_for(jobvite_connection_path) %>" class="-n-btn -n-btn-sm -n-btn-danger -n-btn-link" data-method="delete" rel="nofollow">
+            <%= link_to jobvite_connection_path, class: "-n-btn -n-btn-sm -n-btn-danger -n-btn-link", method: :delete, rel: "nofollow" do %>
               <%= fa_icon "times" %>
               <%= t("dashboards.show.disconnect") %>
-            </a>
+            <% end %>
           </td>
         <% else %>
           <td>

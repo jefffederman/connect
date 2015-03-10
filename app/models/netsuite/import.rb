@@ -19,8 +19,8 @@ module Netsuite
     delegate :namely_connection, to: :user
 
     def netsuite_employees
-      result = RestClient.get(ENV["NETSUITE_GATEWAY_URL"])
-      @netsuite_employees ||= JSON.parse(result)
+      result ||= RestClient.get(ENV["NETSUITE_GATEWAY_URL"])
+      @netsuite_employees = JSON.parse(result)
     end
   end
 end

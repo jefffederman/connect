@@ -14,14 +14,9 @@ feature "User imports netsuite employees" do
   end
   scenario "successfully" do
     user = create(:user)
-    netsuite_employee = {
-      email: "bdickens@ramsey.com",
-      first_name: "Brandy",
-      internal_id: "912",
-      last_name: "Dickens",
-      is_inactive: "false",
-      gender: "female",
-    }
+    netsuite_employee = JSON.parse(
+      File.read("spec/fixtures/api_responses/netsuite_employee.json")
+    )
 
     stub_request(:post, "#{ api_host }/api/v1/profiles")
       .to_return(status: 200, body: File.read("spec/fixtures/api_responses/not_empty_profiles.json"))
@@ -31,8 +26,10 @@ feature "User imports netsuite employees" do
       to_return(body: [netsuite_employee].to_json)
 
     visit dashboard_path(as: user)
-    click_button t("dashboards.show.import_now")
+    within(".netsuite-import") do
+      click_button t("dashboards.show.import_now")
+    end
 
-    expect(page).to have_content t("status.imported_successfully")
+    expect(page).to have_content t("status.success")
   end
 end
