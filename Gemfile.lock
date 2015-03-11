@@ -200,6 +200,9 @@ GEM
     rake (10.4.2)
     recipient_interceptor (0.1.2)
       mail
+    rest-client (1.7.3)
+      mime-types (>= 1.16, < 3.0)
+      netrc (~> 0.7)
     rest_client (1.8.3)
       netrc (~> 0.7.7)
     rspec (3.1.0)
@@ -320,7 +323,7 @@ DEPENDENCIES
   rails (= 4.1.6)
   rails_12factor
   recipient_interceptor
-  rest_client
+  rest-client
   rspec-rails (~> 3.1.0)
   rspec_junit_formatter!
   sass-rails (~> 4.0.3)

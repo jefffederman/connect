@@ -11,7 +11,6 @@ describe Netsuite::Import do
         netsuite_employee = JSON.parse(
           File.read("spec/fixtures/api_responses/netsuite_employee.json")
         )
-
         expected_status = double("status")
         namely_importer = double("NamelyImporter", import: expected_status)
         netsuite_import = Netsuite::Import.new(
@@ -29,7 +28,6 @@ describe Netsuite::Import do
           namely_connection: user.namely_connection,
           attribute_mapper: instance_of(Netsuite::AttributeMapper),
         )
-
         expect(netsuite_import).to have_received(:netsuite_employees)
       end
     end
