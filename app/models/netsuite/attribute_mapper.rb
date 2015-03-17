@@ -1,7 +1,6 @@
 module Netsuite
   class AttributeMapper
     def call(netsuite_employee)
-      binding.pry
       {
         first_name: netsuite_employee["first_name"],
         last_name: netsuite_employee["last_name"],
