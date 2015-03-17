@@ -7,7 +7,7 @@ module Netsuite
 
     def import
       namely_importer.import(
-        recent_hires: netsuite_employees,
+        recent_imports: netsuite_employees,
         namely_connection: namely_connection,
         attribute_mapper: AttributeMapper.new,
       )
@@ -19,7 +19,9 @@ module Netsuite
     delegate :namely_connection, to: :user
 
     def netsuite_employees
-      @netsuite_employees ||= fetch_netsuite_employees
+      @netsuite_employees ||= fetch_netsuite_employees.collect do |employee|
+        Employee.new(employee)
+      end
     end
 
     def fetch_netsuite_employees

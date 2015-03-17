@@ -29,7 +29,7 @@ en:
         update: "Connect"
       namely_authentication:
         submit: "Sign in"
-    link_to: 
+    link_to:
       connections: 'Back To Connections'
 
   homepages:
@@ -44,22 +44,22 @@ en:
 
   jobvite_imports:
     create:
-      imported_successfully: "You have successfully imported the following:"
-      empty_successful_imports: "Currently there aren't any profiles to import"
-      not_imported_successfully: "You haven't import the following:"
-      employee_title: "Employee Name"
-      key_title: "Key"
       contact_number_title: "Contact Number"
       email_address_title: "Email Address"
+      employee_title: "Employee Name"
+      empty_successful_imports: "Currently there aren't any profiles to import"
+      imported_successfully: "You have successfully imported the following:"
+      key_title: "Key"
+      not_imported_successfully: "You haven't import the following:"
       reason: "Reason"
 
   netsuite_imports:
     create:
-      imported_successfully: "You have successfully imported the following:"
-      empty_successful_imports: "Currently there aren't any profiles to import"
-      not_imported_successfully: "You haven't imported the following:"
-      employee_title: "Employee Name"
       email_address_title: "Email Address"
+      employee_title: "Employee Name"
+      empty_successful_imports: "Currently there aren't any profiles to import"
+      imported_successfully: "You have successfully imported the following:"
+      internal_id_title: "Netsuite Id"
       user_status_title: "User Status"
 
   simple_form:

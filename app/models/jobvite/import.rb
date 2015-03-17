@@ -25,7 +25,7 @@ module Jobvite
 
     def import_recent_hires
       namely_importer.import(
-        recent_hires: recent_hires,
+        recent_imports: recent_hires,
         namely_connection: namely_connection,
         attribute_mapper: AttributeMapper.new,
       )

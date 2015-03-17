@@ -1,7 +1,7 @@
 <%= render 'subnav' %>
 
 <h1>Jobvite</h1>
-<% if @jobvite_imports_presenter.imported_candidates.empty? %>
+<% if @jobvite_imports_presenter.imported.empty? %>
   <strong><%= t(".empty_successful_imports") %></strong>
 <% else %>
   <strong><%= t(".imported_successfully") %></strong>
@@ -15,7 +15,7 @@
       </tr>
     </thead>
     <tbody>
-      <% @jobvite_imports_presenter.imported_candidates.each do |candidate| %>
+      <% @jobvite_imports_presenter.imported.each do |candidate| %>
         <tr>
           <td>
             <%= candidate.name %>
@@ -35,7 +35,7 @@
   </table>
 <% end %>
 <hr />
-<% unless @jobvite_imports_presenter.not_imported_candidates.empty? %>
+<% unless @jobvite_imports_presenter.not_imported.empty? %>
   <strong><%= t(".not_imported_successfully") %></strong>
   <table>
     <thead>
@@ -48,7 +48,7 @@
       </tr>
     </thead>
     <tbody>
-      <% @jobvite_imports_presenter.not_imported_candidates.each do |import_result| %>
+      <% @jobvite_imports_presenter.not_imported.each do |import_result| %>
         <tr>
           <td>
             <%= import_result[:candidate].name %>

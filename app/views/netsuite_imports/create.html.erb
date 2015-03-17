@@ -1,7 +1,7 @@
 <%= render "subnav" %>
 
 <h1>Netsuite</h1>
-<% if @netsuite_imports_presenter.imported_candidates.empty? %>
+<% if @netsuite_imports_presenter.imported.empty? %>
   <strong><%= t(".empty_successful_imports") %></strong>
 <% else %>
   <strong><%= t(".imported_successfully") %></strong>
@@ -9,21 +9,25 @@
     <thead>
       <tr>
         <th><%= t(".employee_title") %></th>
+        <th><%= t(".internal_id_title") %></th>
         <th><%= t(".email_address_title") %></th>
         <th><%= t(".user_status_title") %></th>
       </tr>
     </thead>
     <tbody>
-      <% @netsuite_imports_presenter.imported_candidates.each do |employee| %>
+      <% @netsuite_imports_presenter.imported.each do |employee| %>
         <tr>
           <td>
-            <%= "#{employee["first_name"]} #{employee["last_name"]}" %>
+            <%= employee.name %>
           </td>
           <td>
-            <%= employee["email"] %>
+            <%= employee.internal_id %>
           </td>
           <td>
-            <%= employee["user_status"] %>
+            <%= employee.email %>
+          </td>
+          <td>
+            <%= employee.user_status %>
           </td>
         </tr>
       <% end %>

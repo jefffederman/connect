@@ -4,12 +4,12 @@ class NamelyImporter
   end
 
   def initialize(
-    recent_hires:,
+    recent_imports:,
     namely_connection:,
     attribute_mapper:,
     duplicate_filter: NamelyDuplicateFilter
   )
-    @recent_hires = recent_hires
+    @recent_imports = recent_imports
     @namely_connection = namely_connection
     @attribute_mapper = attribute_mapper
     @duplicate_filter = duplicate_filter
@@ -17,15 +17,15 @@ class NamelyImporter
 
   def import
     result = ImportResult.new(attribute_mapper)
-    unique_recent_hires.inject(result) do |status, recent_hire|
-      status[recent_hire] = try_importing(attribute_mapper.call(recent_hire))
+    unique_recent_imports.inject(result) do |status, recent_import|
+      status[recent_import] = try_importing(attribute_mapper.call(recent_import))
       status
     end
   end
 
   private
 
-  attr_reader :recent_hires, :namely_connection, :attribute_mapper, :duplicate_filter
+  attr_reader :recent_imports, :namely_connection, :attribute_mapper, :duplicate_filter
 
   def try_importing(attrs)
     if valid_attributes?(attrs)
@@ -40,9 +40,9 @@ class NamelyImporter
     end
   end
 
-  def unique_recent_hires
+  def unique_recent_imports
     duplicate_filter.filter(
-      recent_hires,
+      recent_imports,
       namely_connection: namely_connection,
       attribute_mapper: attribute_mapper,
     )

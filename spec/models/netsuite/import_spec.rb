@@ -24,7 +24,7 @@ describe Netsuite::Import do
 
         expect(status).to eq expected_status
         expect(namely_importer).to have_received(:import).with(
-          recent_hires: [netsuite_employee],
+          recent_imports: [netsuite_employee],
           namely_connection: user.namely_connection,
           attribute_mapper: instance_of(Netsuite::AttributeMapper),
         )

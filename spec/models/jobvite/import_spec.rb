@@ -28,7 +28,7 @@ describe Jobvite::Import do
         expect(jobvite_client).to have_received(:recent_hires).
           with(user.jobvite_connection)
         expect(namely_importer).to have_received(:import).with(
-          recent_hires: recent_hires,
+          recent_imports: recent_hires,
           namely_connection: user.namely_connection,
           attribute_mapper: instance_of(Jobvite::AttributeMapper),
         )

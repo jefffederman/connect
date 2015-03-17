@@ -4,15 +4,15 @@ describe NamelyImporter do
   describe "#import" do
     it "creates a Namely profile for each recent hire" do
       namely_connection = namely_connection_double
-      recent_hires_with_dupes = double("recent_hires_with_dupes")
+      recent_imports_with_dupes = double("recent_imports_with_dupes")
       candidate = double(
-        "recent_hire",
+        "recent_import",
         name_the_first: "Dade",
         name_the_last: "Murphy",
         email: "crash.override@example.com",
       )
-      recent_hires = [candidate]
-      duplicate_filter = double("duplicate_filter", filter: recent_hires)
+      recent_imports = [candidate]
+      duplicate_filter = double("duplicate_filter", filter: recent_imports)
       attribute_mapper = Proc.new do |original|
         {
           first_name: original.name_the_first,
@@ -21,7 +21,7 @@ describe NamelyImporter do
         }
       end
       importer = described_class.new(
-        recent_hires: recent_hires_with_dupes,
+        recent_imports: recent_imports_with_dupes,
         namely_connection: namely_connection,
         attribute_mapper: attribute_mapper,
         duplicate_filter: duplicate_filter,
@@ -35,7 +35,7 @@ describe NamelyImporter do
         email: "crash.override@example.com",
       )
       expect(duplicate_filter).to have_received(:filter).with(
-        recent_hires_with_dupes,
+        recent_imports_with_dupes,
         namely_connection: namely_connection,
         attribute_mapper: attribute_mapper,
       )
@@ -45,13 +45,13 @@ describe NamelyImporter do
 
     it "flags recent hires with no email address" do
       namely_connection = namely_connection_double
-      recent_hires = [{ first_name: "Dade", last_name: "Murphy", email: "" }]
-      duplicate_filter = double("duplicate_filter", filter: recent_hires)
+      recent_imports = [{ first_name: "Dade", last_name: "Murphy", email: "" }]
+      duplicate_filter = double("duplicate_filter", filter: recent_imports)
 
       candidate = { first_name: "Dade", last_name: "Murphy", email: "" }
-      recent_hires = [candidate]
+      recent_imports = [candidate]
       importer = described_class.new(
-        recent_hires: recent_hires,
+        recent_imports: recent_imports,
         namely_connection: namely_connection,
         attribute_mapper: -> (original) { original },
         duplicate_filter: duplicate_filter,
