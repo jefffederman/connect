@@ -16,11 +16,11 @@ module Jobvite
       application["gender"]
     end
 
-    def name 
+    def name
       "#{self["first_name"]} #{self["last_name"]}"
     end
 
-    def contact_number 
+    def contact_number
       home_phone || work_phone || cell_phone
     end
 

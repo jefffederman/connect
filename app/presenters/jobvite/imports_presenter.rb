@@ -7,7 +7,7 @@ module Jobvite
     def imported_candidates
       @imported_candidates ||= import_results.to_a.select do |import_result|
         import_result[:result] == I18n.t("status.success")
-      end.map do |import_result| 
+      end.map do |import_result|
         import_result[:candidate]
       end
     end

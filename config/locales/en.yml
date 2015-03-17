@@ -53,6 +53,15 @@ en:
       email_address_title: "Email Address"
       reason: "Reason"
 
+  netsuite_imports:
+    create:
+      imported_successfully: "You have successfully imported the following:"
+      empty_successful_imports: "Currently there aren't any profiles to import"
+      not_imported_successfully: "You haven't imported the following:"
+      employee_title: "Employee Name"
+      email_address_title: "Email Address"
+      user_status_title: "User Status"
+
   simple_form:
     labels:
       jobvite_connection:
