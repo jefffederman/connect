@@ -15,6 +15,19 @@ feature "User imports netsuite employees" do
     expect(page).to have_content t("status.success")
   end
 
+  scenario "unsuccessfully" do
+    user = create(:user)
+    stubbed_netsuite_gateway_request
+    stubbed_namely_post_request
+    stubbed_namely_get_request
+
+    visit dashboard_path(as: user)
+    within(".netsuite-import") do
+      click_button t("dashboards.show.import_now")
+    end
+
+  end
+
   def api_host
     "%{protocol}://%{subdomain}.namely.com" % {
       protocol: Rails.configuration.namely_api_protocol,

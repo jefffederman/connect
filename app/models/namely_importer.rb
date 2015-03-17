@@ -17,6 +17,7 @@ class NamelyImporter
 
   def import
     result = ImportResult.new(attribute_mapper)
+    binding.pry
     unique_recent_hires.inject(result) do |status, recent_hire|
       status[recent_hire] = try_importing(attribute_mapper.call(recent_hire))
       status

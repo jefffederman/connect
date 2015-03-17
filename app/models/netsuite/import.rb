@@ -24,7 +24,7 @@ module Netsuite
 
     def fetch_netsuite_employees
       result = RestClient.get(ENV["NETSUITE_GATEWAY_URL"])
-      JSON.parse(result)
+      JSON.parse(result).first["employees"]
     end
   end
 end
