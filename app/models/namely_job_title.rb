@@ -7,13 +7,17 @@ class NamelyJobTitle
   end
 
   def job_title
-    namely_connection.job_tiers.all
+    detect_job_title.id
   end
 
   private
 
-  def job_tiers
-    @job_tiers ||= namely_connection.job_tiers
+  def detect_job_title
+    job_titles.detect { |job_title| job_title.title == job_title_name }
+  end
+
+  def job_titles
+    @job_titles ||= namely_connection.job_titles.all
   end
 
   attr_reader :job_title_name, :namely_connection
