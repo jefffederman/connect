@@ -2,7 +2,7 @@ require "ostruct"
 
 module Icims
   class Candidate < OpenStruct
-    def initialize(attributes, namely_connection)
+    def initialize(namely_connection, attributes)
       super attributes.map { |k,v| [k.underscore, v] }.to_h
       @namely_connection = namely_connection
     end
