@@ -1,0 +1,188 @@
+[
+  {
+    "table": {
+      "links": {
+      },
+      "title": "Individual Contributor",
+      "numerical_id": 21552,
+      "id": "feb7f22f-c860-4ef5-9ec3-3c7bd737d67f"
+    },
+    "resource_access": {
+      "subdomain": "sales14",
+      "endpoint": "job_tiers",
+      "gateway_token": "31b031cd12d012329ea4e7c56558855f"
+    }
+  },
+  {
+    "table": {
+      "links": {
+        "job_titles": [
+          "0f2007f9-19a8-46a9-9d9e-0b235c9530ac"
+        ]
+      },
+      "title": "Unknown Job Tier",
+      "numerical_id": 21223,
+      "id": "9ab2f8f0-0033-423f-bc2c-a2132b43942e"
+    },
+    "resource_gateway": {
+      "subdomain": "sales14",
+      "endpoint": "job_tiers",
+      "access_token": "31b031cd12d012329ea4e7c56558855f"
+    }
+  },
+  {
+    "table": {
+      "links": {
+        "job_titles": [
+          "33b20eb7-42c2-4807-8033-b79b453b06b2",
+          "ae61cb3e-945e-4c28-9fe4-fa447eb6f9f6"
+        ]
+      },
+      "title": "Sr Director",
+      "numerical_id": 21554,
+      "id": "9f63ca8c-b517-4e9c-ab67-02d8b9e93cbc"
+    },
+    "resource_gateway": {
+      "subdomain": "sales14",
+      "endpoint": "job_tiers",
+      "access_token": "31b031cd12d012329ea4e7c56558855f"
+    }
+  },
+  {
+    "table": {
+      "links": {
+        "job_titles": [
+          "54e6a06b-298a-4fdb-a108-9d83717e6cfe",
+          "4404b2d8-c74c-4bc7-abb8-1a26f543f8a7",
+          "c86b831c-ff3c-4e8c-bc13-5a4497227686",
+          "c8042b9e-77f7-4ac5-a336-45f64228f148"
+        ]
+      },
+      "title": "Manager",
+      "numerical_id": 21559,
+      "id": "25a8daea-9b46-4da0-bb5c-1fcf78d945f4"
+    },
+    "resource_gateway": {
+      "subdomain": "sales14",
+      "endpoint": "job_tiers",
+      "access_token": "31b031cd12d012329ea4e7c56558855f"
+    }
+  },
+  {
+    "table": {
+      "links": {
+        "job_titles": [
+          "55130662-450d-45fb-9b26-04451e81b9dd",
+          "f4dfa637-2a19-41a1-bcef-537bbce791d0",
+          "de4d450e-d00a-462d-ac12-cb41bdd22529",
+          "a662b7ca-714f-4b9a-9b6a-2a8b571f087f",
+          "1c6bd980-92eb-43f6-8a1c-8a06ee88d7bc",
+          "082c81d1-bfc1-47dc-a05a-460a9cea50b5",
+          "72c4d136-129a-4e96-9fdc-85d51838cf21",
+          "e0058c9d-3844-43d1-a1f5-6f8fd7fc738a"
+        ]
+      },
+      "title": "Executive",
+      "numerical_id": 21561,
+      "id": "02b5fb19-b35d-4a20-97bc-41e12d8aa44c"
+    },
+    "resource_gateway": {
+      "subdomain": "sales14",
+      "endpoint": "job_tiers",
+      "access_token": "31b031cd12d012329ea4e7c56558855f"
+    }
+  },
+  {
+    "table": {
+      "links": {
+        "job_titles": [
+          "b2696b99-bd5b-4ed4-8876-b0fff5003873",
+          "ca06a018-444b-4ec5-98f8-4601877ec7c7",
+          "529291f3-a887-48b5-8e78-1016d3f34975",
+          "5c05dc6a-366c-4234-995e-b822380828a4"
+        ]
+      },
+      "title": "Director",
+      "numerical_id": 21565,
+      "id": "97b0ce73-d890-431e-925b-10d1cda0bec8"
+    },
+    "resource_gateway": {
+      "subdomain": "sales14",
+      "endpoint": "job_tiers",
+      "access_token": "31b031cd12d012329ea4e7c56558855f"
+    }
+  },
+  {
+    "table": {
+      "links": {
+        "job_titles": [
+          "c2a8e3a9-95b6-4943-a125-5d124926dc47"
+        ]
+      },
+      "title": "Workforce Planning",
+      "numerical_id": 21423,
+      "id": "7cb6e96b-bb9c-4ee5-beae-723b624af959"
+    },
+    "resource_gateway": {
+      "subdomain": "sales14",
+      "endpoint": "job_tiers",
+      "access_token": "31b031cd12d012329ea4e7c56558855f"
+    }
+  },
+  {
+    "table": {
+      "links": {
+        "job_titles": [
+          "7e39315e-5965-4bc2-86b0-bd6ec90c38eb",
+          "5806b406-af56-458d-b4c8-3a5aaf1e207e",
+          "39ef8bab-0ed3-482e-80e8-20b37be8ede3",
+          "5504bc67-d9ef-45cb-9bb0-ba27cd278375",
+          "d857ee6c-b730-479f-9001-75fafc2ead0b"
+        ]
+      },
+      "title": "Netformx",
+      "numerical_id": 21680,
+      "id": "a7679e60-9292-45dc-969a-b5cd69daad77"
+    },
+    "resource_gateway": {
+      "subdomain": "sales14",
+      "endpoint": "job_tiers",
+      "access_token": "31b031cd12d012329ea4e7c56558855f"
+    }
+  },
+  {
+    "table": {
+      "links": {
+        "job_titles": [
+          "15caed55-09ff-43a2-9939-f93e3c1b6655"
+        ]
+      },
+      "title": "Inactive",
+      "numerical_id": 23080,
+      "id": "387c9242-c1bd-4945-a425-1c851d9636c9"
+    },
+    "resource_gateway": {
+      "subdomain": "sales14",
+      "endpoint": "job_tiers",
+      "access_token": "31b031cd12d012329ea4e7c56558855f"
+    }
+  },
+  {
+    "table": {
+      "links": {
+        "job_titles": [
+          "ce0e673d-0e73-4cf9-9694-f40566821934",
+          "7d913446-b5cc-4e83-abd3-8a704e355776"
+        ]
+      },
+      "title": "Test",
+      "numerical_id": 23082,
+      "id": "40e8650f-718e-4e62-ba38-557b53f9bb1e"
+    },
+    "resource_gateway": {
+      "subdomain": "sales14",
+      "endpoint": "job_tiers",
+      "access_token": "31b031cd12d012329ea4e7c56558855f"
+    }
+  }
+]

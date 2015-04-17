@@ -2,8 +2,9 @@ require "ostruct"
 
 module Icims
   class Candidate < OpenStruct
-    def initialize(attributes)
+    def initialize(attributes, namely_connection)
       super attributes.map { |k,v| [k.underscore, v] }.to_h
+      @namely_connection = namely_connection
     end
 
     def start_date
@@ -45,6 +46,13 @@ module Icims
           yearly_amount: icims_salary[:amount],
         }
       end
+    end
+
+    def job_title
+      @job_title ||= NamelyJobTitle.new(
+        namely_connection: namely_connection,
+        job_title_name: jobtitle,
+      ).job_title
     end
 
     private
