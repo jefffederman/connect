@@ -24,6 +24,29 @@ module Icims
       "icims_imports/candidate"
     end
 
+    def home_address
+      if icims_home_address
+        {
+          address1: icims_home_address["addressstreet1"],
+          address2: icims_home_address["addressstreet2"],
+          city: icims_home_address["addresscity"],
+          country_id: icims_home_address["addresscountry"]["abbrev"],
+          state_id: icims_home_address["addressstate"]["abbrev"],
+          zip: icims_home_address["addresszip"],
+        }
+      end
+    end
+
+    def salary
+      if icims_salary
+        {
+          currency: icims_salary[:currency],
+          date: start_date,
+          yearly_amount: icims_salary[:amount],
+        }
+      end
+    end
+
     private
 
     def phone_numbers
@@ -39,6 +62,18 @@ module Icims
 
     def has_start_date?
       startdate.present?
+    end
+
+    def icims_salary
+      self[:salary]
+    end
+
+    def icims_home_address
+      if self[:addresses]
+        @icims_home_address ||=
+          addresses.detect { |address|
+          address["addresstype"]["value"] == "Home"}
+      end
     end
   end
 end

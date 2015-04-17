@@ -8,6 +8,8 @@ module Icims
         user_status: "active",
         start_date: icims_candidate.start_date,
         gender: namely_gender(icims_candidate.gender),
+        salary: icims_candidate.salary,
+        home: icims_candidate.home_address,
         namely_identifier_field => identifier(icims_candidate),
       }.select { |_, value| value.present? }
     end

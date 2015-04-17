@@ -12,6 +12,8 @@ describe Icims::AttributeMapper do
         lastname: "Murphy",
         start_date: "2014-01-02",
         gender: "Opt Out",
+        salary: "lots of money",
+        home_address: "my home",
       )
 
       expect(mapper.call(icims_candidate)).to eq(
@@ -20,6 +22,8 @@ describe Icims::AttributeMapper do
         email: "crash.override@example.com",
         user_status: "active",
         start_date: "2014-01-02",
+        home: "my home",
+        salary: "lots of money",
         icims_id: "edO1Ggwt",
       )
     end
@@ -41,6 +45,8 @@ describe Icims::AttributeMapper do
           firstname: "Sam",
           lastname: "Smith",
           email: "user@example.com",
+          salary: nil,
+          home_address: nil,
           start_date: Date.today.iso8601,
           gender: icims_gender,
         )
@@ -60,6 +66,8 @@ describe Icims::AttributeMapper do
         lastname: "Libby",
         email: "acid.burn@example.com",
         start_date: nil,
+        salary: nil,
+        home_address: nil,
         gender: "Female",
       )
 

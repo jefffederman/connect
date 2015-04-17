@@ -1,11 +1,13 @@
 module Icims
   class CandidateFind
     REQUIRED_FIELDS = [
+      "addresses",
       "email",
       "firstname",
       "gender",
       "lastname",
       "phones",
+      "salary",
       "startdate",
     ]
 

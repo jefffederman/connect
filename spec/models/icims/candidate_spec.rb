@@ -68,4 +68,56 @@ describe Icims::Candidate do
       ]
     end
   end
+
+  describe "#home_address" do
+    it "there are no addresses" do
+      candidate = described_class.new({})
+      expect(candidate.home_address).to be_nil
+    end
+
+    it "doesn't return anything without a home address" do
+      candidate = described_class.new(
+        "addresses" => [
+          {
+            "addresstype" => {
+              "value" => "Not Home",
+            },
+          },
+        ]
+      )
+      expect(candidate.home_address).to be_nil
+    end
+
+    it "returns a formatted list of the given address" do
+      candidate = described_class.new(
+        "addresses" => [
+          {
+            "addresstype" => {
+              "value" => "Home",
+            },
+            "addressstreet1" => "123 address",
+            "addressstreet2" => "PO Box",
+            "addresscity" => "New York",
+            "addresszip" => "10001",
+            "addresscountry" => {
+              "abbrev" => "US",
+            },
+            "addressstate" => {
+              "abbrev" => "NY",
+            },
+          },
+        ]
+      )
+
+      expect(candidate.home_address).not_to be_nil
+      expect(candidate.home_address).to eq(
+        address1: "123 address",
+        address2: "PO Box",
+        city: "New York",
+        country_id: "US",
+        state_id: "NY",
+        zip: "10001",
+      )
+    end
+  end
 end
