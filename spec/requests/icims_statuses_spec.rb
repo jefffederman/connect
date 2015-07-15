@@ -50,6 +50,20 @@ describe "iCIMS new candidate" do
       to include(icims_candidate_retry_import_url(8986))
   end
 
+  it "reports connection issues responsibly" do
+    post icims_candidate_imports_url(1729), {}
+
+    expect(response.body).to be_blank
+    expect(response.status).to eq 200
+    expect(sent_email.subject).to include(
+      t(
+        "candidate_import_mailer.unsuccessful_import.subject",
+        candidate_name: candidate_name,
+        integration: "iCIMS"
+      ).chomp
+    )
+  end
+
   def stub_person_results
     stub_request(:get, "https://api.icims.com/customers/2187/people/8986").
       with(query: { fields: required_fields }).
@@ -74,12 +88,12 @@ describe "iCIMS new candidate" do
     Icims::CandidateFind::REQUIRED_FIELDS.join(",")
   end
 
-  def sent_email
-    @sent_email ||= ActionMailer::Base.deliveries.first
+  let (:sent_email) do
+    ActionMailer::Base.deliveries.first
   end
 
-  def import_data
-    @import_data ||= JSON.parse(
+  let(:import_data) do
+    JSON.parse(
       File.read("spec/fixtures/api_requests/icims_status_change.json")
     )
   end

@@ -41,4 +41,45 @@ describe Icims::Connection do
       expect(icims_connection.username).to be_nil
     end
   end
+
+  describe "#build_candidate_importer" do
+    it "constructs a valid CandidateImporter when connected" do
+      icims_connection = create(:icims_connection)
+      importer = icims_connection.build_candidate_importer(
+        assistant_class: double("assistant_class"),
+        connection: double("connection"),
+        mailer: double("mailer"),
+        params: double("params")
+      )
+      expect(importer.class).to eq CandidateImporter
+    end
+  end
+
+  describe ".for_api_key" do
+    it "constructs a valid connection when given valid credentials" do
+      existing = create(:icims_connection)
+      connection = described_class.for_api_key(
+        api_key: existing.api_key, customer_id: existing.customer_id)
+      importer = connection.build_candidate_importer(
+        assistant_class: double("assistant_class"),
+        connection: double("connection"),
+        mailer: double("mailer"),
+        params: double("params")
+      )
+
+      expect(importer.class).to eq CandidateImporter
+    end
+
+    it "constructs a missing connection when it cannot find the credentials" do
+      connection = described_class.for_api_key(api_key: 1, customer_id: 2)
+      importer = connection.build_candidate_importer(
+        assistant_class: double("assistant_class"),
+        connection: double("connection"),
+        mailer: double("mailer"),
+        params: double("params")
+      )
+
+      expect(importer.class).to eq InvalidCandidateImporter
+    end
+  end
 end

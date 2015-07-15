@@ -5,6 +5,11 @@ module Icims
     validates :api_key, uniqueness: true
     before_create :set_api_key
 
+    def self.for_api_key(api_key:, customer_id:)
+      self.find_by(api_key: api_key.to_s, customer_id: customer_id) ||
+        InvalidConnection.new
+    end
+
     def integration_id
       :icims
     end
@@ -40,5 +45,16 @@ module Icims
     def set_api_key
       self.api_key = SecureRandom.hex(20)
     end
+
+    def build_candidate_importer(*import_params)
+      CandidateImporter.new(*import_params)
+    end
+
+    class InvalidConnection
+      def build_candidate_importer(*import_params)
+        InvalidCandidateImporter.new(*import_params)
+      end
+    end
+    private_constant :InvalidConnection
   end
 end

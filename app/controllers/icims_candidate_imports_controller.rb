@@ -3,19 +3,23 @@ class IcimsCandidateImportsController < ApplicationController
   skip_before_filter :verify_authenticity_token
 
   def create
-    CandidateImporter.new(
-      assistant_class: Icims::CandidateImportAssistant,
-      connection: connection,
-      mailer: CandidateImportMailer,
-      params: params
-    ).import
+    importer.import
     render nothing: true
   end
 
   private
 
+  def importer
+    connection.build_candidate_importer(
+      assistant_class: Icims::CandidateImportAssistant,
+      connection: connection,
+      mailer: CandidateImportMailer,
+      params: params
+    )
+  end
+
   def connection
-    Icims::Connection.find_by!(
+    Icims::Connection.for_api_key(
       api_key: params[:api_key],
       customer_id: params[:customerId]
     )
