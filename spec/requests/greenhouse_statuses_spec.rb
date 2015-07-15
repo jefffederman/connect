@@ -2,10 +2,11 @@ require "rails_helper"
 
 describe "Greenhouse new candidate" do
   before do
-    stub_request(:get, %r{#{ api_host }/api/v1/profiles/fields}).
+    response_file = "spec/fixtures/api_responses/fields_with_greenhouse.json"
+    stub_request(:get, %r{#{api_host}/api/v1/profiles/fields}).
       to_return(
         status: 200,
-        body: File.read("spec/fixtures/api_responses/fields_with_greenhouse.json")
+        body: File.read(response_file)
       )
   end
 
@@ -22,7 +23,7 @@ describe "Greenhouse new candidate" do
 
   let(:greenhouse_ping) do
     JSON.parse(
-      File.read('spec/fixtures/api_requests/greenhouse_payload_ping.json'))
+      File.read("spec/fixtures/api_requests/greenhouse_payload_ping.json"))
   end
 
   let(:sent_email) do
