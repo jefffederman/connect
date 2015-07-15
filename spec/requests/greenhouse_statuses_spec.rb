@@ -19,7 +19,7 @@ describe "Greenhouse new candidate" do
       )
   end
 
-  it 'authorize request coming from greenhouse with valid digest' do
+  it "authorizes requests coming from Greenhouse with valid digest" do
     allow_any_instance_of(Greenhouse::ValidRequesterPolicy).to receive(:valid?) { true }
     post(greenhouse_candidate_imports_url(connection.secret_key),
          { greenhouse_candidate_import: greenhouse_ping },
@@ -28,7 +28,7 @@ describe "Greenhouse new candidate" do
     expect(response.status).to eql 200
   end
 
-  it 'unauthorize request not coming from greenhouse with valid digest' do
+  it "denies requests with an invalid digest" do
     allow_any_instance_of(Greenhouse::ValidRequesterPolicy).to receive(:valid?) { false }
     post(greenhouse_candidate_imports_url(connection.secret_key),
          { greenhouse_candidate_import: greenhouse_ping },
