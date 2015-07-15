@@ -3,7 +3,12 @@ class IcimsCandidateImportsController < ApplicationController
   skip_before_filter :verify_authenticity_token
 
   def create
-    importer.import
+    CandidateImporter.new(
+      assistant_class: Icims::CandidateImportAssistant,
+      connection: connection,
+      mailer: CandidateImportMailer,
+      params: params
+    ).import
     render nothing: true
   rescue Unauthorized
     render nothing: true, status: :unauthorized
@@ -11,18 +16,10 @@ class IcimsCandidateImportsController < ApplicationController
 
   private
 
-  def importer
-    connection.build_candidate_importer(
-      assistant_class: Icims::CandidateImportAssistant,
-      mailer: CandidateImportMailer,
-      params: params
-    )
-  end
-
   def connection
-    Icims::Connection.for_api_key(
+    Icims::Connection.find_by(
       api_key: params[:api_key],
       customer_id: params[:customerId]
-    )
+    ) or raise Unauthorized.new(Unauthorized::DEFAULT_MESSAGE)
   end
 end
