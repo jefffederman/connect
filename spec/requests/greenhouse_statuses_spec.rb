@@ -37,6 +37,13 @@ describe "Greenhouse new candidate" do
     expect(response.status).to eql 401
   end
 
+  it "shows an unauthorized response when the secret key is wrong" do
+    post greenhouse_candidate_imports_url(1729), {}
+
+    expect(response.body).to be_blank
+    expect(response.status).to eql 401
+  end
+
   it "creates new user in namely" do
     stub_request(:post, "#{api_host}/api/v1/profiles").
       to_return(

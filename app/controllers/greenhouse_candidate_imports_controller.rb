@@ -23,9 +23,9 @@ class GreenhouseCandidateImportsController < ApplicationController
   end
 
   def connection
-    Greenhouse::Connection.find_by!(
+    Greenhouse::Connection.find_by(
       secret_key: params.fetch("secret_key")
-    )
+    ) or raise Unauthorized.new(Unauthorized::DEFAULT_MESSAGE)
   end
 
   def greenhouse_candidate_import_params
