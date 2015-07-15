@@ -8,6 +8,16 @@ describe "iCIMS new candidate" do
     }
   end
 
+  let (:sent_email) do
+    ActionMailer::Base.deliveries.first
+  end
+
+  let(:import_data) do
+    JSON.parse(
+      File.read("spec/fixtures/api_requests/icims_status_change.json")
+    )
+  end
+
   it "creates new user in namely" do
     stub_person_results
     connection = user_with_icims_connection
@@ -79,16 +89,6 @@ describe "iCIMS new candidate" do
 
   def required_fields
     Icims::CandidateFind::REQUIRED_FIELDS.join(",")
-  end
-
-  let (:sent_email) do
-    ActionMailer::Base.deliveries.first
-  end
-
-  let(:import_data) do
-    JSON.parse(
-      File.read("spec/fixtures/api_requests/icims_status_change.json")
-    )
   end
 
   def stub_incomplete_person_results

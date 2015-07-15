@@ -1,16 +1,6 @@
 require "rails_helper"
 
 describe "Greenhouse new candidate" do
-  let(:api_host) do
-    "%{protocol}://%{subdomain}.namely.com" % {
-      protocol: Rails.configuration.namely_api_protocol,
-      subdomain: ENV["TEST_NAMELY_SUBDOMAIN"],
-    }
-  end
-  let(:connection) do
-    create(:greenhouse_connection, :with_namely_field, name: "myhook")
-  end
-
   before do
     stub_request(:get, %r{#{ api_host }/api/v1/profiles/fields}).
       to_return(
@@ -18,6 +8,34 @@ describe "Greenhouse new candidate" do
         body: File.read("spec/fixtures/api_responses/fields_with_greenhouse.json")
       )
   end
+
+  let(:api_host) do
+    "%{protocol}://%{subdomain}.namely.com" % {
+      protocol: Rails.configuration.namely_api_protocol,
+      subdomain: ENV["TEST_NAMELY_SUBDOMAIN"],
+    }
+  end
+
+  let(:connection) do
+    create(:greenhouse_connection, :with_namely_field, name: "myhook")
+  end
+
+  let(:greenhouse_ping) do
+    JSON.parse(
+      File.read('spec/fixtures/api_requests/greenhouse_payload_ping.json'))
+  end
+
+  let(:sent_email) do
+    ActionMailer::Base.deliveries.first
+  end
+
+  let(:greenhouse_payload) do
+    JSON.parse(
+      File.read("spec/fixtures/api_requests/greenhouse_payload.json")
+    )
+  end
+
+  let(:candidate_name) { "Johnny Smith" }
 
   it "authorizes requests coming from Greenhouse with valid digest" do
     allow_any_instance_of(Greenhouse::ValidRequesterPolicy).to receive(:valid?) { true }
@@ -82,24 +100,5 @@ describe "Greenhouse new candidate" do
         integration: "Greenhouse"
       ).chomp
     )
-  end
-
-  let(:greenhouse_ping) do
-    JSON.parse(
-      File.read('spec/fixtures/api_requests/greenhouse_payload_ping.json'))
-  end
-
-  let(:sent_email) do
-    ActionMailer::Base.deliveries.first
-  end
-
-  let(:greenhouse_payload) do
-    JSON.parse(
-      File.read("spec/fixtures/api_requests/greenhouse_payload.json")
-    )
-  end
-
-  def candidate_name
-    "Johnny Smith"
   end
 end
