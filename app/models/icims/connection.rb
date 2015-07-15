@@ -6,8 +6,8 @@ module Icims
     before_create :set_api_key
 
     def self.for_api_key(api_key:, customer_id:)
-      self.find_by(api_key: api_key.to_s, customer_id: customer_id) ||
-        InvalidConnection.new
+      self.find_by(api_key: api_key.to_s, customer_id: customer_id) or
+        raise Unauthorized.new(Unauthorized::DEFAULT_MESSAGE)
     end
 
     def integration_id
@@ -46,15 +46,8 @@ module Icims
       self.api_key = SecureRandom.hex(20)
     end
 
-    def build_candidate_importer(*import_params)
-      CandidateImporter.new(*import_params)
+    def build_candidate_importer(import_params)
+      CandidateImporter.new(**import_params.merge(connection: self))
     end
-
-    class InvalidConnection
-      def build_candidate_importer(*import_params)
-        InvalidCandidateImporter.new(*import_params)
-      end
-    end
-    private_constant :InvalidConnection
   end
 end

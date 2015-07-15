@@ -7,19 +7,19 @@ describe "Greenhouse new candidate" do
       subdomain: ENV["TEST_NAMELY_SUBDOMAIN"],
     }
   end
-  let(:connection) do 
-    create(:greenhouse_connection, :with_namely_field, name: "myhook") 
+  let(:connection) do
+    create(:greenhouse_connection, :with_namely_field, name: "myhook")
   end
 
   before do
-    stub_request(:get, /#{ api_host }\/api\/v1\/profiles\/fields/).
+    stub_request(:get, %r{#{ api_host }/api/v1/profiles/fields}).
       to_return(
         status: 200,
         body: File.read("spec/fixtures/api_responses/fields_with_greenhouse.json")
       )
   end
 
-  it 'authorize request comming from greenhouse with valid digest' do 
+  it 'authorize request coming from greenhouse with valid digest' do
     allow_any_instance_of(Greenhouse::ValidRequesterPolicy).to receive(:valid?) { true }
     post(greenhouse_candidate_imports_url(connection.secret_key),
          { greenhouse_candidate_import: greenhouse_ping },
@@ -28,7 +28,7 @@ describe "Greenhouse new candidate" do
     expect(response.status).to eql 200
   end
 
-  it 'unauthorize request not comming from greenhouse with valid digest' do 
+  it 'unauthorize request not coming from greenhouse with valid digest' do
     allow_any_instance_of(Greenhouse::ValidRequesterPolicy).to receive(:valid?) { false }
     post(greenhouse_candidate_imports_url(connection.secret_key),
          { greenhouse_candidate_import: greenhouse_ping },
@@ -77,17 +77,17 @@ describe "Greenhouse new candidate" do
     )
   end
 
-  def greenhouse_ping
-    @greenhouse_ping ||= JSON.parse(
+  let(:greenhouse_ping) do
+    JSON.parse(
       File.read('spec/fixtures/api_requests/greenhouse_payload_ping.json'))
   end
 
-  def sent_email
-    @sent_email ||= ActionMailer::Base.deliveries.first
+  let(:sent_email) do
+    ActionMailer::Base.deliveries.first
   end
 
-  def greenhouse_payload 
-    @greenhouse_payload ||= JSON.parse(
+  let(:greenhouse_payload) do
+    JSON.parse(
       File.read("spec/fixtures/api_requests/greenhouse_payload.json")
     )
   end

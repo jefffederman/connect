@@ -5,6 +5,8 @@ class IcimsCandidateImportsController < ApplicationController
   def create
     importer.import
     render nothing: true
+  rescue Unauthorized
+    render nothing: true, status: :unauthorized
   end
 
   private
@@ -12,7 +14,6 @@ class IcimsCandidateImportsController < ApplicationController
   def importer
     connection.build_candidate_importer(
       assistant_class: Icims::CandidateImportAssistant,
-      connection: connection,
       mailer: CandidateImportMailer,
       params: params
     )

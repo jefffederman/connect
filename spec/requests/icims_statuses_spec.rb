@@ -54,14 +54,7 @@ describe "iCIMS new candidate" do
     post icims_candidate_imports_url(1729), {}
 
     expect(response.body).to be_blank
-    expect(response.status).to eq 200
-    expect(sent_email.subject).to include(
-      t(
-        "candidate_import_mailer.unsuccessful_import.subject",
-        candidate_name: candidate_name,
-        integration: "iCIMS"
-      ).chomp
-    )
+    expect(response.status).to eq 401
   end
 
   def stub_person_results
