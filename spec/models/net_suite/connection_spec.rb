@@ -6,6 +6,11 @@ describe NetSuite::Connection do
     it { is_expected.not_to allow_value("").for(:subsidiary_id) }
   end
 
+  describe "associations" do
+    it { should belong_to(:attribute_mapper).dependent(:destroy) }
+    it { should belong_to(:user).dependent(:destroy) }
+  end
+
   describe "#connected?" do
     context "with saved authorization data" do
       it "returns true" do

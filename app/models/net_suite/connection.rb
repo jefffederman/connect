@@ -1,5 +1,6 @@
 class NetSuite::Connection < ActiveRecord::Base
-  belongs_to :user
+  belongs_to :attribute_mapper, dependent: :destroy
+  belongs_to :user, dependent: :destroy
 
   validates :subsidiary_id, presence: true, allow_nil: true
 
