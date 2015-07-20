@@ -1,4 +1,9 @@
 FactoryGirl.define do
+  factory :attribute_mapper do
+    mapping_direction "export"
+    user
+  end
+
   factory :net_suite_connection, :class => 'NetSuite::Connection' do
     user
 
