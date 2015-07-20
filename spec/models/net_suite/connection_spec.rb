@@ -61,6 +61,33 @@ describe NetSuite::Connection do
     end
   end
 
+  describe "#attribute_mapper" do
+    it "returns the existing AttributeMapper when one exists" do
+      connection = NetSuite::Connection.new(
+        subsidiary_id: "x",
+        user: create(:user)
+      )
+
+      attribute_mapper = connection.attribute_mapper
+      found_connection = NetSuite::Connection.find(connection.id)
+
+      expect(found_connection.attribute_mapper.id).to eq(attribute_mapper.id)
+    end
+
+    it "creates a new AttributeMapper when one doesn't exist" do
+      connection = NetSuite::Connection.new(
+        subsidiary_id: "x",
+        user: create(:user)
+      )
+
+      attribute_mapper = connection.attribute_mapper
+      expect(attribute_mapper).to be_an_instance_of AttributeMapper
+      expect(attribute_mapper).to be_persisted
+      expect(connection.attribute_mapper_id).to eq attribute_mapper.id
+      expect(connection).to be_persisted
+    end
+  end
+
   describe "#client" do
     it "configures a client with its authorization" do
       client = stub_client(authorization: "x")
