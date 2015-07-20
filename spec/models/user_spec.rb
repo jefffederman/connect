@@ -2,9 +2,11 @@ require "rails_helper"
 
 describe User do
   describe "associations" do
+    it { should have_one(:greenhouse_connection) }
     it { should have_one(:jobvite_connection) }
     it { should have_one(:icims_connection) }
     it { should have_one(:net_suite_connection) }
+    it { should have_many(:attribute_mappers) }
   end
 
   describe "#jobvite_connection" do

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150715184131) do
+ActiveRecord::Schema.define(version: 20150720151900) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -49,6 +49,16 @@ ActiveRecord::Schema.define(version: 20150715184131) do
   end
 
   add_index "export_logs", ["connection_id", "connection_type"], name: "index_export_logs_on_connection_id_and_connection_type", using: :btree
+
+  create_table "field_mappings", force: true do |t|
+    t.string   "integration_field_name", null: false
+    t.string   "namely_field_name",      null: false
+    t.integer  "attribute_mapper_id",    null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "field_mappings", ["attribute_mapper_id"], name: "index_field_mappings_on_attribute_mapper_id", using: :btree
 
   create_table "greenhouse_connections", force: true do |t|
     t.datetime "created_at",                         null: false
