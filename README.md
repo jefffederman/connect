@@ -43,23 +43,21 @@ To create a new import, for an API named "Foo":
 
 1. Add a test to `spec/features/user_imports_foo_spec.rb`. Here is a sample:
 
-```ruby
-    visit dashboard_path(as: user)
-    within(".foo-account") do
-      click_button t("dashboards.show.import_now")
-    end
+        visit dashboard_path(as: user)
+        within(".foo-account") do
+          click_button t("dashboards.show.import_now")
+        end
 
-    expect(page).to have_content t("syncs.create.slogan", integration: "Foo")
+        expect(page).to have_content t("syncs.create.slogan", integration: "Foo")
 
-    open_email user.email
-    expect(current_email).to have_text(
-      t(
-        "sync_mailer.sync_notification.succeeded",
-        employees: t("sync_mailer.sync_notification.employees", count: 2),
-        integration: "Foo"
-      )
-    )
-```
+        open_email user.email
+        expect(current_email).to have_text(
+          t(
+            "sync_mailer.sync_notification.succeeded",
+            employees: t("sync_mailer.sync_notification.employees", count: 2),
+            integration: "Foo"
+          )
+        )
 
 2. Add a `has_one` connection for `User` to the desired connection. It is named
    `foo_connection`, with a class name of `Foo::Connection`.
@@ -68,9 +66,8 @@ To create a new import, for an API named "Foo":
 
    A Result adheres to the following interface:
 
-    name :: -> String
-
-    success? :: -> Boolean
+        name :: -> String
+        success? :: -> Boolean
 
 4. The `Foo::Connection#sync` method may make use of the `Importer` class. This
    involves building `Foo::AttributeMapper` and `Foo::Client` classes.
@@ -80,21 +77,17 @@ To create a new import, for an API named "Foo":
    candidate, and produces a Hash that maps from the Namely field to Foo's
    value. As a trivial example:
 
-```ruby
-def call(candidate)
-  { 'first_name' => candidate['fName'] }
-end
-```
+        def call(candidate)
+          { 'first_name' => candidate['fName'] }
+        end
 
    The `Foo::Client` class must respond to `::Error` and `#recent_hires`. The
    `#recent_hires` method produces an Array for Foo candidates, as passed to
    `Foo::AttributeMapper#call`:
 
-```ruby
-def recent_hires
-  [{ 'fName' => 'Mark' }]
-end
-```
+        def recent_hires
+          [{ 'fName' => 'Mark' }]
+        end
 
 ### Export
 
@@ -132,23 +125,21 @@ To create a new export, for an API named "Foo":
 
 1. Add a test to `spec/features/user_exports_foo_spec.rb`. Here is a sample:
 
-```ruby
-visit dashboard_path(as: user)
-within(".foo-account") do
-  click_button t("dashboards.show.export_now")
-end
-
-expect(page).to have_content t("syncs.create.slogan", integration: "Foo")
-
-open_email user.email
-expect(current_email).to have_text(
-  t(
-    "sync_mailer.sync_notification.succeeded",
-    employees: t("sync_mailer.sync_notification.employees", count: 2),
-    integration: "Foo"
-  )
-)
-```
+        visit dashboard_path(as: user)
+        within(".foo-account") do
+          click_button t("dashboards.show.export_now")
+        end
+        
+        expect(page).to have_content t("syncs.create.slogan", integration: "Foo")
+        
+        open_email user.email
+        expect(current_email).to have_text(
+          t(
+            "sync_mailer.sync_notification.succeeded",
+            employees: t("sync_mailer.sync_notification.employees", count: 2),
+            integration: "Foo"
+          )
+        )
 
 2. Add a `has_one` connection for `User` to the desired connection. It is named
    `foo_connection`, with a class name of `Foo::Connection`.
@@ -157,9 +148,8 @@ expect(current_email).to have_text(
 
    A Result adheres to the following interface:
 
-    name :: -> String
-
-    success? :: -> Boolean
+        name :: -> String
+        success? :: -> Boolean
 
 ### Namely
 
