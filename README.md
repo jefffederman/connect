@@ -5,9 +5,124 @@
 
 Simple web app for connecting external apps with Namely.
 
-Planned integrations:
+This app imports and exports data between Namely and other third-party data
+providers.
 
-* Jobvite (create new Namely Profiles based on candidate data)
+### Import
+
+#### Jobvite
+
+Get credentials for Jobvite from Attila Maczak or from Paul. Once you get a
+Jobvite key and secret, add to your `.env`:
+
+```sh
+TEST_JOBVITE_KEY=...
+TEST_JOBVITE_SECRET=...
+```
+
+The documentation for the Jobvite API is only available from the signed-in
+Jobvite Web site.
+
+The Jobvite import happens via the `SyncsController` with `integration_id` set
+to `jobvite`.
+
+#### iCIMS
+
+Get credentials for iCIMS from Attila Maczak or from Paul. When creating a
+connection to iCIMS using the Namely Connect UI, use your credentials.
+
+iCIMS exposes [a documented REST API][icims].
+
+[icims]: https://developer.icims.com/REST-API/Integration-Events
+
+Follow `IcimsCandidateImportsController` for an introduction.
+
+#### Custom
+
+To create a new import, for an API named "Foo":
+
+1. Add a test to `spec/features/user_imports_foo_spec.rb`. Here is a sample:
+
+```ruby
+    visit dashboard_path(as: user)
+    within(".foo-account") do
+      click_button t("dashboards.show.import_now")
+    end
+
+    expect(page).to have_content t("syncs.create.slogan", integration: "Foo")
+
+    open_email user.email
+    expect(current_email).to have_text(
+      t(
+        "sync_mailer.sync_notification.succeeded",
+        employees: t("sync_mailer.sync_notification.employees", count: 2),
+        integration: "Foo"
+      )
+    )
+```
+
+2. Add a `has_one` connection for `User` to the desired connection. It is named
+   `foo_connection`, with a class name of `Foo::Connection`.
+3. Define the `Foo::Connection` class. It must respond to `#sync`. `#sync`
+   takes no arguments and produces an Enumerable of Results.
+
+   A Result adheres to the following interface:
+
+    name :: -> String
+    success? :: -> Boolean
+
+4. The `Foo::Connection#sync` method may make use of the `Importer` class. This
+   involves building `Foo::AttributeMapper` and `Foo::Client` classes.
+   
+   The `Foo::AttributeMapper` instance is a Proc-like object that responds to
+   `#call`. `Foo::AttributeMapper#call` takes an object representing the Foo
+   candidate, and produces a Hash that maps from the Namely field to Foo's
+   value. As a trivial example:
+
+    def call(candidate)
+      { 'first_name' => candidate['fName'] }
+    end
+
+   The `Foo::Client` class must respond to `::Error` and `#recent_hires`. The
+   `#recent_hires` method produces an Array for Foo candidates, as passed to
+   `Foo::AttributeMapper#call`.
+
+### Export
+
+#### Netsuite
+
+The official Netsuite API uses SOAP. To make life easier, we connect using
+Cloud Elements. You will need a Cloud Elements account; Attila or Paul can
+help. Once you have your credentials, update your `.env`:
+
+```sh
+CLOUD_ELEMENTS_ORGANIZATION_SECRET=...
+CLOUD_ELEMENTS_USER_SECRET=...
+```
+
+Documentation can be found in the Cloud Elements console. Each documentation is
+specific to the integration, so on the left you must navigate through the
+integrations, then select the "Documentation" tab for the relevant integration.
+
+The Netsuite export happens via the `SyncsController` with `integration_id` set
+to `netsuite`.
+
+#### Greenhouse
+
+Get credentials for Greenhouse from Attila or Paul. When creating a connection
+to Greenhouse using the Namely Connect UI, use your credentials.
+
+The documentation for the Greenhouse API is only available from the signed-in
+Greenhouse Web site.
+
+Start reading at `GreenhouseCandidateImportsController`.
+
+#### Custom
+
+### Namely
+
+All of this depends on you having access to Namely. Be sure to follow the
+"Connecting API client" section below.
 
 ## Getting set up
 
