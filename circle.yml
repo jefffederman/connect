@@ -6,7 +6,12 @@ machine:
 
 deployment:
   production:
-    branch: master
+    branch: production
     commands:
       - git push git@heroku.com:namely-connect.git $CIRCLE_SHA1:master
       - heroku run rake db:migrate --app namely-connect
+  staging:
+    branch: master
+    commands:
+      - git push git@heroku.com:namely-connect-staging.git $CIRCLE_SHA1:master
+      - heroku run rake db:migrate --app namely-connect-staging
