@@ -10,6 +10,7 @@ class Session
 
   def user
     @user ||= user_model.find_or_initialize_by(
+      installation: installation,
       namely_user_id: namely_user.id,
       subdomain: subdomain,
     ).tap do |user|
@@ -46,6 +47,12 @@ class Session
 
   def refresh_token
     tokens.fetch("refresh_token")
+  end
+
+  def installation
+    @installation ||= Installation.find_or_initialize_by(
+      subdomain: subdomain
+    )
   end
 
   def tokens

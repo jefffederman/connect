@@ -10,7 +10,7 @@ describe NetSuite::Client do
 
       ClimateControl.modify env do
         stub_request(:post, /.*/)
-        client = NetSuite::Client.from_env(build_stubbed(:user))
+        client = NetSuite::Client.from_env
 
         client.create_instance({})
 
@@ -27,7 +27,6 @@ describe NetSuite::Client do
     it "sets element authorization" do
       stub_request(:post, /.*/)
       client = NetSuite::Client.new(
-        user: build_stubbed(:user),
         user_secret: "user-secret",
         organization_secret: "org-secret",
       )
@@ -76,7 +75,6 @@ describe NetSuite::Client do
           to_return(status: 200, body: instance.to_json)
 
         client = NetSuite::Client.new(
-          user: build_stubbed(:user),
           user_secret: "user-secret",
           organization_secret: "org-secret"
         )
@@ -103,7 +101,6 @@ describe NetSuite::Client do
           to_return(status: 400, body: { message: error }.to_json)
 
         client = NetSuite::Client.new(
-          user: build_stubbed(:user),
           user_secret: "x",
           organization_secret: "x"
         )
@@ -126,10 +123,7 @@ describe NetSuite::Client do
         ).
           to_return(status: 401, body: { message: error }.to_json)
 
-        user = build_stubbed(:user)
-
         client = NetSuite::Client.new(
-          user: user,
           user_secret: "x",
           organization_secret: "x"
         )
@@ -167,7 +161,6 @@ describe NetSuite::Client do
           to_return(status: 200, body: employee.to_json)
 
         client = NetSuite::Client.new(
-          user: build_stubbed(:user),
           user_secret: "user-secret",
           organization_secret: "org-secret",
           element_secret: "element-secret"
@@ -218,7 +211,6 @@ describe NetSuite::Client do
           to_return(status: 200, body: employee.to_json)
 
         client = NetSuite::Client.new(
-          user: build_stubbed(:user),
           user_secret: "user-secret",
           organization_secret: "org-secret",
           element_secret: "element-secret"
@@ -262,17 +254,40 @@ describe NetSuite::Client do
         ).
         to_return(status: 200, body: subsidiaries.to_json)
 
-      client = NetSuite::Client.new(
-        user: build_stubbed(:user),
-        user_secret: "user-secret",
-        organization_secret: "org-secret",
-        element_secret: "element-secret"
-      )
-
       result = client.subsidiaries
 
       expect(result).to be_success
       expect(result.to_a).to eq(subsidiaries)
     end
+  end
+
+  describe "#profile_fields" do
+    it "gets a currest list of NetSuite employee profile fields" do
+      fields = [
+        double(:employee_field),
+        double(:employee_field)
+      ]
+
+      fields_loader = instance_spy(
+        NetSuite::EmployeeFieldsLoader,
+        load_profile_fields: fields
+      )
+
+      netsuite_client = client
+
+      allow(NetSuite::EmployeeFieldsLoader).to receive(:new).
+        with(request: netsuite_client.request).
+        and_return(fields_loader)
+
+      expect(netsuite_client.profile_fields).to match_array(fields)
+    end
+  end
+
+  def client
+    NetSuite::Client.new(
+      user_secret: "user-secret",
+      organization_secret: "org-secret",
+      element_secret: "element-secret"
+    )
   end
 end

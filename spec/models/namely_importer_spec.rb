@@ -13,7 +13,7 @@ describe NamelyImporter do
       )
       recent_hires = [candidate]
       duplicate_filter = double("duplicate_filter", filter: recent_hires)
-      attribute_mapper = Proc.new do |original|
+      normalizer = Proc.new do |original|
         {
           first_name: original.name_the_first,
           last_name: original.name_the_last,
@@ -22,7 +22,7 @@ describe NamelyImporter do
       end
       importer = described_class.new(
         namely_connection: namely_connection,
-        attribute_mapper: attribute_mapper,
+        normalizer: normalizer,
         duplicate_filter: duplicate_filter,
       )
 
@@ -31,7 +31,7 @@ describe NamelyImporter do
       expect(duplicate_filter).to have_received(:filter).with(
         recent_hires_with_dupes,
         namely_connection: namely_connection,
-        attribute_mapper: attribute_mapper,
+        normalizer: normalizer,
       )
       expect(status).to be_an ImportResult
       expect(status[candidate]).to be_success
@@ -46,7 +46,7 @@ describe NamelyImporter do
       recent_hires = [candidate]
       importer = described_class.new(
         namely_connection: namely_connection,
-        attribute_mapper: -> (original) { original },
+        normalizer: -> (original) { original },
         duplicate_filter: duplicate_filter,
       )
 
@@ -67,7 +67,7 @@ describe NamelyImporter do
         name_the_last: "Murphy",
         email: "crash.override@example.com",
       )
-      attribute_mapper = Proc.new do |original|
+      normalizer = Proc.new do |original|
         {
           first_name: original.name_the_first,
           last_name: original.name_the_last,
@@ -76,7 +76,7 @@ describe NamelyImporter do
       end
       importer = described_class.new(
         namely_connection: namely_connection,
-        attribute_mapper: attribute_mapper,
+        normalizer: normalizer,
       )
 
       status = importer.single_import(candidate)

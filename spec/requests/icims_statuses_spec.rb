@@ -63,9 +63,9 @@ describe "iCIMS new candidate" do
     create(
       :icims_connection,
       :with_namely_field,
-      key: "KEY",
       customer_id: 2187,
-      user: user,
+      installation: user.installation,
+      key: "KEY",
       username: "USERNAME",
     )
   end

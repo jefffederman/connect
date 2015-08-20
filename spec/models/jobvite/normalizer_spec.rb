@@ -1,9 +1,10 @@
 require "rails_helper"
 
-describe Jobvite::AttributeMapper do
+describe Jobvite::Normalizer do
   describe "#call" do
-    it "transforms a Jobvite candidate into a Hash appropriate for the Namely API" do
-      mapper = described_class.new
+    it "provides the attribute mapper with a normalized profile hash" do
+      attribute_mapper = stub_attribute_mapper
+      mapper = described_class.new(attribute_mapper: attribute_mapper)
       jobvite_candidate = double(
         "jobvite_candidate",
         e_id: "edO1Ggwt",
@@ -14,18 +15,21 @@ describe Jobvite::AttributeMapper do
         gender: "Undefined",
       )
 
-      expect(mapper.call(jobvite_candidate)).to eq(
-        first_name: "Dade",
-        last_name: "Murphy",
-        email: "crash.override@example.com",
-        user_status: "active",
-        start_date: "2014-01-02",
-        jobvite_id: "edO1Ggwt",
-      )
+      mapper.call(jobvite_candidate)
+
+      expect(attribute_mapper).
+        to have_imported(
+          first_name: "Dade",
+          last_name: "Murphy",
+          email: "crash.override@example.com",
+          user_status: "active",
+          start_date: "2014-01-02",
+          jobvite_id: "edO1Ggwt",
+          gender: nil,
+        )
     end
 
     it "maps genders correctly" do
-      mapper = described_class.new
       expected_mapping = {
         "Male" => "Male",
         "Female" => "Female",
@@ -35,6 +39,8 @@ describe Jobvite::AttributeMapper do
       }
 
       expected_mapping.each do |jobvite_gender, namely_gender|
+        attribute_mapper = stub_attribute_mapper
+        mapper = described_class.new(attribute_mapper: attribute_mapper)
         jobvite_candidate = double(
           "jobvite_candidate",
           e_id: "edO1Ggwt",
@@ -45,14 +51,16 @@ describe Jobvite::AttributeMapper do
           gender: jobvite_gender,
         )
 
-        result = mapper.call(jobvite_candidate)
+        mapper.call(jobvite_candidate)
 
-        expect(result[:gender]).to eq namely_gender
+        expect(attribute_mapper).
+          to have_imported(hash_including(gender: namely_gender))
       end
     end
 
     it "doesn't include a start date if Jobvite didn't provide one" do
-      mapper = described_class.new
+      attribute_mapper = stub_attribute_mapper
+      mapper = described_class.new(attribute_mapper: attribute_mapper)
       jobvite_candidate = double(
         "jobvite_candidate",
         e_id: "edO1Ggwt",
@@ -63,15 +71,17 @@ describe Jobvite::AttributeMapper do
         gender: "Female",
       )
 
-      result = mapper.call(jobvite_candidate)
+      mapper.call(jobvite_candidate)
 
-      expect(result).not_to have_key(:start_date)
+      expect(attribute_mapper).
+        to have_imported(hash_including(start_date: nil))
     end
   end
 
   describe "#namely_identifier_field" do
     it "returns the custom Namely profile field that stores the Jobvite ID" do
-      mapper = described_class.new
+      attribute_mapper = stub_attribute_mapper
+      mapper = described_class.new(attribute_mapper: attribute_mapper)
 
       expect(mapper.namely_identifier_field).to eq :jobvite_id
     end
@@ -80,7 +90,8 @@ describe Jobvite::AttributeMapper do
   describe "#identifier" do
     it "returns the Jobvite ID of a given candidate" do
       jobvite_candidate = double("jobvite_candidate", e_id: "MY_UNIQUE_ID")
-      mapper = described_class.new
+      attribute_mapper = stub_attribute_mapper
+      mapper = described_class.new(attribute_mapper: attribute_mapper)
 
       expect(mapper.identifier(jobvite_candidate)).to eq "MY_UNIQUE_ID"
     end
@@ -94,10 +105,21 @@ describe Jobvite::AttributeMapper do
         last_name: "Libby",
         e_id: "MY_UNIQUE_ID",
       )
-      mapper = described_class.new
+      attribute_mapper = stub_attribute_mapper
+      mapper = described_class.new(attribute_mapper: attribute_mapper)
 
       expect(mapper.readable_name(jobvite_candidate)).
         to eq "Kate Libby (MY_UNIQUE_ID)"
     end
+  end
+
+  def stub_attribute_mapper
+    double(:attribute_mapper).tap do |attribute_mapper|
+      allow(attribute_mapper).to receive(:import)
+    end
+  end
+
+  def have_imported(attributes)
+    have_received(:import).with(attributes)
   end
 end

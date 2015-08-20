@@ -2,75 +2,7 @@ require "rails_helper"
 
 describe User do
   describe "associations" do
-    it { should have_one(:greenhouse_connection) }
-    it { should have_one(:jobvite_connection) }
-    it { should have_one(:icims_connection) }
-    it { should have_one(:net_suite_connection) }
-    it { should have_many(:attribute_mappers) }
-  end
-
-  describe "#jobvite_connection" do
-    it "returns the existing Jobvite::Connection when one exists" do
-      user = create(:user)
-
-      jobvite_connection = create(:jobvite_connection, user: user)
-
-      expect(user.jobvite_connection).to eq jobvite_connection
-    end
-
-    it "creates a new Jobvite::Connection when one doesn't exist" do
-      user = create(:user)
-
-      jobvite_connection = user.jobvite_connection
-
-      expect(jobvite_connection).to be_a Jobvite::Connection
-      expect(jobvite_connection).to be_persisted
-      expect(jobvite_connection.user_id).to eq user.id
-    end
-  end
-
-  describe "#net_suite_connection" do
-    context "with an existing connection" do
-      it "returns the existing connection" do
-        user = create(:user)
-
-        net_suite_connection = create(:net_suite_connection, user: user)
-
-        expect(user.net_suite_connection).to eq net_suite_connection
-      end
-    end
-
-    context "with no existing connection" do
-      it "creates a new connection" do
-        user = create(:user)
-
-        net_suite_connection = user.net_suite_connection
-
-        expect(net_suite_connection).to be_a NetSuite::Connection
-        expect(net_suite_connection).to be_persisted
-        expect(net_suite_connection.user_id).to eq user.id
-      end
-    end
-  end
-
-  describe "#namely_connection" do
-    it "returns a Namely::Connection configured to use the user's credentials" do
-      namely_connection = double("Namely::Connection")
-      allow(Namely::Connection).to receive(:new).and_return(namely_connection)
-      user = build(
-        :user,
-        access_token: "MY_ACCESS_TOKEN",
-        subdomain: "ellingsonmineral",
-      )
-
-      result = user.namely_connection
-
-      expect(result).to eq namely_connection
-      expect(Namely::Connection).to have_received(:new).with(
-        access_token: "MY_ACCESS_TOKEN",
-        subdomain: "ellingsonmineral",
-      )
-    end
+    it { is_expected.to belong_to(:installation) }
   end
 
   describe "#send_connection_notification" do
@@ -106,33 +38,78 @@ describe User do
     end
   end
 
-  describe ".ready_to_sync_with" do
-    it "returns users with a ready connection to the given integration" do
-      user = create(:user, first_name: "ready-with-given-service")
-      create(:net_suite_connection, :connected, :with_namely_field, user: user)
-      user = create(:user, first_name: "connected-without-field")
-      create(:net_suite_connection, :connected, user: user)
-      user = create(:user, first_name: "disconnected")
-      create(:net_suite_connection, user: user)
-      create(:user, first_name: "uninitialized")
-      user = create(:user, first_name: "ready-with-different-service")
-      create(:greenhouse_connection, :connected, :with_namely_field, user: user)
-
-      result = User.ready_to_sync_with(:net_suite)
-
-      expect(result.map(&:first_name)).to eq(%w(ready-with-given-service))
-    end
-  end
-
   describe "#namely_profiles" do
     it "returns profiles from its Namely connection" do
-      profiles = double(:namely_profiles)
+      first_names = %w(Alice Bob)
+      profile_list = first_names.map { |name| stub_namely_profile(name) }
+
+      profiles = double(:namely_profiles, all: profile_list)
       stub_namely_connection profiles: profiles
       user = User.new
 
-      result = user.namely_profiles
+      profile_first_names = user.namely_profiles.map do |profile|
+        profile[:first_name]
+      end
 
-      expect(result).to eq(profiles)
+      expect(profile_first_names).to match_array(first_names)
+    end
+  end
+
+  describe "#namely_connection" do
+    it "returns a connection configured to use the user's credentials" do
+      namely_connection = double("Namely::Connection")
+      allow(Namely::Connection).to receive(:new).and_return(namely_connection)
+      user = build(
+        :user,
+        access_token: "MY_ACCESS_TOKEN",
+        subdomain: "ellingsonmineral",
+      )
+
+      result = user.namely_connection
+
+      expect(result).to eq namely_connection
+      expect(Namely::Connection).to have_received(:new).with(
+        access_token: "MY_ACCESS_TOKEN",
+        subdomain: "ellingsonmineral",
+      )
+    end
+  end
+
+  describe "#namely_fields_by_label" do
+    it "returns mappable fields from a Namely connection" do
+      models = [
+        double(name: "first_name", label: "First name", type: "text"),
+        double(name: "last_name", label: "Last name", type: "longtext"),
+        double(name: "gender", label: "Gender", type: "select"),
+        double(name: "email", label: "Email", type: "email"),
+        double(name: "job_title", label: "Job title", type: "referencehistory"),
+        double(name: "user_status", label: "Status", type: "referenceselect"),
+        double(name: "start_date", label: "Started", type: "date"),
+        stub_profile_field(type: "address"),
+        stub_profile_field(type: "checkboxes"),
+        stub_profile_field(type: "file"),
+        stub_profile_field(type: "image"),
+        stub_profile_field(type: "salary"),
+      ]
+      fields = double("fields", all: models)
+      stub_namely_connection fields: fields
+      user = User.new
+
+      result = user.namely_fields_by_label
+
+      expect(result).to eq([
+        ["First name", "first_name"],
+        ["Last name", "last_name"],
+        ["Gender", "gender"],
+        ["Email", "email"],
+        ["Job title", "job_title"],
+        ["Status", "user_status"],
+        ["Started", "start_date"],
+      ])
+    end
+
+    def stub_profile_field(type:)
+      double(name: type, label: "#{type} field", type: type)
     end
   end
 
@@ -146,6 +123,10 @@ describe User do
 
       expect(result).to eq(fields)
     end
+  end
+
+  def stub_namely_profile(first_name)
+    { first_name: first_name }
   end
 
   def stub_namely_connection(attributes)

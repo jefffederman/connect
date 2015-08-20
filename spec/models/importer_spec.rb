@@ -4,10 +4,7 @@ describe Importer do
   describe "#import" do
     context "with a connected" do
       it "passes hired candidates to the NamelyImporter and set the status" do
-        user = double(
-          "user",
-          namely_connection: double("Namely::Connection"),
-        )
+        namely_connection = double("Namely::Connection")
         connection = double("connection", connected?: true)
         recent_hires = [double("hire")]
         client = double("client", recent_hires: recent_hires)
@@ -20,7 +17,7 @@ describe Importer do
           client: client,
           connection: connection,
           namely_importer: namely_importer,
-          user: user,
+          namely_connection: namely_connection,
         )
 
         status = import.import
@@ -33,10 +30,7 @@ describe Importer do
 
     context "when the request fails" do
       it "sets the status to error message" do
-        user = double(
-          "user",
-          namely_connection: double("Namely::Connection"),
-        )
+        namely_connection = double("Namely::Connection")
         connection = double("connection", connected?: true)
         client = double("client", class: Icims::Client)
         allow(client).
@@ -47,7 +41,7 @@ describe Importer do
           client: client,
           connection: connection,
           namely_importer: namely_importer,
-          user: user,
+          namely_connection: namely_connection
         )
 
         status = import.import
@@ -60,10 +54,7 @@ describe Importer do
 
     context "when the Namely API request fails" do
       it "sets the status to the Namely error message" do
-        user = double(
-          "user",
-          namely_connection: double("Namely::Connection"),
-        )
+        namely_connection = double("Namely::Connection")
         recent_hires = [double("hire")]
         connection = double("connection", connected?: true)
         client = double(
@@ -79,7 +70,7 @@ describe Importer do
           client: client,
           connection: connection,
           namely_importer: namely_importer,
-          user: user,
+          namely_connection: namely_connection
         )
 
         status = import.import
@@ -92,15 +83,12 @@ describe Importer do
 
     context "with a disconnected" do
       it "does nothing and sets an appropriate status" do
-        user = double(
-          "user",
-          namely_connection: double("Namely::Connection"),
-        )
+        namely_connection = double("Namely::Connection")
         importer = described_class.new(
           client: double("client"),
           connection: double("connection", connected?: false),
           namely_importer: double("namely_importer"),
-          user: user,
+          namely_connection: namely_connection
         )
         status = nil
 

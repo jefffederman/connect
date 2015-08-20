@@ -483,6 +483,28 @@
       "links": {
         "section": "afe67e3d-7648-4df9-8436-7cc0538c8644"
       }
+    },
+    {
+      "id": "8bf5dfba-90cb-46bd-9170-1b5773087118",
+      "name": "custom_field",
+      "label": "Custom field",
+      "type": "text",
+      "default": false,
+      "valid_format_info": "generic text",
+      "links": {
+        "section": "347f2936-353a-11e5-a151-feff819cdc9f"
+      }
+    },
+    {
+      "id": "9cde41b3-2449-4141-a895-67087687c05a",
+      "name": "linkedin",
+      "label": "LinkedIn URL",
+      "type": "text",
+      "default": false,
+      "valid_format_info": "generic text",
+      "links": {
+        "section": "347f2936-353a-11e5-a151-feff819cdc9f"
+      }
     }
   ]
 }

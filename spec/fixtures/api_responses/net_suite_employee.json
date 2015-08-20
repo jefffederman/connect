@@ -1,0 +1,112 @@
+[
+    {
+        "lastName": "Wolfe",
+        "gender": {
+            "value": "_male"
+        },
+        "isInactive": false,
+        "approvalLimit": 1000000.0,
+        "isSupportRep": true,
+        "purchaseOrderLimit": 10000.0,
+        "title": "VP Sales",
+        "employeeStatus": {
+            "internalId": "3",
+            "name": "Regular - Full Time"
+        },
+        "expenseLimit": 5000.0,
+        "isSalesRep": true,
+        "internalId": "-5",
+        "billPay": false,
+        "dateCreated": 1382425200000,
+        "nextReviewDate": 1438412400000,
+        "officePhone": "(650) 555-9788",
+        "isJobResource": false,
+        "currency": {
+            "internalId": "1",
+            "name": "USD"
+        },
+        "fax": "(650) 555-9788",
+        "department": {
+            "internalId": "11",
+            "name": "Engineering"
+        },
+        "email": "user@example.com",
+        "giveAccess": true,
+        "customFieldList": {
+            "customField": [
+                {
+                    "internalId": "696",
+                    "scriptId": "custentity2",
+                    "value": false
+                },
+                {
+                    "internalId": "3992",
+                    "scriptId": "custentity_2663_payment_method",
+                    "value": false
+                },
+                {
+                    "internalId": "2096",
+                    "scriptId": "custentity_linkedin_url",
+                    "value": ""
+                }
+            ]
+        },
+        "approver": {
+            "internalId": "1302",
+            "name": "Mark Jones"
+        },
+        "image": {
+            "internalId": "12446",
+            "name": "AlexWolfe"
+        },
+        "hireDate": 1343804400000,
+        "lastModifiedDate": 1428997975000,
+        "initials": "AW",
+        "homePhone": "(650) 555-9788",
+        "externalId": "entity-5",
+        "workCalendar": {
+            "internalId": "1",
+            "name": "Default Work Calendar"
+        },
+        "entityId": "Alex Wolfe",
+        "purchaseOrderApprover": {
+            "internalId": "1302",
+            "name": "Mark Jones"
+        },
+        "accountNumber": "ADP00001",
+        "birthDate": -433094400000,
+        "subsidiary": {
+            "internalId": "1",
+            "name": "Honeycomb Mfg."
+        },
+        "firstName": "Alex",
+        "employeeType": {
+            "internalId": "1",
+            "name": "Officer"
+        },
+        "mobilePhone": "(650) 555-9788",
+        "phone": "(650) 555-9788",
+        "lastReviewDate": 1408086000000,
+        "globalSubscriptionStatus": {
+            "value": "_softOptIn"
+        },
+        "purchaseOrderApprovalLimit": 1000000.0,
+        "location": {
+            "internalId": "2",
+            "name": "01: San Francisco"
+        },
+        "_class": {
+            "internalId": "15",
+            "name": "Internal"
+        },
+        "supervisor": {
+            "internalId": "1302",
+            "name": "Mark Jones"
+        },
+        "maritalStatus": {
+            "internalId": "2",
+            "name": "Married"
+        },
+        "defaultAddress": "US"
+    }
+]

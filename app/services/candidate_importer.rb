@@ -31,39 +31,43 @@ class CandidateImporter
 
   def namely_importer
     NamelyImporter.new(
-      attribute_mapper: import_assistant.attribute_mapper,
-      namely_connection: user.namely_connection
+      normalizer: import_assistant.normalizer,
+      namely_connection: installation.namely_connection
     )
   end
 
   def notifier
     AuthenticationNotifier.new(
       integration_id: assistant_class::INTEGRATION_ID,
-      user: user
+      installation: installation
     )
   end
 
-  def user
-    connection.user
+  def installation
+    connection.installation
   end
 
   private
 
   def notify_of_successful_import
-    mailer.delay.successful_import(
-      candidate: import_assistant.candidate,
-      email: user.email,
-      integration_id: assistant_class::INTEGRATION_ID
-    )
+    installation.users.each do |user|
+      mailer.delay.successful_import(
+        candidate: import_assistant.candidate,
+        email: user.email,
+        integration_id: assistant_class::INTEGRATION_ID
+      )
+    end
   end
 
   def notify_of_unsuccessful_import
-    mailer.delay.unsuccessful_import(
-      candidate: import_assistant.candidate,
-      email: user.email,
-      integration_id: assistant_class::INTEGRATION_ID,
-      status: import_assistant.import_candidate
-    )
+    installation.users.each do |user|
+      mailer.delay.unsuccessful_import(
+        candidate: import_assistant.candidate,
+        email: user.email,
+        integration_id: assistant_class::INTEGRATION_ID,
+        status: import_assistant.import_candidate
+      )
+    end
   end
 
   def report_import_results

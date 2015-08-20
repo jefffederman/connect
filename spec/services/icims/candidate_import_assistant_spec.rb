@@ -13,13 +13,13 @@ describe Icims::CandidateImportAssistant do
     end
   end
 
-  describe "#attribute_mapper" do
-    it "returns an attribute mapper object" do
+  describe "#normalizer" do
+    it "returns a normalizer object" do
       context = candidate_importer_double
       import_assistant = Icims::CandidateImportAssistant.new(context: context)
 
-      expect(import_assistant.attribute_mapper).to be_instance_of(
-        Icims::AttributeMapper
+      expect(import_assistant.normalizer).to be_instance_of(
+        Icims::Normalizer
       )
     end
   end

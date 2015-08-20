@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Greenhouse::AttributeMapper do
+describe Greenhouse::Normalizer do
   let(:namely_fields) do
     raw_objects = JSON.parse(
       File.read("spec/fixtures/api_responses/fields_with_greenhouse.json")

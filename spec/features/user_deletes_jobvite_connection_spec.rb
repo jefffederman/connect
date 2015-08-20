@@ -6,7 +6,7 @@ feature "User deletes Jobvite connection" do
     create(
       :jobvite_connection,
       :connected,
-      user: user,
+      installation: user.installation,
       found_namely_field: true,
     )
 

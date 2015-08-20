@@ -30,6 +30,7 @@ describe Session do
         )
 
         user = session.user
+        installation = user.installation
 
         expect(user.namely_user_id).to eq "a-namely-user"
         expect(user.subdomain).to eq "my-subdomain"
@@ -40,6 +41,8 @@ describe Session do
         expect(user.first_name).to eq "Eugene"
         expect(user.last_name).to eq "Belford"
         expect(user).to be_persisted
+        expect(installation.subdomain).to eq "my-subdomain"
+        expect(installation).to be_persisted
         expect(authenticator).to have_received(:retrieve_tokens).with("my-code")
         expect(authenticator).to have_received(:current_user).with("my-access-token")
       end
@@ -48,12 +51,15 @@ describe Session do
     context "for a returning User" do
       it "updates and returns a User" do
         expiry_time = Time.current + expiry_time_in_seconds.seconds
+        subdomain = "my-subdomain"
+        installation = create(:installation, subdomain: subdomain)
         existing_user = create(
           :user,
           namely_user_id: "a-namely-user",
-          subdomain: "my-subdomain",
+          subdomain: subdomain,
           access_token: "old-access-token",
           refresh_token: "old-refresh-token",
+          installation: installation,
         )
         authenticator = authenticator_double(
           namely_user_id: existing_user.namely_user_id,
@@ -64,7 +70,7 @@ describe Session do
         session = described_class.new(
           authenticator,
           code: "my-code",
-          subdomain: "my-subdomain",
+          subdomain: subdomain,
         )
 
         user = session.user

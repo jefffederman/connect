@@ -7,8 +7,13 @@ describe "Greenhouse new candidate" do
       subdomain: ENV["TEST_NAMELY_SUBDOMAIN"],
     }
   end
-  let(:connection) do 
-    create(:greenhouse_connection, :with_namely_field, name: "myhook") 
+  let(:connection) do
+    create(
+      :greenhouse_connection,
+      :with_namely_field,
+      installation: create(:user).installation,
+      name: "myhook"
+    )
   end
 
   before do

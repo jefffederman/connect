@@ -14,7 +14,7 @@ feature "User visits their dashboard" do
     create(
       :jobvite_connection,
       :connected,
-      user: user,
+      installation: user.installation,
       found_namely_field: false,
     )
 
@@ -31,7 +31,7 @@ feature "User visits their dashboard" do
       create(
         :jobvite_connection,
         :connected,
-        user: user,
+        installation: user.installation,
         found_namely_field: false,
       )
 
@@ -55,7 +55,7 @@ feature "User visits their dashboard" do
       create(
         :jobvite_connection,
         :connected,
-        user: user,
+        installation: user.installation,
         found_namely_field: true,
       )
 
@@ -78,7 +78,7 @@ feature "User visits their dashboard" do
       create(
         :icims_connection,
         :connected,
-        user: user,
+        installation: user.installation,
         found_namely_field: false,
       )
 
@@ -102,7 +102,7 @@ feature "User visits their dashboard" do
       connection = create(
         :icims_connection,
         :connected,
-        user: user,
+        installation: user.installation,
         found_namely_field: true,
       )
 
@@ -126,7 +126,7 @@ feature "User visits their dashboard" do
       create(
         :greenhouse_connection,
         :connected,
-        user: user,
+        installation: user.installation,
         found_namely_field: false,
       )
 
@@ -149,7 +149,7 @@ feature "User visits their dashboard" do
       connection = create(
         :greenhouse_connection,
         :connected,
-        user: user,
+        installation: user.installation,
         found_namely_field: true,
       )
 
@@ -173,7 +173,7 @@ feature "User visits their dashboard" do
       create(
         :net_suite_connection,
         :connected,
-        user: user,
+        installation: user.installation,
         found_namely_field: false,
       )
 
@@ -196,7 +196,7 @@ feature "User visits their dashboard" do
       create(
         :net_suite_connection,
         :connected,
-        user: user,
+        installation: user.installation,
         found_namely_field: true,
       )
 

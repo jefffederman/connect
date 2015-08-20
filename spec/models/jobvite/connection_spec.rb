@@ -2,11 +2,12 @@ require "rails_helper"
 
 describe Jobvite::Connection do
   describe "associations" do
-    it { should belong_to(:user) }
+    it { is_expected.to belong_to(:attribute_mapper).dependent(:destroy) }
+    it { is_expected.to belong_to(:installation) }
   end
 
   describe "validations" do
-    it { should validate_presence_of(:hired_workflow_state) }
+    it { is_expected.to validate_presence_of(:hired_workflow_state) }
   end
 
   describe "#connected?" do
@@ -23,24 +24,14 @@ describe Jobvite::Connection do
     end
   end
 
-  describe "#disconnect" do
-    it "sets the api_key and secret to nil" do
-      jobvite_connection = create(
-        :jobvite_connection,
-        api_key: "a",
-        secret: "b",
-      )
-
-      jobvite_connection.disconnect
-
-      expect(jobvite_connection.api_key).to be_nil
-      expect(jobvite_connection.secret).to be_nil
-    end
-  end
-
   describe "#sync" do
     it "uses the importer" do
-      jobvite_connection = create(:jobvite_connection)
+      user = create(:user)
+      installation = user.installation
+      jobvite_connection = create(
+        :jobvite_connection,
+        installation: installation
+      )
       candidate = double("candidate")
       failure = double("failed_candidate_import", success?: false)
       success = double("successful_candidate_import", success?: true)
@@ -57,10 +48,28 @@ describe Jobvite::Connection do
     end
   end
 
-  def stub_namely_connection(user, field_names:)
-    fields = field_names.map { |name| double("field", name: name) }
-    fields_collection = double("fields", all: fields)
-    namely_connection = double("namely_connection", fields: fields_collection)
-    allow(user).to receive(:namely_connection).and_return(namely_connection)
+  describe "#attribute_mapper" do
+    it "builds and saves an attribute mapper" do
+      connection = build(:jobvite_connection)
+
+      connection.save!
+
+      expect(connection.attribute_mapper).to be_an_instance_of(AttributeMapper)
+      expect(connection.attribute_mapper).to be_persisted
+      expect(mapped_fields_for(connection.attribute_mapper)).
+        to match_array([
+          %w(first_name first_name),
+          %w(last_name last_name),
+          %w(email email),
+          %w(start_date start_date),
+          %w(gender gender),
+        ])
+    end
+  end
+
+  def mapped_fields_for(attribute_mapper)
+    attribute_mapper.field_mappings.map do |field_mapping|
+      [field_mapping.integration_field_id, field_mapping.namely_field_name]
+    end
   end
 end

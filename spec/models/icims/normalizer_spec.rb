@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe Icims::AttributeMapper do
+describe Icims::Normalizer do
   describe "#call" do
     it "transforms a iCIMS candidate into a Hash appropriate for the Namely API" do
       mapper = described_class.new

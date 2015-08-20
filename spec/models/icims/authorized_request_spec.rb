@@ -103,7 +103,9 @@ describe Icims::AuthorizedRequest do
 
     context "an authentication error is returned" do
       it "sends an invalid authentication message" do
-        connection = build_connection
+        user = build(:user)
+        installation = build(:installation, users: [user])
+        connection = build_connection(installation: installation)
         request = build_authorized_request(connection: connection)
         stub_request(
           :post,
@@ -116,7 +118,6 @@ describe Icims::AuthorizedRequest do
 
         mail = double(ConnectionMailer, deliver: true)
         exception = Unauthorized.new("401 Unauthorized")
-        user = connection.user
         allow(ConnectionMailer).
           to receive(:authentication_notification).
           with(
@@ -139,8 +140,8 @@ describe Icims::AuthorizedRequest do
     described_class.new(connection: connection, request: request)
   end
 
-  def build_connection
-    build(:icims_connection, :connected)
+  def build_connection(*attributes)
+    build(:icims_connection, :connected, *attributes)
   end
 
   def errors

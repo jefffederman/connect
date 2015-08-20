@@ -19,7 +19,7 @@ class IcimsCandidateRetryImportsController < ApplicationController
   def namely_importer
     NamelyImporter.new(
       namely_connection: current_user.namely_connection,
-      attribute_mapper: Icims::AttributeMapper.new,
+      normalizer: Icims::Normalizer.new,
     )
   end
 

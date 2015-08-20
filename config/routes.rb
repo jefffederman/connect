@@ -21,6 +21,7 @@ Rails.application.routes.draw do
     resource :authentication, only: [:new, :create, :edit, :update]
     resource :connection, only: [:edit, :update, :destroy]
     resource :sync, only: [:create]
+    resource :mapping, only: [:edit, :update]
   end
 
   get(

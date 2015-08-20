@@ -1,20 +1,10 @@
 class NetSuite::Connection < ActiveRecord::Base
   belongs_to :attribute_mapper, dependent: :destroy
-  belongs_to :user, dependent: :destroy
+  belongs_to :installation
 
   validates :subsidiary_id, presence: true, allow_nil: true
 
-  after_create :build_attribute_mapper
-
-  delegate :export, to: :attribute_mapper
-  delegate :post_handle, to: :attribute_mapper
-
-  def attribute_mapper
-    @attribute_mapper ||= NetSuite::AttributeMapper.new(
-      attribute_mapper: super,
-      configuration: self
-    )
-  end
+  delegate :export, to: :normalizer
 
   def integration_id
     :net_suite
@@ -30,6 +20,15 @@ class NetSuite::Connection < ActiveRecord::Base
 
   def enabled?
     ENV["CLOUD_ELEMENTS_ORGANIZATION_SECRET"].present?
+  end
+
+  def attribute_mapper?
+    true
+  end
+
+  def attribute_mapper
+    AttributeMapperFactory.new(attribute_mapper: super, connection: self).
+      build_with_defaults { |mappings| map_defaults(mappings) }
   end
 
   def ready?
@@ -48,25 +47,48 @@ class NetSuite::Connection < ActiveRecord::Base
 
   def sync
     NetSuite::Export.new(
-      configuration: self,
-      namely_profiles: user.namely_profiles.all,
+      normalizer: normalizer,
+      namely_profiles: installation.namely_profiles,
       net_suite: client
     ).perform
   end
 
   def client
-    NetSuite::Client.from_env(user).authorize(authorization)
-  end
-
-  def disconnect
-    update!(instance_id: nil, authorization: nil)
+    NetSuite::Client.from_env.authorize(authorization)
   end
 
   private
 
-  def build_attribute_mapper
-    builder = NetSuite::AttributeMapperBuilder.new(user: user)
-    self.attribute_mapper = builder.build
-    save
+  def normalizer
+    @normalizer ||= NetSuite::Normalizer.new(
+      attribute_mapper: attribute_mapper,
+      configuration: self
+    )
+  end
+
+  def map_defaults(mappings)
+    map_standard_fields(mappings)
+    map_remote_fields(mappings)
+  end
+
+  def map_remote_fields(mappings)
+    mappable_fields.each do |profile_field|
+      mappings.map! profile_field.id, name: profile_field.name
+    end
+  end
+
+  def mappable_fields
+    client.profile_fields.select do |profile_field|
+      profile_field.type == "text"
+    end
+  end
+
+  def map_standard_fields(mappings)
+    mappings.map! "email", to: "email", name: "Email"
+    mappings.map! "firstName", to: "first_name", name: "First name"
+    mappings.map! "gender", to: "gender", name: "Gender"
+    mappings.map! "lastName", to: "last_name", name: "Last name"
+    mappings.map! "phone", to: "home_phone", name: "Phone"
+    mappings.map! "title", to: "job_title", name: "Title"
   end
 end

@@ -19,7 +19,7 @@ module Jobvite
     attr_reader :connection
 
     class CandidatePage
-      delegate :user, to: :connection
+      delegate :installation, to: :connection
 
       attr_reader :response_code
 
@@ -80,7 +80,7 @@ module Jobvite
       def raise_on_authenticaton_error
         if invalid_secret_key.present?
           exception = Unauthorized.new(json_response["responseMessage"])
-          user.send_connection_notification(
+          installation.send_connection_notification(
             integration_id: "jobvite",
             message: exception.message
           )

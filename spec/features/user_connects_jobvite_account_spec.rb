@@ -15,6 +15,7 @@ feature "User connects jobvite account" do
     fill_in field("jobvite_authentication.api_key"), with: "12345"
     fill_in field("jobvite_authentication.secret"), with: "abcde"
     click_button button("jobvite_connection.update")
+    click_on t("attribute_mappings.edit.save")
 
     within(".jobvite-account") do
       expect(page).not_to have_link t("dashboards.show.connect")

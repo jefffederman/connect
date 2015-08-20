@@ -23,19 +23,16 @@ feature "User imports jobvite candidates" do
     stub_namely_fields("fields_with_jobvite")
     stub_request(:post, "#{ api_host }/api/v1/profiles")
       .to_return(status: 200, body: File.read("spec/fixtures/api_responses/not_empty_profiles.json"))
-
     user = create(:user)
-    create(
-      :jobvite_connection,
-      user: user,
-      api_key: ENV.fetch("TEST_JOBVITE_KEY"),
-      secret: ENV.fetch("TEST_JOBVITE_SECRET"),
-    )
 
     visit dashboard_path(as: user)
-    within(".jobvite-account") do
-      click_button t("dashboards.show.import_now")
-    end
+    jobvite.click_link t("dashboards.show.connect")
+    fill_in field("jobvite_authentication.api_key"), with: "12345"
+    fill_in field("jobvite_authentication.secret"), with: "abcde"
+    click_button button("jobvite_connection.update")
+    select "Preferred name", from: t("integration_fields.first_name")
+    click_on t("attribute_mappings.edit.save")
+    jobvite.click_button t("dashboards.show.import_now")
 
     expect(page).to have_content t("syncs.create.slogan",
                                    integration: "Jobvite")
@@ -48,6 +45,18 @@ feature "User imports jobvite candidates" do
         integration: "Jobvite"
       )
     )
+    expect(WebMock).
+      to have_requested(:post, "#{api_host}/api/v1/profiles").
+      with(
+        body: hash_including(
+          profiles: a_collection_including(
+            hash_including(
+              "preferred_name" => "Roger",
+              "email" => "roger@gmail.com"
+            )
+          )
+        )
+      )
   end
 
   scenario "successfully with failed import candidates" do
@@ -58,8 +67,8 @@ feature "User imports jobvite candidates" do
     user = create(:user)
     create(
       :jobvite_connection,
-      user: user,
       api_key: ENV.fetch("TEST_JOBVITE_KEY"),
+      installation: user.installation,
       secret: ENV.fetch("TEST_JOBVITE_SECRET"),
     )
 
@@ -90,8 +99,8 @@ feature "User imports jobvite candidates" do
     create(
       :jobvite_connection,
       api_key: ENV.fetch("TEST_JOBVITE_KEY"),
+      installation: user.installation,
       secret: ENV.fetch("TEST_JOBVITE_SECRET"),
-      user: user
     )
 
     visit dashboard_path(as: user)
@@ -109,6 +118,10 @@ feature "User imports jobvite candidates" do
         integration: "Jobvite"
       )
     )
+  end
+
+  def jobvite
+    find(".jobvite-account")
   end
 
   def authentication_error_as_json

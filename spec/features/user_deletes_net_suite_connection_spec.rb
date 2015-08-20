@@ -3,7 +3,12 @@ require "rails_helper"
 feature "user deletes NetSuite connection" do
   scenario "successfully" do
     user = create(:user)
-    create(:net_suite_connection, :connected, :with_namely_field, user: user)
+    create(
+      :net_suite_connection,
+      :connected,
+      :with_namely_field,
+      installation: user.installation
+    )
 
     visit dashboard_path(as: user)
 

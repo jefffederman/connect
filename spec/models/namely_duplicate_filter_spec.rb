@@ -13,16 +13,16 @@ describe NamelyDuplicateFilter do
         double("profile", external_service_id: "D4"),
       ])
       namely_connection = double("namely_connection", profiles: profiles)
-      attribute_mapper = double(
-        "attribute_mapper",
+      normalizer = double(
+        "normalizer",
         namely_identifier_field: :external_service_id,
       )
-      allow(attribute_mapper).to receive(:identifier) do |third_party_record|
+      allow(normalizer).to receive(:identifier) do |third_party_record|
         third_party_record.person_id
       end
       filter = described_class.new(
         namely_connection: namely_connection,
-        attribute_mapper: attribute_mapper,
+        normalizer: normalizer,
       )
 
       uniques = filter.filter(unfiltered)

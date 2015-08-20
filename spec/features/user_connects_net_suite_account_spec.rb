@@ -3,6 +3,7 @@ require "rails_helper"
 feature "user connects NetSuite account" do
   scenario "successfully" do
     stub_namely_fields("fields_with_net_suite")
+    stub_net_suite_fields
     stub_create_instance(status: 200, body: { id: "123", token: "abcxyz" })
     stub_lookup_subsidiaries(
       status: 200,
@@ -20,6 +21,7 @@ feature "user connects NetSuite account" do
 
     submit_net_suite_account_form
     select_net_suite_subsidiary("Second")
+    save_attribute_mappings
     expect(net_suite).
       to have_text_from("net_suite_connections.description.connected_html")
   end
@@ -37,6 +39,7 @@ feature "user connects NetSuite account" do
 
   scenario "with updated credentials" do
     stub_namely_fields("fields_with_net_suite")
+    stub_net_suite_fields
     stub_create_instance(status: 200, body: { id: "123", token: "abcxyz" })
     stub_lookup_subsidiaries(
       status: 200,
@@ -47,6 +50,7 @@ feature "user connects NetSuite account" do
     net_suite.click_link t("dashboards.show.connect")
     submit_net_suite_account_form
     select_net_suite_subsidiary("First")
+    save_attribute_mappings
 
     net_suite.click_link t("dashboards.show.edit")
     submit_net_suite_account_form
@@ -71,11 +75,24 @@ feature "user connects NetSuite account" do
     click_button button("net_suite_connection.update")
   end
 
+  def save_attribute_mappings
+    click_on t("attribute_mappings.edit.save")
+  end
+
   def stub_create_instance(status:, body:)
     stub_request(
       :post,
       "https://api.cloud-elements.com/elements/api-v2/instances"
     ).to_return(status: status, body: JSON.dump(body))
+  end
+
+  def stub_net_suite_fields
+    net_suite_employee =
+      File.read("spec/fixtures/api_responses/net_suite_employee.json")
+    stub_request(
+      :get,
+      %r{.*/elements/api-v2/hubs/erp/employees\?.*}
+    ).to_return(status: 200, body: net_suite_employee)
   end
 
   def stub_lookup_subsidiaries(status:, body:)

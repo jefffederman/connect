@@ -5,14 +5,14 @@ class ConnectionsController < IntegrationController
 
   def update
     if update_connection
-      redirect_to dashboard_path
+      redirect_to after_update_path
     else
       render :edit
     end
   end
 
   def destroy
-    connection.disconnect
+    connection.destroy
     redirect_to dashboard_path
   end
 
@@ -24,5 +24,13 @@ class ConnectionsController < IntegrationController
 
   def connection_params
     params.require(connection_type).permit(connection.allowed_parameters)
+  end
+
+  def after_update_path
+    if connection.attribute_mapper?
+      edit_integration_mapping_path(integration_id)
+    else
+      dashboard_path
+    end
   end
 end

@@ -3,8 +3,7 @@ require 'rails_helper'
 RSpec.describe Greenhouse::Connection, :type => :model do
   describe "associations" do
     subject { build(:greenhouse_connection) }
-    it { is_expected.to belong_to(:user) }
-    it { is_expected.to validate_presence_of(:user_id) }
+    it { is_expected.to belong_to(:installation) }
     it { is_expected.to validate_uniqueness_of(:secret_key) }
   end
 
@@ -26,15 +25,6 @@ RSpec.describe Greenhouse::Connection, :type => :model do
     it 'generates a secret key' do
       greenhouse_connection = create :greenhouse_connection, :connected
       expect(greenhouse_connection.secret_key).to_not be_nil
-    end
-  end
-
-  describe "#disconnect" do
-    let(:greenhouse_connection) { create :greenhouse_connection,
-                                  :connected, name: "crashoverride" }
-    it "sets the name to be nil" do
-      greenhouse_connection.disconnect
-      expect(greenhouse_connection.name).to be_nil
     end
   end
 end

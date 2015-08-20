@@ -7,11 +7,18 @@ describe SyncJob do
       net_suite_connection = double(NetSuite::Connection, sync: results)
       user = double(
         User,
-        email: double(:email),
-        net_suite_connection: net_suite_connection
+        email: double(:email)
       )
-      user_id = double(:user_id)
-      allow(User).to receive(:find).with(user_id).and_return(user)
+      installation = double(
+        Installation,
+        net_suite_connection: net_suite_connection,
+        users: [user]
+      )
+      installation_id = double(:installation_id)
+      allow(Installation).
+        to receive(:find).
+        with(installation_id).
+        and_return(installation)
       integration_id = "net_suite"
       mail = double(SyncMailer, deliver: true)
       allow(SyncMailer).
@@ -22,7 +29,7 @@ describe SyncJob do
           results: results
         ).
         and_return(mail)
-      job = SyncJob.new(integration_id, user_id)
+      job = SyncJob.new(integration_id, installation_id)
 
       job.perform
 
@@ -36,31 +43,38 @@ describe SyncJob do
       net_suite_connection = double(NetSuite::Connection)
       user = double(
         User,
-        id: 1,
-        email: double(:email),
-        net_suite_connection: net_suite_connection
+        email: double(:email)
       )
-      user_id = double(:user_id)
+      installation = double(
+        Installation,
+        id: 1,
+        net_suite_connection: net_suite_connection,
+        users: [user]
+      )
+      installation_id = double(:installation_id)
       exception = Unauthorized.new("An error message")
       allow(net_suite_connection).to receive(:sync).
         and_raise(exception)
       integration_id = "net_suite"
-      allow(User).to receive(:find).with(user_id).and_return(user)
-      allow(user).to receive(:send_connection_notification).with(
+      allow(Installation).
+        to receive(:find).
+        with(installation_id).
+        and_return(installation)
+      allow(installation).to receive(:send_connection_notification).with(
         integration_id: integration_id,
         message: exception.message
       )
-      job = SyncJob.new(integration_id, user_id)
+      job = SyncJob.new(integration_id, installation_id)
 
       expect(SyncMailer).not_to receive(:net_suite_notification)
       expect(Rails.logger).to receive(:error).with(
-        "Unauthorized error An error message for user_id: #{user.id} " \
-        "with NetSuite"
+        "Unauthorized error An error message for installation_id: " \
+        "#{installation.id} with NetSuite"
       )
 
       job.perform
 
-      expect(user).to have_received(:send_connection_notification).
+      expect(installation).to have_received(:send_connection_notification).
         with(integration_id: integration_id, message: exception.message)
     end
   end

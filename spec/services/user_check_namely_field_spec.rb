@@ -67,12 +67,12 @@ describe UserCheckNamelyField do
       found_namely_field?: found,
       required_namely_field: required_field,
       update: true,
-      user: stub_user(fields)
+      installation: stub_installation(fields)
     )
   end
 
-  def stub_user(fields)
-    double(:user, namely_connection: stub_namely_connection(fields))
+  def stub_installation(fields)
+    double(:installation, namely_connection: stub_namely_connection(fields))
   end
 
   def stub_namely_connection(fields)

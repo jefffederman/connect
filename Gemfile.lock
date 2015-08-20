@@ -46,7 +46,7 @@ GEM
     addressable (2.3.8)
     arel (5.0.1.20140414130214)
     awesome_print (1.6.1)
-    backports (3.6.4)
+    backports (3.6.5)
     bourbon (3.2.4)
       sass (~> 3.2)
       thor
@@ -133,9 +133,9 @@ GEM
     mini_portile (0.6.2)
     minitest (5.6.0)
     multi_json (1.11.0)
-    namely (0.1.0)
+    namely (0.2.1)
       backports
-      rest_client
+      rest-client
     neat (1.5.1)
       bourbon (>= 3.1)
       sass (~> 3.2.19)
@@ -182,8 +182,6 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
-    rest_client (1.8.3)
-      netrc (~> 0.7.7)
     rspec (3.1.0)
       rspec-core (~> 3.1.0)
       rspec-expectations (~> 3.1.0)
@@ -280,7 +278,7 @@ DEPENDENCIES
   jquery-rails
   launchy
   mailgun_rails (~> 0.6.6)
-  namely
+  namely (~> 0.2.1)
   neat (~> 1.5.1)
   normalize-rails (~> 3.0.0)
   pg
@@ -301,3 +299,6 @@ DEPENDENCIES
   title
   unicorn
   webmock
+
+BUNDLED WITH
+   1.10.6

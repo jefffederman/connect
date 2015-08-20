@@ -1,7 +1,7 @@
 class AuthenticationNotifier
-  def initialize(integration_id:, user:)
+  def initialize(integration_id:, installation:)
     @integration_id = integration_id
-    @user = user
+    @installation = installation
   end
 
   def integration_name
@@ -16,7 +16,7 @@ class AuthenticationNotifier
   private
 
   def deliver_unauthorized_notification(exception)
-    user.send_connection_notification(
+    installation.send_connection_notification(
       integration_id: integration_id,
       message: exception.message
     )
@@ -25,9 +25,9 @@ class AuthenticationNotifier
   def log_unauthorized_exception(exception)
     Rails.logger.error(
       "#{exception.class} error #{exception.message} for " \
-      "user_id: #{user.id} with #{integration_name}"
+      "installation_id: #{installation.id} with #{integration_name}"
     )
   end
 
-  attr_reader :integration_id, :user
+  attr_reader :integration_id, :installation
 end

@@ -6,7 +6,7 @@ feature "User deletes Greenhouse connection" do
     create(
       :greenhouse_connection,
       :connected,
-      user: user,
+      installation: user.installation,
       found_namely_field: true,
     )
 

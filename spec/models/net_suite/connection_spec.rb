@@ -7,8 +7,8 @@ describe NetSuite::Connection do
   end
 
   describe "associations" do
-    it { should belong_to(:attribute_mapper).dependent(:destroy) }
-    it { should belong_to(:user).dependent(:destroy) }
+    it { is_expected.to belong_to(:attribute_mapper).dependent(:destroy) }
+    it { is_expected.to belong_to(:installation) }
   end
 
   describe "#connected?" do
@@ -62,18 +62,33 @@ describe NetSuite::Connection do
   end
 
   describe "#attribute_mapper" do
-    it "returns the AttributeMapper built from an `after_create` hook" do
+    it "builds and saves an attribute mapper" do
       connection = NetSuite::Connection.new(
         subsidiary_id: "x",
-        user: create(:user)
+        authorization: "x",
+        installation: create(:installation)
       )
+      client = stub_client(authorization: "x")
+      profile_fields = [
+        double(id: "email", name: "email", type: "text"),
+        double(id: "initials", name: "initials", type: "text"),
+        double(id: "unsupported", name: "unsupported", type: "file"),
+      ]
+      allow(client).to receive(:profile_fields).and_return(profile_fields)
 
-      connection.save
+      connection.save!
 
-      expect(connection.attribute_mapper).to be_an_instance_of(
-        NetSuite::AttributeMapper
-      )
+      expect(connection.attribute_mapper).to be_an_instance_of(AttributeMapper)
       expect(connection.attribute_mapper).to be_persisted
+      expect(mapped_fields(connection.attribute_mapper)).to match_array([
+        %w(email email),
+        %w(firstName first_name),
+        %w(gender gender),
+        %w(phone home_phone),
+        %w(title job_title),
+        %w(lastName last_name),
+        ["initials", nil],
+      ])
     end
   end
 
@@ -85,16 +100,6 @@ describe NetSuite::Connection do
       result = connection.client
 
       expect(result).to eq(client)
-    end
-  end
-
-  describe "#disconnect" do
-    it "clears connected fields" do
-      connection = create(:net_suite_connection, :connected)
-
-      connection.disconnect
-
-      expect(connection.reload).not_to be_connected
     end
   end
 
@@ -116,20 +121,28 @@ describe NetSuite::Connection do
 
   describe "#sync" do
     it "exports to NetSuite" do
-      all_profiles = double(:all_profiles)
-      namely_profiles = double(:namely_profiles, all: all_profiles)
+      namely_profiles = double(:namely_profiles)
       client = stub_client(authorization: "x")
+      allow(client).to receive(:profile_fields).and_return([])
       connection = create(:net_suite_connection, authorization: "x")
-      allow(connection.user).
+      allow(connection.installation).
         to receive(:namely_profiles).
         and_return(namely_profiles)
       results = double(:results)
       export = double(NetSuite::Export, perform: results)
+      normalizer = double("normalizer")
+      allow(NetSuite::Normalizer).
+        to receive(:new).
+        with(
+          attribute_mapper: connection.attribute_mapper,
+          configuration: connection
+        ).
+        and_return(normalizer)
       allow(NetSuite::Export).
         to receive(:new).
         with(
-          configuration: connection,
-          namely_profiles: all_profiles,
+          normalizer: normalizer,
+          namely_profiles: namely_profiles,
           net_suite: client
         ).
         and_return(export)
@@ -141,14 +154,10 @@ describe NetSuite::Connection do
   end
 
   describe "#export" do
-    it { should delegate_method(:export).to(:attribute_mapper).as(:export) }
-  end
-
-  describe "#post_handle" do
     it do
-      should delegate_method(
-        :post_handle
-      ).to(:attribute_mapper).as(:post_handle)
+      should delegate_method(:export).
+        to(:normalizer).
+        as(:export)
     end
   end
 
@@ -160,6 +169,12 @@ describe NetSuite::Connection do
         to receive(:authorize).
         with(authorization).
         and_return(authorized_client)
+    end
+  end
+
+  def mapped_fields(attribute_mapper)
+    attribute_mapper.field_mappings.map do |field_mapping|
+      [field_mapping.integration_field_id, field_mapping.namely_field_name]
     end
   end
 end

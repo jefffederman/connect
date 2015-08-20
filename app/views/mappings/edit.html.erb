@@ -1,0 +1,28 @@
+<%= simple_form_for @attribute_mapper, url: integration_mapping_path(integration_id) do |form| %>
+  <%= form.error :base %>
+
+  <table>
+    <thead>
+      <tr>
+        <td><%= integration_name %> Field</td>
+        <td>Namely Field</td>
+      </tr>
+    </thead>
+    <tbody>
+      <%= form.simple_fields_for(:field_mappings) do |fields| %>
+        <%= render(
+          "field_mapping",
+          field_mapping: fields.object,
+          fields: fields,
+          namely_fields: current_user.namely_fields_by_label
+        ) %>
+      <% end %>
+    </tbody>
+  </table>
+
+  <div class="-n-actions">
+    <%= button_tag(type: 'submit', class: '-n-btn') do %>
+      <%= t("attribute_mappings.edit.save") %>
+    <% end %>
+  </div>
+<% end %>

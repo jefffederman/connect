@@ -1,0 +1,18 @@
+<tr>
+  <td>
+    <%= fields.label(
+      :namely_field_name,
+      t(
+        "integration_fields.#{field_mapping.integration_key}",
+        default: field_mapping.integration_field_name.titleize
+      )
+    ) %>
+  </td>
+  <td>
+    <%= fields.input(
+      :namely_field_name,
+      collection: namely_fields,
+      label: false
+    ) %>
+  </td>
+</tr>

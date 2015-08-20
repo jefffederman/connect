@@ -10,8 +10,8 @@ module Icims
       @authentication_error = false
     end
 
-    def attribute_mapper
-      Icims::AttributeMapper.new
+    def normalizer
+      Normalizer.new
     end
 
     def candidate

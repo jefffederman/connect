@@ -26,8 +26,9 @@ describe CandidateImporter do
     context "successful imports" do
       it "enqueues a successful mail delivery" do
         candidate = candidate_double
-        connection = connection_double
-        user = connection.user
+        user = user_double
+        installation = installation_double(users: [user])
+        connection = connection_double(installation: installation)
         params = {}
         mailer = mailer_double
         assistant_class = Icims::CandidateImportAssistant
@@ -64,11 +65,13 @@ describe CandidateImporter do
           and_return(namely_profiles)
 
         user = user_double
-        allow(user).to receive(:namely_connection).
+
+        installation = installation_double(users: [user])
+        allow(installation).to receive(:namely_connection).
           and_return(namely_connection)
 
         connection = connection_double
-        allow(connection).to receive(:user).and_return(user)
+        allow(connection).to receive(:installation).and_return(installation)
         candidate = candidate_double
         mailer = mailer_double
         assistant_class = Icims::CandidateImportAssistant
@@ -103,8 +106,8 @@ describe CandidateImporter do
           connection = connection_double
           mailer = mailer_double
           params = { payload: { web_hook_id: -1 } }
-          user = connection.user
-          user_id = user.id
+          installation = connection.installation
+          installation_id = installation.id
 
           importer = CandidateImporter.new(
             assistant_arguments: { signature: "foo" },
@@ -122,13 +125,13 @@ describe CandidateImporter do
               params
             ).and_return(policy_double)
 
-          allow(user).to receive(:send_connection_notification).
+          allow(installation).to receive(:send_connection_notification).
             with(integration_id: "greenhouse", message: exception.message)
           expect(Rails.logger).to receive(:error).with(
             "Unauthorized error Invalid authentication for " \
-            "user_id: #{user_id} with Greenhouse"
+            "installation_id: #{installation_id} with Greenhouse"
           )
-          expect(user).to receive(:send_connection_notification).
+          expect(installation).to receive(:send_connection_notification).
             with(integration_id: "greenhouse", message: exception.message)
           expect(mailer.delay).not_to receive(:successful_import)
           expect(mailer.delay).not_to receive(:unsuccessful_import)
@@ -145,8 +148,8 @@ describe CandidateImporter do
 
           connection = connection_double
           mailer = mailer_double
-          user = connection.user
-          user_id = user.id
+          installation = connection.installation
+          installation_id = installation.id
 
           importer = CandidateImporter.new(
             connection: connection,
@@ -155,13 +158,13 @@ describe CandidateImporter do
             assistant_class: Icims::CandidateImportAssistant
           )
 
-          allow(user).to receive(:send_connection_notification).
+          allow(installation).to receive(:send_connection_notification).
             with(integration_id: "icims", message: exception.message)
           expect(Rails.logger).to receive(:error).with(
-            "Icims::Client::Error error Unauthorized for user_id: #{user_id} " \
-            "with iCIMS"
+            "Icims::Client::Error error Unauthorized for installation_id: " \
+            "#{installation_id} with iCIMS"
           )
-          expect(user).to receive(:send_connection_notification).
+          expect(installation).to receive(:send_connection_notification).
             with(integration_id: "icims", message: exception.message)
           expect(mailer.delay).not_to receive(:successful_import)
           expect(mailer.delay).not_to receive(:unsuccessful_import)
@@ -185,8 +188,8 @@ describe CandidateImporter do
     )
   end
 
-  def connection_double
-    double(:connection, user: user_double)
+  def connection_double(installation: installation_double)
+    double(:connection, installation: installation)
   end
 
   def delayed_double
@@ -205,12 +208,20 @@ describe CandidateImporter do
     double(:namely_connection, profiles: double(:profiles, create!: true))
   end
 
+  def installation_double(users: [])
+    double(
+      :installation,
+      id: -1,
+      namely_connection: namely_connection_double,
+      users: users
+    )
+  end
+
   def user_double
     double(
       :user,
-      email: "test@example.com",
       id: -1,
-      namely_connection: namely_connection_double
+      email: "user@example.com"
     )
   end
 end

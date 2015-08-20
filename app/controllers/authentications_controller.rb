@@ -34,9 +34,17 @@ class AuthenticationsController < IntegrationController
 
   def after_create_path
     if connection.ready?
-      dashboard_path
+      after_ready_path
     else
       edit_integration_connection_path(integration_id)
+    end
+  end
+
+  def after_ready_path
+    if connection.attribute_mapper?
+      edit_integration_mapping_path(integration_id)
+    else
+      dashboard_path
     end
   end
 

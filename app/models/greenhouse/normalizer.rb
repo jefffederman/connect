@@ -1,5 +1,5 @@
 module Greenhouse
-  class AttributeMapper
+  class Normalizer
     # Initializes an attribute mapper using Namely Fields
     def initialize(namely_fields)
       @namely_fields = namely_fields

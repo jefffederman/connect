@@ -1,7 +1,7 @@
 class SyncJob
-  def initialize(integration_id, user_id)
+  def initialize(integration_id, installation_id)
     @integration_id = integration_id
-    @user_id = user_id
+    @installation_id = installation_id
   end
 
   def perform
@@ -14,26 +14,28 @@ class SyncJob
   private
 
   def connection
-    user.send(:"#{@integration_id}_connection")
+    installation.public_send("#{integration_id}_connection")
   end
 
   def deliver_sync_notification(results)
-    SyncMailer.sync_notification(
-      email: user.email,
-      integration_id: integration_id,
-      results: results
-    ).deliver
+    installation.users.each do |user|
+      SyncMailer.sync_notification(
+        email: user.email,
+        integration_id: integration_id,
+        results: results
+      ).deliver
+    end
   end
 
   def notifier
     AuthenticationNotifier.new(
       integration_id: integration_id,
-      user: user
+      installation: installation
     )
   end
 
-  def user
-    @user ||= User.find(@user_id)
+  def installation
+    @installation ||= Installation.find(@installation_id)
   end
 
   attr_reader :integration_id

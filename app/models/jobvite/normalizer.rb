@@ -1,7 +1,11 @@
 module Jobvite
-  class AttributeMapper
+  class Normalizer
+    def initialize(attribute_mapper:)
+      @attribute_mapper = attribute_mapper
+    end
+
     def call(jobvite_candidate)
-      {
+      @attribute_mapper.import(
         first_name: jobvite_candidate.first_name,
         last_name: jobvite_candidate.last_name,
         email: jobvite_candidate.email,
@@ -9,7 +13,7 @@ module Jobvite
         start_date: jobvite_candidate.start_date,
         gender: namely_gender(jobvite_candidate.gender),
         namely_identifier_field => identifier(jobvite_candidate),
-      }.select { |key, value| value.present? }
+      )
     end
 
     def namely_identifier_field

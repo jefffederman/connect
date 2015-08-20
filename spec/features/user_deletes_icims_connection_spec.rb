@@ -6,7 +6,7 @@ feature "User deletes iCIMS connection" do
     create(
       :icims_connection,
       :connected,
-      user: user,
+      installation: user.installation,
       found_namely_field: true,
     )
 

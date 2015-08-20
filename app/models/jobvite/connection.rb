@@ -1,6 +1,7 @@
 module Jobvite
   class Connection < ActiveRecord::Base
-    belongs_to :user
+    belongs_to :attribute_mapper, dependent: :destroy
+    belongs_to :installation
 
     validates :hired_workflow_state, presence: true
 
@@ -20,15 +21,23 @@ module Jobvite
       true
     end
 
-    def disconnect
-      update(
-        api_key: nil,
-        secret: nil
-      )
+    def attribute_mapper?
+      true
+    end
+
+    def attribute_mapper
+      AttributeMapperFactory.new(attribute_mapper: super, connection: self).
+        build_with_defaults do |mappings|
+          mappings.map! "first_name", to: "first_name", name: "First name"
+          mappings.map! "last_name", to: "last_name", name: "Last name"
+          mappings.map! "email", to: "email", name: "Email"
+          mappings.map! "start_date", to: "start_date", name: "Start date"
+          mappings.map! "gender", to: "gender", name: "Gender"
+        end
     end
 
     def required_namely_field
-      AttributeMapper.new.namely_identifier_field.to_s
+      normalizer.namely_identifier_field.to_s
     end
 
     def sync
@@ -41,16 +50,24 @@ module Jobvite
       Importer.new(
         client: Jobvite::Client.new(self),
         connection: self,
+        namely_connection: namely_connection,
         namely_importer: namely_importer,
-        user: user,
       ).import
     end
 
     def namely_importer
       NamelyImporter.new(
-        attribute_mapper: Jobvite::AttributeMapper.new,
-        namely_connection: user.namely_connection,
+        normalizer: normalizer,
+        namely_connection: namely_connection,
       )
+    end
+
+    def namely_connection
+      installation.namely_connection
+    end
+
+    def normalizer
+      Normalizer.new(attribute_mapper: attribute_mapper)
     end
 
     class Result

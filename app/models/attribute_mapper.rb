@@ -1,27 +1,33 @@
 class AttributeMapper < ActiveRecord::Base
-  belongs_to :user, dependent: :destroy
-  has_many :field_mappings
+  SUPPORTED_TYPES = %w(
+    date
+    email
+    longtext
+    referencehistory
+    referenceselect
+    select
+    text
+  )
+  # Unsupported: address checkboxes file image salary
 
-  validates :user, presence: true
-  validates :user_id, presence: true
+  has_many :field_mappings, dependent: :destroy
 
-  def build_field_mappings(default_field_mapping)
-    default_field_mapping.each_pair do |namely_field, integration_field|
-      field_mappings << FieldMapping.new(
-        integration_field_name: integration_field.to_s,
-        namely_field_name: namely_field
-      )
+  accepts_nested_attributes_for :field_mappings
+
+  def export(profile)
+    field_mappings.each_with_namely_field do |field_mapping, accumulator|
+      value = profile[field_mapping.namely_field_name]
+      if value.present?
+        accumulator.merge!(field_mapping.integration_field_id => value)
+      end
     end
   end
 
-  def export(profile)
-    field_mappings.each_with_object({}) do |field_mapping, accumulator|
-      if profile.send(field_mapping.namely_field_name).present?
-        accumulator.merge!(
-          field_mapping.integration_field_name => profile.send(
-            field_mapping.namely_field_name
-          )
-        )
+  def import(attributes)
+    field_mappings.each_with_namely_field do |field_mapping, accumulator|
+      value = attributes[field_mapping.integration_field_id.to_sym]
+      if value.present?
+        accumulator.merge!(field_mapping.namely_field_name.to_sym => value)
       end
     end
   end

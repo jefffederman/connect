@@ -33,6 +33,6 @@ class UserCheckNamelyField < SimpleDelegator
   end
 
   def namely_connection
-    user.namely_connection
+    installation.namely_connection
   end
 end

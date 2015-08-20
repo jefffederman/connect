@@ -1,7 +1,6 @@
 module Icims
   class Connection < ActiveRecord::Base
-    belongs_to :user
-    validates :user_id, presence: true
+    belongs_to :installation
     validates :api_key, uniqueness: true
     before_create :set_api_key
 
@@ -25,16 +24,12 @@ module Icims
       "https://api.icims.com/customers/#{customer_id}"
     end
 
-    def disconnect
-      update(
-        customer_id: nil,
-        key: nil,
-        username: nil,
-      )
+    def attribute_mapper?
+      false
     end
 
     def required_namely_field
-      AttributeMapper.new.namely_identifier_field.to_s
+      Normalizer.new.namely_identifier_field.to_s
     end
 
     def set_api_key

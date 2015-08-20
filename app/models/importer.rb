@@ -1,12 +1,12 @@
 class Importer
   def initialize(
-    user:,
     client:,
     connection:,
-    namely_importer:
+    namely_importer:,
+    namely_connection:
   )
 
-    @user = user
+    @namely_connection = namely_connection
     @client = client
     @connection = connection
     @namely_importer = namely_importer
@@ -22,8 +22,7 @@ class Importer
 
   private
 
-  attr_reader :connection, :client, :namely_importer, :user
-  delegate :namely_connection, to: :user
+  attr_reader :connection, :client, :namely_connection, :namely_importer
 
   def import_recent_hires
     namely_importer.import(recent_hires)

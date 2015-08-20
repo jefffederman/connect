@@ -1,16 +1,16 @@
 FactoryGirl.define do
   factory :attribute_mapper do
-    user
   end
 
   factory :field_mapping do
     attribute_mapper
-    integration_field_name "firstName"
+    integration_field_name { integration_field_id.titleize }
+    integration_field_id "firstName"
     namely_field_name "first_name"
   end
 
   factory :net_suite_connection, :class => 'NetSuite::Connection' do
-    user
+    installation
 
     trait :connected do
       instance_id "123xy"
@@ -23,7 +23,7 @@ FactoryGirl.define do
   end
 
   factory :icims_connection, class: "Icims::Connection" do
-    user
+    installation
 
     trait :connected do
       customer_id 2187
@@ -37,7 +37,7 @@ FactoryGirl.define do
   end
 
   factory :jobvite_connection, class: "Jobvite::Connection" do
-    user
+    installation
 
     trait :connected do
       api_key "MY_API_KEY"
@@ -51,7 +51,7 @@ FactoryGirl.define do
   end
 
   factory :greenhouse_connection, class: "Greenhouse::Connection" do
-    user
+    installation
 
     trait :connected do
       name "MY NAME"
@@ -70,10 +70,19 @@ FactoryGirl.define do
 
   factory :user do
     sequence(:namely_user_id) { |n| "NAMELY-USER-#{n}" }
-    subdomain ENV.fetch("TEST_NAMELY_SUBDOMAIN")
+    subdomain { installation.subdomain }
     access_token ENV.fetch("TEST_NAMELY_ACCESS_TOKEN")
     sequence(:refresh_token) { |n| "refresh-token-#{n}" }
     access_token_expiry { 15.minutes.from_now }
     email "integrationlover@example.com"
+    association :installation, factory: :fixed_subdomain_installation
+  end
+
+  factory :installation do
+    sequence(:subdomain) { |n| "subdomain#{n}" }
+
+    factory :fixed_subdomain_installation do
+      subdomain ENV.fetch("TEST_NAMELY_SUBDOMAIN")
+    end
   end
 end

@@ -25,7 +25,7 @@ describe Jobvite::Client do
           api_key: "MY_API_KEY",
           hired_workflow_state: "Hired",
           secret: "MY_SECRET",
-          user: user_double,
+          installation: installation_double,
         )
 
         client = described_class.new(connection)
@@ -57,7 +57,7 @@ describe Jobvite::Client do
             api_key: "MY_API_KEY",
             hired_workflow_state: "Hired",
             secret: "MY_SECRET",
-            user: user_double,
+            installation: installation_double,
           )
 
           client = described_class.new(connection)
@@ -105,7 +105,7 @@ describe Jobvite::Client do
           api_key: "MY_API_KEY",
           hired_workflow_state: "Offer Accepted",
           secret: "MY_SECRET",
-          user: user_double,
+          installation: installation_double,
         )
 
         client = described_class.new(connection)
@@ -129,7 +129,7 @@ describe Jobvite::Client do
           api_key: "MY_API_KEY",
           hired_workflow_state: "Offer Accepted",
           secret: "MY_SECRET",
-          user: user_double,
+          installation: installation_double,
         )
 
         client = described_class.new(connection)
@@ -154,38 +154,29 @@ describe Jobvite::Client do
             JSON
           )
 
-        user = user_double
+        installation = installation_double
         connection = double(
           "jobvite_connection",
           api_key: "MY_API_KEY",
           hired_workflow_state: "Offer Accepted",
           secret: "MY_SECRET",
-          user: user,
+          installation: installation,
         )
 
         client = Jobvite::Client.new(connection)
 
-        mail = double(ConnectionMailer, deliver: true)
         exception = Unauthorized.new("An error message")
-        allow(ConnectionMailer).
-          to receive(:authentication_notification).
-          with(
-            email: user.email,
-            integration_id: "jobvite",
-            message: exception.message
-          ).
-          and_return(mail)
+        allow(installation).to receive(:send_connection_notification)
 
-        expect { client.recent_hires }.to raise_error(
-          Unauthorized
-        )
-        expect(mail).to have_received(:deliver)
+        expect { client.recent_hires }.to raise_error(Unauthorized)
+        expect(installation).to have_received(:send_connection_notification).
+          with(integration_id: "jobvite", message: exception.message)
       end
     end
   end
 
-  def user_double
-    build_stubbed(:user)
+  def installation_double
+    build_stubbed(:installation)
   end
 
   def sample_response(values = {})

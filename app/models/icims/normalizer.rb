@@ -1,5 +1,5 @@
 module Icims
-  class AttributeMapper
+  class Normalizer
     def call(icims_candidate)
       {
         first_name: icims_candidate.firstname,

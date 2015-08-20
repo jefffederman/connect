@@ -1,7 +1,7 @@
 module Icims
   class AuthorizedRequest < SimpleDelegator
     HMAC_SHA256_HEADER = "x-icims-v1-hmac-sha256"
-    delegate :user, to: :connection
+    delegate :installation, to: :connection
 
     def initialize(connection:, request:)
       super(request)
@@ -68,7 +68,7 @@ module Icims
       r.execute
     rescue RestClient::Unauthorized => exception
       unauthorized_exception = Unauthorized.new(exception.message)
-      user.send_connection_notification(
+      installation.send_connection_notification(
         integration_id: "icims",
         message: unauthorized_exception.message
       )

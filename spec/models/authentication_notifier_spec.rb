@@ -5,7 +5,7 @@ describe AuthenticationNotifier do
     it "translates to a proper name" do
       notifier = AuthenticationNotifier.new(
         integration_id: "icims",
-        user: user_spy
+        installation: installation_spy
       )
 
       expect(notifier.integration_name).to eq("iCIMS")
@@ -16,28 +16,29 @@ describe AuthenticationNotifier do
     it "logs the exception" do
       notifier = AuthenticationNotifier.new(
         integration_id: integration_id_stub,
-        user: user_spy
+        installation: installation_spy
       )
       exception = Unauthorized.new(Unauthorized::DEFAULT_MESSAGE)
 
       expect(Rails.logger).to receive(:error).with(
         "#{exception.class} error #{exception.message} for " \
-        "user_id: #{user_spy.id} with #{notifier.integration_name}"
+        "installation_id: #{installation_spy.id} " \
+        "with #{notifier.integration_name}"
       )
 
       notifier.log_and_notify_of_unauthorized_exception(exception)
     end
 
-    it "tells User to send_connection_notification" do
+    it "tells installation to send_connection_notification" do
       exception = Unauthorized.new(Unauthorized::DEFAULT_MESSAGE)
-      user = user_spy
+      installation = installation_spy
 
       AuthenticationNotifier.new(
         integration_id: integration_id_stub,
-        user: user
+        installation: installation
       ).log_and_notify_of_unauthorized_exception(exception)
 
-      expect(user).to have_received(
+      expect(installation).to have_received(
         :send_connection_notification
       ).with(integration_id: integration_id_stub, message: exception.message)
     end
@@ -47,7 +48,7 @@ describe AuthenticationNotifier do
     "icims"
   end
 
-  def user_spy
-    instance_spy(User, id: 1)
+  def installation_spy
+    instance_spy(Installation, id: 1)
   end
 end

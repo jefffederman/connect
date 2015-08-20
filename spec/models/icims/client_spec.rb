@@ -25,7 +25,7 @@ describe Icims::Client do
             "icims_connection",
             api_url: icims_customer_api_url,
             key: "MY_KEY",
-            user: user_double,
+            installation: installation_double,
             username: "USERNAME",
           )
           client = described_class.new(connection)
@@ -56,7 +56,7 @@ describe Icims::Client do
             "icims_connection",
             api_url: icims_customer_api_url,
             key: "MY_KEY",
-            user: user_double,
+            installation: installation_double,
             username: "USERNAME",
           )
 
@@ -76,7 +76,7 @@ describe Icims::Client do
           "icims_connection",
           api_url: icims_customer_api_url,
           key: "MY_KEY",
-          user: user_double,
+          installation: installation_double,
           username: "USERNAME",
         )
 
@@ -105,7 +105,7 @@ describe Icims::Client do
     }.merge(values).to_json
   end
 
-  def user_double
-    build_stubbed(:user)
+  def installation_double
+    build_stubbed(:installation)
   end
 end

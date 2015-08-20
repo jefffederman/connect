@@ -5,12 +5,30 @@ describe NetSuite::Export do
     context "with new, valid employees" do
       it "returns a result with created profiles" do
         emails = %w(one@example.com two@example.com)
-        profiles = emails.map { |email| stub_profile(email: email) }
+        profile_data = [
+          {
+            email: "one@example.com",
+            first_name: "One",
+            last_name: "Last"
+          },
+          {
+            email: "two@example.com",
+            first_name: "Two",
+            last_name: "Last"
+          }
+        ]
+        profiles = profile_data.map { |profile| stub_profile(profile) }
+        emails = profile_data.map { |profile| profile[:email] }
+        names = profile_data.map do |profile|
+          "#{profile[:first_name]} #{profile[:last_name]}"
+        end
+
         net_suite = stub_net_suite(success: true, internalId: "1234")
-        configuration = stub_configuration(subsidiary_id: "4567")
+        mapped_attributes = double("mapped_attributes")
+        normalizer = stub_normalizer(to: mapped_attributes)
 
         results = perform_export(
-          configuration: configuration,
+          normalizer: normalizer,
           net_suite: net_suite,
           profiles: profiles
         )
@@ -18,16 +36,11 @@ describe NetSuite::Export do
         expect(results.map(&:success?)).to eq([true, true])
         expect(results.map(&:updated?)).to eq([false, false])
         expect(results.map(&:email)).to eq(emails)
+        expect(results.map(&:name)).to eq(names)
+        expect(net_suite).to have_received(:create_employee).
+          with(mapped_attributes).
+          exactly(2)
         profiles.each do |profile|
-          expect(net_suite).to have_received(:create_employee).with(
-            firstName: profile.first_name,
-            lastName: profile.last_name,
-            email: profile.email,
-            gender: "_female",
-            phone: profile.home_phone,
-            subsidiary: { internalId: "4567" },
-            title: profile.job_title[:title]
-          )
           expect(profile).to have_received(:update).with(netsuite_id: "1234")
         end
       end
@@ -36,27 +49,23 @@ describe NetSuite::Export do
     context "with an already-exported employee" do
       it "returns a result with updated profiles" do
         profile = stub_profile({}, netsuite_id: "1234")
-        configuration = stub_configuration(subsidiary_id: "4567")
+        mapped_attributes = double("mapped_attributes")
+        normalizer = stub_normalizer(
+          from: profile,
+          to: mapped_attributes
+        )
         net_suite = stub_net_suite(success: true)
 
         results = perform_export(
-          configuration: configuration,
+          normalizer: normalizer,
           net_suite: net_suite,
           profiles: [profile]
         )
 
         expect(results.map(&:email)).to eq([profile.email])
         expect(results.map(&:updated?)).to eq([true])
-        expect(net_suite).to have_received(:update_employee).with(
-          profile["netsuite_id"],
-          firstName: profile.first_name,
-          lastName: profile.last_name,
-          email: profile.email,
-          gender: "_female",
-          phone: profile.home_phone,
-          subsidiary: { internalId: "4567" },
-          title: profile.job_title[:title]
-        )
+        expect(net_suite).to have_received(:update_employee).
+          with("1234", mapped_attributes)
       end
     end
 
@@ -101,6 +110,10 @@ describe NetSuite::Export do
       attributes.each do |name, value|
         allow(profile).to receive(name).and_return(value)
       end
+
+      allow(profile).to receive(:name).and_return(
+        "#{profile.first_name} #{profile.last_name}"
+      )
     end
   end
 
@@ -113,16 +126,23 @@ describe NetSuite::Export do
     end
   end
 
-  def stub_configuration(overrides = {})
-    double(
-      "configuration",
-      { subsidiary_id: "123" }.merge(overrides)
-    )
+  def stub_normalizer(from: anything, to: double("attributes"))
+    double("normalizer").tap do |normalizer|
+      allow(normalizer).
+        to receive(:export).
+        with(from).
+        at_least(1).
+        and_return(to)
+    end
   end
 
-  def perform_export(configuration: stub_configuration, net_suite:, profiles:)
+  def perform_export(
+    normalizer: stub_normalizer,
+    net_suite:,
+    profiles:
+  )
     NetSuite::Export.new(
-      configuration: configuration,
+      normalizer: normalizer,
       net_suite: net_suite,
       namely_profiles: profiles
     ).perform
