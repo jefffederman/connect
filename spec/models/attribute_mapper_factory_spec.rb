@@ -37,6 +37,28 @@ describe AttributeMapperFactory do
         expect(mapped_fields_for(result)).to eq([%w(firstName first_name)])
       end
     end
+
+    context "when creating the mapper fails" do
+      it "doesn't commit the mapper" do
+        connection = create(:net_suite_connection)
+        factory = AttributeMapperFactory.new(
+          attribute_mapper: nil,
+          connection: connection
+        )
+        exception = StandardError.new("failure")
+
+        expect { build_defaults_and_raise(factory, exception) }.
+          to raise_error(exception)
+        expect(connection.reload.attribute_mapper_id).to be_nil
+      end
+    end
+  end
+
+  def build_defaults_and_raise(factory, exception)
+    factory.build_with_defaults do |mappings|
+      mappings.map!("firstName", to: "first_name", name: "First name")
+      raise exception
+    end
   end
 
   def mapped_fields_for(attribute_mapper)

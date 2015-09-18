@@ -41,7 +41,7 @@ feature "User imports jobvite candidates" do
     expect(current_email).to have_text(
       t(
         "sync_mailer.sync_notification.succeeded",
-        employees: t("sync_mailer.sync_notification.employees", count: 6),
+        count: 6,
         integration: "Jobvite"
       )
     )
@@ -84,7 +84,7 @@ feature "User imports jobvite candidates" do
     expect(current_email).to have_text(
       t(
         "sync_mailer.sync_notification.failed",
-        employees: t("sync_mailer.sync_notification.employees", count: 6),
+        count: 6,
         integration: "Jobvite"
       )
     )

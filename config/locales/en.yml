@@ -5,12 +5,17 @@ en:
 
   dashboards:
     show:
+      activity_feed: View Activity Feed
       connect: "Connect"
       disconnect: "Disconnect"
-      edit: "Edit"
+      edit_configuration: Edit Configuration
+      edit_credentials: Edit Credentials
+      edit_mappings: Edit Field Mappings
       export_now: "Export now"
       import_now: "Import now"
+      show_webhook: Show Webhook URL
       sign_out: "Sign out"
+      webhook_label: "Webhook URL:"
       missing_namely_field: >
         You need to add a '%{name}' custom field to your Namely account in order
         to synchronize profiles. This field is used to avoid importing or
@@ -52,6 +57,32 @@ en:
     show:
       sign_in:
         prompt: "Sign in using"
+
+  activity_feeds:
+    show:
+      title: "%{integration}: Activity Feed"
+      slogan: >
+        Below is a history of synchronization attempts with %{integration}.
+
+  sync_summaries:
+    authorization_error:
+      error_html: >
+        Unable to complete sync due to an authorization error.
+        The error returned was "%{error}". Please %{link} to correct this issue.
+      heading: Authorization Error
+      update_authorization: update the authorization information
+
+  sync_summary:
+    success_heading:
+      one: "Successfully synced one profile:"
+      other: "Successfully synced %{count} profiles:"
+    failure_heading:
+      one: "Unable to sync one profile:"
+      other: "Unable to sync %{count} profiles:"
+    time: "%{duration} ago"
+
+  profile_event:
+    retry: "Retry"
 
   candidate_import_mailer:
     successful_import:
@@ -164,6 +195,13 @@ en:
       title: "Connect to %{integration}"
       slogan: >
         Please fill out the following fields to finalize this connection.
+
+  retries:
+    show:
+      title: Retrying Failed Profiles
+      slogan: >
+        We are synchronizing the failed profiles and will send you an email as
+        soon as synchronization is complete.
   syncs:
     create:
       title: "Synchronizing with %{integration}"
@@ -200,13 +238,16 @@ en:
 
   sync_mailer:
     sync_notification:
-      employees:
-        one: "%{count} employee"
-        other: "%{count} employees"
-      failed: "%{employees} not synchronized."
+      failed:
+        one: "%{count} employee not synchronized."
+        other: "%{count} employees not synchronized."
       failed_list: "Here's who wasn't synchronized:"
-      subject: "%{employees} synced with %{integration}"
-      succeeded: "%{employees} synchronized with %{integration} successfully."
+      subject:
+        one: "%{count} employee synced with %{integration}"
+        other: "%{count} employees synced with %{integration}"
+      succeeded:
+        one: "%{count} employee synchronized with %{integration} successfully."
+        other: "%{count} employees synchronized with %{integration} successfully."
       succeeded_list: "Here's who was synchronized:"
 
   time:

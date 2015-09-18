@@ -80,9 +80,9 @@ module Jobvite
       def raise_on_authenticaton_error
         if invalid_secret_key.present?
           exception = Unauthorized.new(json_response["responseMessage"])
-          installation.send_connection_notification(
-            integration_id: "jobvite",
-            message: exception.message
+          UnauthorizedNotifier.deliver(
+            connection: connection,
+            exception: exception
           )
           raise exception
         end

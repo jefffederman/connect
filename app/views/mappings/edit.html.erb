@@ -9,14 +9,12 @@
       </tr>
     </thead>
     <tbody>
-      <%= form.simple_fields_for(:field_mappings) do |fields| %>
-        <%= render(
-          "field_mapping",
-          field_mapping: fields.object,
-          fields: fields,
-          namely_fields: current_user.namely_fields_by_label
-        ) %>
-      <% end %>
+      <%= render(
+        "form",
+        field_mappings: @attribute_mapper.field_mappings.ordered,
+        form: form,
+        namely_fields: current_user.namely_fields_by_label
+      ) %>
     </tbody>
   </table>
 

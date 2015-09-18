@@ -25,3 +25,4 @@ ignore_unused:
   - greenhouse_candidate_import_mailer.*
   - "*connections.description.disconnected_html"
   - "*connections.description.connected_html"
+  - "sync_summary.*"

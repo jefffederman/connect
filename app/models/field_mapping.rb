@@ -23,6 +23,10 @@ class FieldMapping < ActiveRecord::Base
     end
   end
 
+  def self.ordered
+    order(integration_field_name: :asc)
+  end
+
   def integration_key
     integration_field_name.underscore.parameterize("_")
   end

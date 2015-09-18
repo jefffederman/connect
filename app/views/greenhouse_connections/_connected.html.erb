@@ -1,1 +1,17 @@
-<%= greenhouse_candidate_imports_url(connection.secret_key) %>
+<div class="webhook">
+  <button class="-n-btn -n-btn-sm">
+    <%= t("dashboards.show.show_webhook") %>
+  </button>
+
+  <div class="webhook-value">
+    <label for="greenhouse_webhook">
+      <%= t("dashboards.show.webhook_label") %>
+    </label>
+
+    <input
+      id="greenhouse_webhook"
+      value="<%= greenhouse_candidate_imports_url(connection.secret_key) %>"
+      class="webhook-url"
+    >
+  </div>
+</div>

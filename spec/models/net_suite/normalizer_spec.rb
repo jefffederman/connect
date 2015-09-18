@@ -13,13 +13,26 @@ describe NetSuite::Normalizer do
     it "returns a converted data structure based on field mappings" do
       export_attributes = export
 
-      expect(export_attributes.keys).to include(*%w(
+      expect(export_attributes.keys).to match_array(%w(
+        customFieldList
         email
         firstName
         gender
+        isInactive
         lastName
         phone
+        subsidiary
+        releaseDate
+        nullFieldList
       ))
+    end
+
+    it "does not include custom fields in field mappings if opted out" do
+      ClimateControl.modify(NET_SUITE_CUSTOM_FIELDS_ENABLED: "false") do
+        export_attributes = export
+
+        expect(export_attributes.keys).not_to include("customFieldList")
+      end
     end
 
     it "doesn't map empty values" do
@@ -34,7 +47,7 @@ describe NetSuite::Normalizer do
     end
 
     describe "value handling" do
-      it "sets expected values in the profile for regular attributes" do
+      it "sets expected values in the profile for string attributes" do
         attributes = {
           "email" => "test@example.com",
           "first_name" => "First",
@@ -42,7 +55,7 @@ describe NetSuite::Normalizer do
           "last_name" => "Last",
         }
 
-        profile_data = stubbed_profile_data.merge(attributes)
+        profile_data = stubbed_profile_data(attributes)
 
         export_attributes = export(profile_data)
 
@@ -55,7 +68,7 @@ describe NetSuite::Normalizer do
 
     context "gender mapping" do
       it "maps 'Female to _female'" do
-        profile_data = stubbed_profile_data.merge("gender" => "Female")
+        profile_data = stubbed_profile_data("gender" => "Female")
 
         export_attributes = export(profile_data)
 
@@ -63,7 +76,7 @@ describe NetSuite::Normalizer do
       end
 
       it "maps 'Male to _male'" do
-        profile_data = stubbed_profile_data.merge("gender" => "Male")
+        profile_data = stubbed_profile_data("gender" => "Male")
 
         export_attributes = export(profile_data)
 
@@ -71,7 +84,7 @@ describe NetSuite::Normalizer do
       end
 
       it "maps nil to '_omitted'" do
-        profile_data = stubbed_profile_data.merge("gender" => nil)
+        profile_data = stubbed_profile_data("gender" => nil)
 
         export_attributes = export(profile_data)
 
@@ -79,11 +92,79 @@ describe NetSuite::Normalizer do
       end
 
       it "maps an empty string to '_omitted'" do
-        profile_data = stubbed_profile_data.merge("gender" => "")
+        profile_data = stubbed_profile_data("gender" => "")
 
         export_attributes = export(profile_data)
 
         expect(export_attributes["gender"]).to eq("_omitted")
+      end
+    end
+
+    context "isInactive" do
+      it "maps a user status of 'inactive' to true" do
+        profile_data = stubbed_profile_data("user_status" => "inactive")
+
+        export_attributes = export(profile_data)
+
+        expect(export_attributes["isInactive"]).to be true
+      end
+
+      it "maps user_status of 'active' values to false" do
+        profile_data = stubbed_profile_data("user_status" => "active")
+
+        export_attributes = export(profile_data)
+
+        expect(export_attributes["isInactive"]).to be false
+      end
+    end
+
+    context "address" do
+      it "maps to a NetSuite address hash" do
+        profile_data = stubbed_profile_data(
+          "first_name" => "Iggy",
+          "last_name" => "Igloo"
+        ).merge(
+          "home" => Fields::AddressValue.new(
+            "address1" => "123 Main Street",
+            "address2" => "Suite 501",
+            "city" => "Boston",
+            "state_id" => "MA",
+            "zip" => "11213",
+            "country_id" => "US"
+          )
+        )
+
+        export_attributes = export(profile_data)
+
+        expect(export_attributes["addressbookList"]).to eq(
+          "addressbook" => [
+            {
+              "defaultShipping" => true,
+              "addressbookAddress" => {
+                "zip" => "11213",
+                "country" => {
+                  "value" => "_unitedStates"
+                },
+                "addr2" => "Suite 501",
+                "addr1" => "123 Main Street",
+                "city" => "Boston",
+                "addr3" => "",
+                "addressee" => "Iggy Igloo",
+                "attention" => "",
+                "state" => "MA"
+              }
+            }
+          ],
+          "replaceAll" => true
+        )
+      end
+
+      it "removes a missing address" do
+        profile_data = stubbed_profile_data.merge("home" => nil)
+
+        export_attributes = export(profile_data)
+
+        expect(export_attributes).not_to have_key("addressbookList")
       end
     end
 
@@ -97,9 +178,25 @@ describe NetSuite::Normalizer do
       end
     end
 
+    context "releaseDate" do
+      it "maps departure date string to milliseconds since epoch" do
+        date = Date.today
+        date_string = date.strftime("%m/%d/%Y")
+        profile_data = stubbed_profile_data.merge(
+          "departure_date" => Fields::DateValue.new(date_string)
+        )
+
+        export_attributes = export(profile_data)
+
+        expect(export_attributes["releaseDate"]).to eq(
+          date.to_datetime.to_i * 1000
+        )
+      end
+    end
+
     context "custom fields" do
       it "generates a custom field list" do
-        profile_data = stubbed_profile_data.merge(
+        profile_data = stubbed_profile_data(
           "facebook" => "http://example.com/facebook",
           "linkedin" => "http://example.com/linkedin",
         )
@@ -135,6 +232,21 @@ describe NetSuite::Normalizer do
         expect(export_attributes.keys.grep(/custom:/)).to be_empty
       end
     end
+
+    context "null scalar fields" do
+      it "moves keys with null scalar values to the nullFieldList" do
+        profile_data = stubbed_profile_data.merge(
+          "departure_date" => Fields::DateValue.new(nil)
+        )
+
+        export_attributes = export(profile_data)
+
+        expect(export_attributes.keys).not_to include("releaseDate")
+        expect(export_attributes["nullFieldList"]).to match_array([
+          "releaseDate"
+        ])
+      end
+    end
   end
 
   def build_normalizer(attribute_mapper: build_attribute_mapper)
@@ -156,17 +268,25 @@ describe NetSuite::Normalizer do
     normalizer.export(stubbed_profile(profile_data))
   end
 
-  def stubbed_profile_data
-    {
-      "email" => "test@example.com",
-      "first_name" => "First",
-      "gender" => "Female",
-      "home_phone" => "212-555-1212",
-      "last_name" => "Last"
-    }
+  def stubbed_profile_data(overrides = {})
+    stub_string_values(
+      {
+        "email" => "test@example.com",
+        "first_name" => "First",
+        "gender" => "Female",
+        "home_phone" => "212-555-1212",
+        "last_name" => "Last",
+      }.merge(overrides)
+    ).merge("departure_date" => Fields::DateValue.new("01/01/2016"))
   end
 
-  def stubbed_profile(data = stubbed_profile_data)
-    Profile.new(data)
+  def stub_string_values(values)
+    values.each_with_object({}) do |(name, value), result|
+      result[name] = Fields::StringValue.new(value)
+    end
+  end
+
+  def stubbed_profile(data)
+    data
   end
 end

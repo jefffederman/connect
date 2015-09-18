@@ -1,0 +1,28 @@
+<ul class="actions">
+  <li><%= link_to t("dashboards.show.edit_credentials"),
+    edit_integration_authentication_path(connection.integration_id) %></li>
+
+  <% if connection.configurable? %>
+    <li><%= link_to t("dashboards.show.edit_configuration"),
+      edit_integration_connection_path(connection.integration_id) %></li>
+  <% end %>
+
+  <% if connection.attribute_mapper? %>
+    <li><%= link_to t("dashboards.show.edit_mappings"),
+      edit_integration_mapping_path(connection.integration_id) %></li>
+  <% end %>
+
+  <% if connection.has_activity_feed? %>
+    <li><%= link_to t("dashboards.show.activity_feed"),
+      integration_activity_feed_path(connection.integration_id) %></li>
+  <% end %>
+
+  <% if connection.found_namely_field? %>
+    <li>
+      <%= render(
+        "#{connection.integration_id}_connections/connected",
+        connection: connection
+      ) %>
+    </li>
+  <% end %>
+</ul>

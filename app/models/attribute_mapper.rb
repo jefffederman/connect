@@ -1,5 +1,6 @@
 class AttributeMapper < ActiveRecord::Base
   SUPPORTED_TYPES = %w(
+    address
     date
     email
     longtext
@@ -8,7 +9,7 @@ class AttributeMapper < ActiveRecord::Base
     select
     text
   )
-  # Unsupported: address checkboxes file image salary
+  # Unsupported: checkboxes file image salary
 
   has_many :field_mappings, dependent: :destroy
 

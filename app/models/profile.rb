@@ -1,8 +1,13 @@
 class Profile
   delegate :update, to: :namely_profile
 
-  def initialize(namely_profile)
+  def initialize(namely_profile, fields:)
     @namely_profile = namely_profile
+    @fields = fields
+  end
+
+  def id
+    @namely_profile[:id]
   end
 
   def name
@@ -10,18 +15,10 @@ class Profile
   end
 
   def [](key)
-    flatten_hash namely_profile[key]
+    @fields.export(key, from: @namely_profile)
   end
 
   private
-
-  def flatten_hash(value)
-    if value.respond_to?(:to_hash)
-      value.to_hash["title"] || value.to_hash["name"]
-    else
-      value
-    end
-  end
 
   attr_reader :namely_profile
 end

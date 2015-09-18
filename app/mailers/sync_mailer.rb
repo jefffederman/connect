@@ -1,63 +1,15 @@
 class SyncMailer < ApplicationMailer
-  def sync_notification(email:, integration_id:, results:)
-    @integration_id = integration_id
-    @sync_results = SyncResults.new(integration_id, results)
+  def sync_notification(email:, sync_summary:)
+    @integration = I18n.t("#{sync_summary.integration_id}.name")
+    @profile_events = sync_summary.profile_events
 
-    mail(to: email, subject: @sync_results.subject)
-  end
-
-  class SyncResults
-    def initialize(integration_id, results)
-      @integration_id = integration_id
-      @results = results
-    end
-
-    def subject
-      t(
+    mail(
+      to: email,
+      subject: t(
         "sync_mailer.sync_notification.subject",
-        employees: employees(succeeded.count)
+        integration: @integration,
+        count: @profile_events.successful.count
       )
-    end
-
-    def succeeded
-      @succeeded ||= @results.select(&:success?)
-    end
-
-    def succeeded_message
-      t(
-        "sync_mailer.sync_notification.succeeded",
-        employees: employees(succeeded.count)
-      )
-    end
-
-    def failed
-      @failed ||= @results.reject(&:success?)
-    end
-
-    def failed_message
-      t(
-        "sync_mailer.sync_notification.failed",
-        employees: employees(failed.count)
-      )
-    end
-
-    def employees(count)
-      t(
-        "sync_mailer.sync_notification.employees",
-        count: count
-      )
-    end
-
-    private
-
-    def t(key, data = {})
-      I18n.t(key, data.merge(integration: integration))
-    end
-
-    def integration
-      I18n.t("#{@integration_id}.name")
-    end
+    )
   end
-
-  private_constant :SyncResults
 end

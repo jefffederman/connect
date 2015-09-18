@@ -1,16 +1,17 @@
 source "https://rubygems.org"
 ruby "2.2.2"
 
-gem "rails", "4.1.6"
+gem "rails", "~> 4.2.4"
 gem "bourbon", "~> 3.2.1"
 gem "delayed_job_active_record"
 gem "email_validator"
 gem "i18n-tasks"
+gem "kaminari"
 gem "namely", "~> 0.2.1"
 gem "neat", "~> 1.5.1"
 gem "normalize-rails", "~> 3.0.0"
 gem "pg"
-gem "rack-timeout"
+gem "raygun4ruby"
 gem "recipient_interceptor"
 gem "rest-client"
 gem "sass-rails", "~> 4.0.3"
@@ -32,7 +33,7 @@ group :development, :test do
   gem "dotenv-rails"
   gem "factory_girl_rails"
   gem "pry-rails"
-  gem "rspec-rails", "~> 3.1.0"
+  gem "rspec-rails", "~> 3.3"
 end
 
 group :test do
@@ -51,6 +52,6 @@ group :test do
 end
 
 group :staging, :production do
-  gem 'rails_12factor'
-  gem 'honeybadger'
+  gem "rails_12factor"
+  gem "rack-timeout"
 end

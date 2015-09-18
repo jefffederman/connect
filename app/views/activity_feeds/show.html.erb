@@ -1,0 +1,9 @@
+<section id="subheader">
+  <h1><%= t(".title", integration: integration_name) %></h2>
+  <p><%= t(".slogan", integration: integration_name) %></p>
+</section>
+
+<section>
+  <%= render @sync_summaries %>
+  <%= paginate(@sync_summaries) %>
+</section>

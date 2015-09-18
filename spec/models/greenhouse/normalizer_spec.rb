@@ -10,13 +10,9 @@ describe Greenhouse::Normalizer do
     end
   end
 
-  subject(:mapper) { described_class.new(namely_fields) }
   describe "#call" do
-    it "transforms a Greenhouse candidate into a Hash appropriate for the Namely API" do
-      greenhouse_candidate = JSON.parse(
-        File.read("spec/fixtures/api_requests/greenhouse_payload.json"))["payload"]
-
-      expect(mapper.call(greenhouse_candidate)).to eq(
+    it "maps a Greenhouse candidate into a Namely profile" do
+      expect(map_fixture("greenhouse_payload")).to eq(
         first_name: "Johnny",
         last_name: "Smith",
         personal_email: "personal@example.com",
@@ -25,16 +21,17 @@ describe Greenhouse::Normalizer do
         start_date: "2015-01-23",
         home: { address1: "455 Broadway New York, NY 10280" },
         greenhouse_id: "20",
-        salary: { yearly_amount: 80000, currency_type: "USD", date: "2015-01-23"},
+        salary: {
+          yearly_amount: 80000,
+          currency_type: "USD",
+          date: "2015-01-23"
+        },
       )
     end
 
     context "when salary field is a short_text" do
-      it "transforms a Greenhouse candidate into a Hash appropriate for the Namely API" do
-        greenhouse_candidate = JSON.parse(
-          File.read("spec/fixtures/api_requests/greenhouse_payload_salary_text.json"))["payload"]
-
-        expect(mapper.call(greenhouse_candidate)).to eq(
+      it "maps a Greenhouse candidate into a Namely profile" do
+        expect(map_fixture("greenhouse_payload_salary_text")).to eq(
           first_name: "Johnny",
           last_name: "Smith",
           personal_email: "personal@example.com",
@@ -43,17 +40,18 @@ describe Greenhouse::Normalizer do
           start_date: "2015-01-23",
           home: { address1: "455 Broadway New York, NY 10280" },
           greenhouse_id: "20",
-          salary: { yearly_amount: 70000, currency_type: "USD", date: "2015-01-23"},
+          salary: {
+            yearly_amount: 70000,
+            currency_type: "USD",
+            date: "2015-01-23"
+          },
         )
       end
     end
 
     context "when offer has custom fields" do
-      it "transforms a Greenhouse candidate into a Hash appropriate for the Namely API" do
-        greenhouse_candidate = JSON.parse(
-          File.read("spec/fixtures/api_requests/greenhouse_payload_offer_custom_fields.json"))["payload"]
-
-        expect(mapper.call(greenhouse_candidate)).to eq(
+      it "maps a Greenhouse candidate into a Namely profile" do
+        expect(map_fixture("greenhouse_payload_offer_custom_fields")).to eq(
           first_name: "Johnny",
           last_name: "Smith",
           personal_email: "personal@example.com",
@@ -62,18 +60,19 @@ describe Greenhouse::Normalizer do
           start_date: "2015-01-23",
           home: { address1: "455 Broadway New York, NY 10280" },
           greenhouse_id: "20",
-          salary: { yearly_amount: 70000, currency_type: "USD", date: "2015-01-23"},
+          salary: {
+            yearly_amount: 70000,
+            currency_type: "USD",
+            date: "2015-01-23"
+          },
           middle_name: "Attila",
         )
       end
     end
 
     context "when job has custom fields" do
-      it "transforms a Greenhouse candidate into a Hash appropriate for the Namely API" do
-        greenhouse_candidate = JSON.parse(
-          File.read("spec/fixtures/api_requests/greenhouse_payload_job_custom_fields.json"))["payload"]
-
-        expect(mapper.call(greenhouse_candidate)).to eq(
+      it "maps a Greenhouse candidate into a Namely profile" do
+        expect(map_fixture("greenhouse_payload_job_custom_fields")).to eq(
           first_name: "Johnny",
           last_name: "Smith",
           personal_email: "personal@example.com",
@@ -82,7 +81,11 @@ describe Greenhouse::Normalizer do
           start_date: "2015-01-23",
           home: { address1: "455 Broadway New York, NY 10280" },
           greenhouse_id: "20",
-          salary: { yearly_amount: 70000, currency_type: "USD", date: "2015-01-23"},
+          salary: {
+            yearly_amount: 70000,
+            currency_type: "USD",
+            date: "2015-01-23"
+          },
           middle_name: "Test",
         )
       end
@@ -90,11 +93,7 @@ describe Greenhouse::Normalizer do
 
     context "handle missing none mandatory fields" do
       it "return default values when not present in payload" do
-        greenhouse_candidate = JSON.parse(
-          File.read("spec/fixtures/api_requests/greenhouse_payload_missing.json")
-        )["payload"]
-
-        expect(mapper.call(greenhouse_candidate)).to eq(
+        expect(map_fixture("greenhouse_payload_missing")).to eq(
           first_name: "Johnny",
           last_name: "Smith",
           personal_email: "personal@example.com",
@@ -128,7 +127,7 @@ describe Greenhouse::Normalizer do
           "id" => "greenhouse_id"
         } }
 
-        expect(mapper.call(greenhouse_candidate)).to eq(
+        expect(map(greenhouse_candidate)).to eq(
           first_name: "Johnny",
           last_name: "Smith",
           personal_email: "personal@example.com",
@@ -156,7 +155,7 @@ describe Greenhouse::Normalizer do
           "id" => "greenhouse_id"
         } }
 
-        expect(mapper.call(greenhouse_candidate)).to eq(
+        expect(map(greenhouse_candidate)).to eq(
           first_name: "Johnny",
           last_name: "Smith",
           user_status: "active",
@@ -168,8 +167,29 @@ describe Greenhouse::Normalizer do
   end
 
   describe "#namely_identifier_field" do
-    it "returns the custom Namely profile field that stores the Greenhouse ID" do
-      expect(mapper.namely_identifier_field).to eq :greenhouse_id
+    it "returns the custom Namely field that stores the Greenhouse ID" do
+      expect(build_mapper.namely_identifier_field).to eq(:greenhouse_id)
     end
+  end
+
+  def map_fixture(name)
+    json = File.read("spec/fixtures/api_requests/#{name}.json")
+    candidate = JSON.parse(json)["payload"]
+    map(candidate)
+  end
+
+  def map(candidate)
+    build_mapper.call(candidate)
+  end
+
+  def build_mapper
+    Greenhouse::Normalizer.new(
+      attribute_mapper: build_attribute_mapper,
+      namely_fields: namely_fields
+    )
+  end
+
+  def build_attribute_mapper
+    create(:greenhouse_connection).attribute_mapper
   end
 end

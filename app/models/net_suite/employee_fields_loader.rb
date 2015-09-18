@@ -13,14 +13,19 @@ module NetSuite
 
       employees.
         flat_map { |employee| profile_fields_from_employee_hash(employee) }.
-        uniq(&:id)
+        uniq(&:id).
+        reject { |field| blacklist.include?(field.id) }
+    end
+
+    private
+
+    def blacklist
+      ENV.fetch("NET_SUITE_FIELD_BLACKLIST", "").split(",")
     end
 
     def profile_fields_from_employee_hash(employee)
       standard_fields(employee) + custom_fields(employee)
     end
-
-    private
 
     def standard_fields(employee)
       employee.except("customFieldList").map do |id, value|
@@ -29,10 +34,14 @@ module NetSuite
     end
 
     def custom_fields(employee)
-      employee.
-        fetch("customFieldList", {}).
-        fetch("customField", []).
-        map { |field| custom_field(field) }
+      if ENV["NET_SUITE_CUSTOM_FIELDS_ENABLED"] == "true"
+        employee.
+          fetch("customFieldList", {}).
+          fetch("customField", []).
+          map { |field| custom_field(field) }
+      else
+        []
+      end
     end
 
     def custom_field(field)

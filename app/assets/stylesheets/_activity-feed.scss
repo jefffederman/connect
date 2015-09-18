@@ -1,0 +1,34 @@
+.sync-summary {
+  border-bottom: 1px solid $grey-25;
+  margin-bottom: 20px;
+  padding: 0 0 20px;
+
+  h2 {
+    font-size: 16px;
+    margin: 10px 0;
+  }
+
+  time {
+    color: $grey-50;
+    float: right;
+  }
+
+  li {
+    color: $grey-25;
+    list-style: inside disc;
+  }
+
+  .name {
+    color: $grey-75;
+    font-weight: bold;
+  }
+
+  .button_to {
+    float: right;
+  }
+
+  input {
+    @extend .-n-btn;
+    @extend .-n-btn-sm;
+  }
+}

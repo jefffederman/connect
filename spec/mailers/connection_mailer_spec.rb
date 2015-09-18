@@ -3,13 +3,16 @@ require "rails_helper"
 describe ConnectionMailer do
   it "provides integration name in the subject, addresses the email, and " \
   "describes the problem" do
-    integration_id = "icims"
+    sync_summary = create(
+      :sync_summary,
+      connection: create(:icims_connection),
+      authorization_error: "Foo"
+    )
     email = "test@example.com"
-    exception = Unauthorized.new("I can't do that, Dave")
+
     mailer = ConnectionMailer.authentication_notification(
       email: email,
-      integration_id: integration_id,
-      message: exception.message
+      sync_summary: sync_summary
     )
 
     expect(mailer.subject).to eq(
@@ -28,7 +31,7 @@ describe ConnectionMailer do
     expect(mailer.body.to_s).to include(
       t(
         "connection_mailer.authentication_notification.error_message",
-        message: exception.message
+        message: sync_summary.authorization_error
       )
     )
   end

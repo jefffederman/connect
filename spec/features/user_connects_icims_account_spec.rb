@@ -20,7 +20,8 @@ feature "User connects iCIMS account" do
 
     within(".icims-account") do
       expect(page).to have_no_link t("dashboards.show.connect")
-      expect(page).to have_content(icims_candidate_imports_url("api_key"))
+      expect(find_field(t("dashboards.show.webhook_label")).value).
+        to eq icims_candidate_imports_url("api_key")
     end
   end
 end

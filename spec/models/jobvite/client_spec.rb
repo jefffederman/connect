@@ -39,8 +39,8 @@ describe Jobvite::Client do
         expect(first_hire.email).to eq "crash.override@example.com"
       end
 
-      context "when the json response doesn't have candidates" do 
-        it 'returns an empty list of candidates' do 
+      context "when the json response doesn't have candidates" do
+        it "returns an empty list of candidates" do
           stub_request(:get, "https://api.jobvite.com/api/v2/candidate").
             with(query: hash_including(
               "api" => "MY_API_KEY",
@@ -153,24 +153,19 @@ describe Jobvite::Client do
               }
             JSON
           )
-
-        installation = installation_double
-        connection = double(
-          "jobvite_connection",
+        connection = create(
+          :jobvite_connection,
           api_key: "MY_API_KEY",
           hired_workflow_state: "Offer Accepted",
           secret: "MY_SECRET",
-          installation: installation,
         )
+        allow(UnauthorizedNotifier).to receive(:deliver)
 
         client = Jobvite::Client.new(connection)
 
-        exception = Unauthorized.new("An error message")
-        allow(installation).to receive(:send_connection_notification)
-
         expect { client.recent_hires }.to raise_error(Unauthorized)
-        expect(installation).to have_received(:send_connection_notification).
-          with(integration_id: "jobvite", message: exception.message)
+        expect(UnauthorizedNotifier).to have_received(:deliver).
+          with(connection: connection, exception: Unauthorized)
       end
     end
   end

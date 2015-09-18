@@ -44,7 +44,10 @@ describe Greenhouse::CandidateImportAssistant do
   def candidate_importer_double
     double(
       CandidateImporter,
-      connection: double(:connection),
+      connection: double(
+        :connection,
+        attribute_mapper: double(:attribute_mapper)
+      ),
       params: {},
       installation: double(
         :installation,

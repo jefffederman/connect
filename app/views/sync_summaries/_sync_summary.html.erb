@@ -1,0 +1,25 @@
+<article class="sync-summary">
+  <div class="sync-header">
+    <%= time_tag(
+      sync_summary.created_at,
+      t(
+        "sync_summary.time",
+        duration: time_ago_in_words(sync_summary.created_at)
+      )
+    ) %>
+
+    <% if sync_summary.authorization_error? %>
+      <%= render "sync_summaries/authorization_error",
+        sync_summary: sync_summary %>
+    <% else %>
+      <%= render "sync_summaries/profile_events",
+        status: "success",
+        profile_events: sync_summary.successful_profile_events,
+        sync_summary: sync_summary %>
+      <%= render "sync_summaries/profile_events",
+        status: "failure",
+        profile_events: sync_summary.failed_profile_events,
+        sync_summary: sync_summary %>
+    <% end %>
+  </div>
+</article>

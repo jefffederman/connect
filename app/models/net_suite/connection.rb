@@ -1,6 +1,7 @@
 class NetSuite::Connection < ActiveRecord::Base
   belongs_to :attribute_mapper, dependent: :destroy
   belongs_to :installation
+  has_many :sync_summaries, as: :connection
 
   validates :subsidiary_id, presence: true, allow_nil: true
 
@@ -26,13 +27,21 @@ class NetSuite::Connection < ActiveRecord::Base
     true
   end
 
+  def configurable?
+    !subsidiary_optional?
+  end
+
+  def has_activity_feed?
+    true
+  end
+
   def attribute_mapper
     AttributeMapperFactory.new(attribute_mapper: super, connection: self).
       build_with_defaults { |mappings| map_defaults(mappings) }
   end
 
   def ready?
-    subsidiary_id.present?
+    subsidiary_id.present? || subsidiary_optional?
   end
 
   def required_namely_field
@@ -46,11 +55,11 @@ class NetSuite::Connection < ActiveRecord::Base
   end
 
   def sync
-    NetSuite::Export.new(
-      normalizer: normalizer,
-      namely_profiles: installation.namely_profiles,
-      net_suite: client
-    ).perform
+    perform_export(installation.namely_profiles)
+  end
+
+  def retry(sync_summary)
+    perform_export(sync_summary.failed_profiles)
   end
 
   def client
@@ -58,6 +67,22 @@ class NetSuite::Connection < ActiveRecord::Base
   end
 
   private
+
+  def perform_export(profiles)
+    NetSuite::Export.perform(
+      normalizer: normalizer,
+      namely_profiles: profiles,
+      net_suite: client
+    )
+  end
+
+  def subsidiary_optional?
+    if subsidiary_required.nil?
+      update!(subsidiary_required: subsidiaries.present?)
+    end
+
+    !subsidiary_required?
+  end
 
   def normalizer
     @normalizer ||= NetSuite::Normalizer.new(
@@ -84,11 +109,22 @@ class NetSuite::Connection < ActiveRecord::Base
   end
 
   def map_standard_fields(mappings)
+    mappings.map! "address", to: "home", name: "Address"
     mappings.map! "email", to: "email", name: "Email"
     mappings.map! "firstName", to: "first_name", name: "First name"
     mappings.map! "gender", to: "gender", name: "Gender"
+    mappings.map! "isInactive", to: "user_status", name: "Inactive"
     mappings.map! "lastName", to: "last_name", name: "Last name"
+    mappings.map! "middleName", to: "middle_name", name: "Middle name"
+    mappings.map! "mobilePhone", to: "mobile_phone", name: "Mobile phone"
+    mappings.map! "officePhone", to: "office_phone", name: "Office phone"
     mappings.map! "phone", to: "home_phone", name: "Phone"
     mappings.map! "title", to: "job_title", name: "Title"
+
+    mappings.map!(
+      "releaseDate",
+      to: "departure_date",
+      name: "Release Date"
+    )
   end
 end

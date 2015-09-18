@@ -19,7 +19,7 @@ header {
     padding-top: 5px;
 
     .icon {
-      background: transparent url('logo_full.svg') no-repeat;
+      background: transparent image-url('logo_full.svg') no-repeat;
       width: 100px;
       height: 40px;
     }
@@ -32,7 +32,7 @@ header {
     line-height: 44px;
     font-size: 14px;
     color: white;
-    
+
     .username {
       display: inline;
       margin-right: 30px;

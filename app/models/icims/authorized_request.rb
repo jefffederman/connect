@@ -68,9 +68,9 @@ module Icims
       r.execute
     rescue RestClient::Unauthorized => exception
       unauthorized_exception = Unauthorized.new(exception.message)
-      installation.send_connection_notification(
-        integration_id: "icims",
-        message: unauthorized_exception.message
+      UnauthorizedNotifier.deliver(
+        connection: connection,
+        exception: unauthorized_exception
       )
       raise unauthorized_exception
     end

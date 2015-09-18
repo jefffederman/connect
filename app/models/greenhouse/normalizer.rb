@@ -1,116 +1,136 @@
 module Greenhouse
   class Normalizer
-    # Initializes an attribute mapper using Namely Fields
-    def initialize(namely_fields)
+    NAMELY_IDENTIFIER_FIELD = :greenhouse_id
+
+    def initialize(attribute_mapper:, namely_fields:)
+      @attribute_mapper = attribute_mapper
       @namely_fields = namely_fields
     end
 
-    def call(payload)
-      custom_fields(candidate(payload)).
-        merge(custom_fields(offer(payload))).
-        merge(custom_fields(job(payload))).
-        merge(basic_fields(payload)).
-        select { |_, value| value.present? }
+    def call(data)
+      candidate = Payload.new(data, namely_fields: @namely_fields).to_hash
+      imported = @attribute_mapper.import(candidate)
+      imported.merge(
+        candidate.slice(NAMELY_IDENTIFIER_FIELD, :salary, :home, :user_status)
+      )
     end
 
     def namely_identifier_field
-      :greenhouse_id
+      NAMELY_IDENTIFIER_FIELD
     end
 
     private
 
-    # TODO: refactor this method
-    def basic_fields(payload)
-      {
-        first_name: candidate(payload).fetch("first_name"),
-        last_name: candidate(payload).fetch("last_name"),
-        email: email_for(candidate(payload), "work"),
-        personal_email: email_for(candidate(payload), "personal"),
-        user_status: "active",
-        start_date: offer(payload).fetch("starts_at"),
-        home: home_address_for(candidate(payload)),
-        namely_identifier_field => identifier(application(payload)).to_s,
-        salary: salary_field(payload),
-      }
-    end
-
-    def custom_fields(payload)
-      p = payload.fetch("custom_fields", {})
-      if p.present?
-        Greenhouse::CustomFields.match(
-          namely_fields: @namely_fields,
-          payload: p
-        )
-      else
-        {}
+    class Payload
+      def initialize(data, namely_fields:)
+        @data = data
+        @namely_fields = namely_fields
       end
-    end
 
-    def candidate(payload)
-      application(payload).fetch("candidate")
-    end
+      def to_hash
+        custom_fields(candidate).
+          merge(custom_fields(offer)).
+          merge(custom_fields(job)).
+          merge(basic_fields).
+          select { |_, value| value.present? }
+      end
 
-    def identifier(payload)
-      payload.fetch("id")
-    end
+      def basic_fields
+        {
+          first_name: candidate.fetch("first_name"),
+          last_name: candidate.fetch("last_name"),
+          work_email: email_for("work"),
+          personal_email: email_for("personal"),
+          user_status: "active",
+          starts_at: offer.fetch("starts_at"),
+          home: home_address,
+          NAMELY_IDENTIFIER_FIELD => identifier.to_s,
+          salary: salary_field,
+        }
+      end
 
-    def application(payload)
-      payload.fetch("application")
-    end
+      def custom_fields(payload)
+        fields = payload.fetch("custom_fields", {})
+        if fields.present?
+          Greenhouse::CustomFields.match(
+            namely_fields: @namely_fields,
+            payload: fields
+          )
+        else
+          {}
+        end
+      end
 
-    def offer(payload)
-      application(payload).fetch("offer", { "starts_at" => "" })
-    end
+      def candidate
+        application.fetch("candidate")
+      end
 
-    def job(payload)
-      application(payload).fetch("job")
-    end
+      def identifier
+        application.fetch("id")
+      end
 
-    def salary_field(payload)
-      custom_fields = offer(payload).fetch("custom_fields", {})
-      salary = custom_fields.fetch("salary", nil)
-      if salary.present?
-        if salary.fetch("type") == "currency"
+      def application
+        @data.fetch("application")
+      end
+
+      def offer
+        application.fetch("offer") { { "starts_at" => "" } }
+      end
+
+      def job
+        application.fetch("job")
+      end
+
+      def salary_field
+        custom_fields = offer.fetch("custom_fields", {})
+        salary = custom_fields.fetch("salary", {})
+        case salary["type"]
+        when "currency"
           {
             yearly_amount: salary.fetch("value").fetch("amount"),
             currency_type: salary.fetch("value").fetch("unit"),
-            date: offer(payload).fetch("starts_at")
+            date: offer.fetch("starts_at")
           }
+        when nil
+          {}
         else
           {
             yearly_amount: salary.fetch("value").to_i,
             currency_type: "USD",
-            date: offer(payload).fetch("starts_at")
+            date: offer.fetch("starts_at")
           }
         end
-      else
-        {}
+      end
+
+      def email_for(type)
+        email_address =
+          email_addresses.detect { |address| address.fetch("type") == type }
+
+        if email_address.present?
+          email_address.fetch("value")
+        else
+          nil
+        end
+      end
+
+      def email_addresses
+        candidate["email_addresses"] || []
+      end
+
+      def home_address
+        home_address = candidate.fetch("addresses", [])
+        if home_address
+          home_address = home_address.detect do |address|
+            address.fetch("type") == "home"
+          end || {}
+          { address1: home_address.fetch("value", "") }
+        else
+          nil
+        end
       end
     end
 
-    def email_for(payload, type)
-      addresses = payload.fetch("email_addresses", []) || []
-      email_address = addresses.find do |email_address|
-        email_address.fetch("type") == type
-      end
-      if email_address.present?
-        email_address.fetch("value")
-      else
-        nil
-      end
-    end
-
-
-    def home_address_for(candidate)
-      home_address = candidate.fetch("addresses", [])
-      if home_address
-        home_address = home_address.find do |address|
-          address.fetch("type") == "home"
-        end || {}
-        { address1: home_address.fetch("value", "") }
-      else
-        nil
-      end
-    end
+    private_constant :Payload
+    private_constant :NAMELY_IDENTIFIER_FIELD
   end
 end

@@ -11,8 +11,9 @@ describe NetSuite::Client do
       ClimateControl.modify env do
         stub_request(:post, /.*/)
         client = NetSuite::Client.from_env
+        allow(NetSuite::Instance).to receive(:new).and_return({})
 
-        client.create_instance({})
+        client.create_instance(double("Authentication"))
 
         expect(WebMock).to have_requested(:post, /.*/).with(
           headers: {
@@ -25,6 +26,7 @@ describe NetSuite::Client do
 
   describe "#authorize" do
     it "sets element authorization" do
+      allow(NetSuite::Instance).to receive(:new).and_return({})
       stub_request(:post, /.*/)
       client = NetSuite::Client.new(
         user_secret: "user-secret",
@@ -33,7 +35,7 @@ describe NetSuite::Client do
 
       client.
         authorize("element-secret").
-        create_instance({})
+        create_instance(double("Authentication"))
 
       expect(WebMock).to have_requested(:post, /.*/).with(
         headers: {
@@ -48,51 +50,41 @@ describe NetSuite::Client do
   describe "#create_instance" do
     context "on HTTP success" do
       it "returns successful data" do
-        instance = { "id" => "123", "token" => "abcxyz" }
+        authentication = double(NetSuite::Authentication)
+        instance_request = { configuration: "foo", elements: "bar" }
+        instance_response = { "id" => "123", "token" => "abcxyz" }
+        allow(NetSuite::Instance).to receive(:new).
+          with(authentication).
+          and_return(instance_request)
+
         stub_request(
           :post,
           "https://api.cloud-elements.com/elements/api-v2/instances"
         ).
           with(
-            body: {
-              configuration: {
-                "user.username" => "u@example.com",
-                "user.password" => "secret",
-                "netsuite.accountId" => "123",
-                "netsuite.sandbox" => false
-              },
-              "element" => {
-                "key" => "netsuiteerp"
-              },
-              "tags" => [],
-              "name" => "123_netsuite"
-            }.to_json,
+            body: instance_request.to_json,
             headers: {
               "Authorization" => "User user-secret, Organization org-secret",
               "Content-Type" => "application/json"
             }
           ).
-          to_return(status: 200, body: instance.to_json)
+          to_return(status: 200, body: instance_response.to_json)
 
         client = NetSuite::Client.new(
           user_secret: "user-secret",
           organization_secret: "org-secret"
         )
 
-        result = client.create_instance(
-          email: "u@example.com",
-          password: "secret",
-          account_id: "123"
-        )
+        result = client.create_instance(authentication)
 
-        expect(result).to be_success
-        expect(result[:id]).to eq("123")
-        expect(result[:token]).to eq("abcxyz")
+        expect(result["id"]).to eq instance_response["id"]
+        expect(result["token"]).to eq instance_response["token"]
       end
     end
 
     context "on HTTP failure" do
-      it "returns failure messages" do
+      it "raises an exception" do
+        allow(NetSuite::Instance).to receive(:new).and_return({})
         error = "a failure"
         stub_request(
           :post,
@@ -105,15 +97,14 @@ describe NetSuite::Client do
           organization_secret: "x"
         )
 
-        result = client.create_instance({})
-
-        expect(result).not_to be_success
-        expect(result[:message]).to eq(error)
+        expect { client.create_instance(double("Authentication")) }.
+          to raise_error(NetSuite::ApiError)
       end
     end
 
     context "on authentication failure" do
       it "raises an Unauthorized exception" do
+        allow(NetSuite::Instance).to receive(:new).and_return({})
         error = "Invalid Organization or User secret, or invalid Element" \
                 " token provided."
 
@@ -128,7 +119,8 @@ describe NetSuite::Client do
           organization_secret: "x"
         )
 
-        expect { client.create_instance({}) }.to raise_error(Unauthorized)
+        expect { client.create_instance(double("Authentication")) }.
+          to raise_error(Unauthorized)
       end
     end
   end
@@ -176,7 +168,6 @@ describe NetSuite::Client do
           title: "CEO"
         )
 
-        expect(result).to be_success
         expect(result["internalId"]).to eq("1949")
       end
     end
@@ -227,7 +218,6 @@ describe NetSuite::Client do
           title: "CEO",
         )
 
-        expect(result).to be_success
         expect(result["internalId"]).to eq("1949")
       end
     end
@@ -256,7 +246,6 @@ describe NetSuite::Client do
 
       result = client.subsidiaries
 
-      expect(result).to be_success
       expect(result.to_a).to eq(subsidiaries)
     end
   end

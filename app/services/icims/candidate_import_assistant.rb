@@ -22,7 +22,7 @@ module Icims
       @import_candidate ||= context.namely_importer.single_import(candidate)
     rescue Icims::Client::Error => exception
       @authentication_error = true
-      context.notifier.log_and_notify_of_unauthorized_exception(exception)
+      context.notify_of_unauthorized_exception(exception)
     end
 
     def success?

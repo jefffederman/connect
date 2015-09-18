@@ -1,0 +1,6 @@
+<li>
+  <span class="name"><%= profile_event.profile_name %></span>
+  <% if profile_event.error? %>
+    <span class="error">(<%= profile_event.error %>)</span>
+  <% end %>
+</li>

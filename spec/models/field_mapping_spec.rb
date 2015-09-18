@@ -93,6 +93,21 @@ describe FieldMapping do
     end
   end
 
+  describe ".ordered" do
+    it "returns field mappings in alphabetical order" do
+      map_fields(
+        "fieldB" => "b",
+        "fieldA" => "a",
+        "fieldC" => "c",
+      ).each(&:save!)
+
+      result = FieldMapping.ordered
+
+      expect(result.map(&:integration_field_name)).
+        to eq(%w(fieldA fieldB fieldC))
+    end
+  end
+
   def integration_key(field_name:)
     FieldMapping.new(integration_field_name: field_name).integration_key
   end

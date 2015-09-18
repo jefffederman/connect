@@ -20,10 +20,8 @@ describe Icims::AuthorizedRequest do
     end
 
     it "sends a header with formatted date time of its request" do
-      Timecop.freeze(Time.current) do
-        expect(build_authorized_request.headers["x-icims-date"]).
-          to eq Time.current.iso8601
-      end
+      expect(build_authorized_request.headers["x-icims-date"]).
+        to eq Time.current.iso8601
     end
   end
 
@@ -43,17 +41,15 @@ describe Icims::AuthorizedRequest do
   describe "#string_to_sign" do
     it "returns a string to sign" do
       authorized_request = build_authorized_request
-      Timecop.freeze do
-        signable_string = [
-          "x-icims-v1-hmac-sha256",
-          "#{Time.current.iso8601}",
-          "#{OpenSSL::Digest::SHA256.new(
-            authorized_request.canonical_request)
-          }",
-        ].join("\n")
+      signable_string = [
+        "x-icims-v1-hmac-sha256",
+        "#{Time.current.iso8601}",
+        "#{OpenSSL::Digest::SHA256.new(
+          authorized_request.canonical_request)
+        }",
+      ].join("\n")
 
-        expect(authorized_request.string_to_sign).to eq signable_string
-      end
+      expect(authorized_request.string_to_sign).to eq signable_string
     end
   end
 
@@ -116,19 +112,13 @@ describe Icims::AuthorizedRequest do
           }
         ).to_return(status: 401, body: errors.to_json)
 
-        mail = double(ConnectionMailer, deliver: true)
-        exception = Unauthorized.new("401 Unauthorized")
-        allow(ConnectionMailer).
-          to receive(:authentication_notification).
-          with(
-            email: user.email,
-            integration_id: "icims",
-            message: exception.message,
-          ).
-          and_return(mail)
+        allow(UnauthorizedNotifier).to receive(:deliver)
 
         expect { request.execute }.to raise_error(Unauthorized)
-        expect(mail).to have_received(:deliver)
+        expect(UnauthorizedNotifier).to have_received(:deliver).with(
+          connection: connection,
+          exception: Unauthorized
+        )
       end
     end
   end
@@ -177,5 +167,11 @@ describe Icims::AuthorizedRequest do
 
       content-type;host;x-icims-content-sha256;x-icims-date
     REQUEST
+  end
+
+  around do |example|
+    Timecop.freeze(Time.now) do
+      example.run
+    end
   end
 end

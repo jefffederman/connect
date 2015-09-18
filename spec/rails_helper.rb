@@ -1,5 +1,6 @@
 ENV["RAILS_ENV"] = "test"
 ENV["SHOW_FEATURE"] = "true"
+ENV["NET_SUITE_CUSTOM_FIELDS_ENABLED"] = "true"
 
 require File.expand_path("../../config/environment", __FILE__)
 

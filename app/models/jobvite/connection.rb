@@ -25,6 +25,14 @@ module Jobvite
       true
     end
 
+    def configurable?
+      false
+    end
+
+    def has_activity_feed?
+      false
+    end
+
     def attribute_mapper
       AttributeMapperFactory.new(attribute_mapper: super, connection: self).
         build_with_defaults do |mappings|
@@ -77,7 +85,11 @@ module Jobvite
       end
 
       delegate :name, to: :candidate
-      delegate :success?, to: :result
+      delegate :success?, :error, to: :result
+
+      def profile_id
+        ""
+      end
 
       private
 

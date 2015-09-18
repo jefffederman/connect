@@ -1,17 +1,25 @@
-<%= @sync_results.succeeded_message %>
+<%= t(
+  "sync_mailer.sync_notification.succeeded",
+  count: @profile_events.successful.count,
+  integration: @integration,
+) %>
 
 <%= t(".succeeded_list") %>
 
-<% @sync_results.succeeded.each do |result| %>
-<%= result.name %>
+<% @profile_events.successful.each do |profile_event| %>
+<%= profile_event.profile_name %>
 <% end -%>
 
-<%= @sync_results.failed_message %>
+<%= t(
+  "sync_mailer.sync_notification.failed",
+  count: @profile_events.failed.count,
+  integration: @integration,
+) %>
 
 <%= t(".failed_list") %>
 
-<% @sync_results.failed.each do |result| %>
-<%= result.name %>
+<% @profile_events.failed.each do |profile_event| %>
+<%= profile_event.profile_name %> (<%= profile_event.error %>)
 <% end -%>
 
 Namely

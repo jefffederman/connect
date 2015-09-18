@@ -16,9 +16,12 @@ feature "User connects Greenhouse account" do
     fill_in field("greenhouse_authentication.name"), with: "name"
     click_button button("greenhouse_connection.update")
 
+    click_on t("attribute_mappings.edit.save")
+
     within(".greenhouse-account") do
       expect(page).to have_no_link t("dashboards.show.connect")
-      expect(page).to have_content(greenhouse_candidate_imports_url("greenhouse_key"))
+      expect(find_field(t("dashboards.show.webhook_label")).value).
+        to eq greenhouse_candidate_imports_url("greenhouse_key")
     end
   end
 end

@@ -10,13 +10,16 @@ class User < ActiveRecord::Base
   end
 
   def namely_profiles
-    namely_connection.profiles.all.map { |profile| Profile.new(profile) }
+    namely_connection.profiles.all.map do |profile|
+      Profile.new(profile, fields: Fields::Collection.new(namely_connection))
+    end
   end
 
   def namely_fields_by_label
     namely_fields.
       all.
       select { |field| AttributeMapper::SUPPORTED_TYPES.include?(field.type) }.
+      sort_by { |field| field.label.downcase }.
       map { |field| [field.label, field.name] }
   end
 
@@ -39,13 +42,5 @@ class User < ActiveRecord::Base
     self.access_token = access_token
     self.access_token_expiry = Users::TokenExpiry.for(access_token_expires_in)
     save
-  end
-
-  def send_connection_notification(integration_id:, message:)
-    ConnectionMailer.authentication_notification(
-      email: email,
-      integration_id: integration_id,
-      message: message
-    ).deliver
   end
 end

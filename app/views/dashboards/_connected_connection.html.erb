@@ -1,28 +1,39 @@
-<h3>
-  <%= fa_icon(
-    "check-circle",
-    class: "connected",
-    text: t("#{connection.integration_id}.name")
-  ) %>
-</h3>
+<div class="connection-header">
+  <%= button_to(
+    integration_connection_path(connection.integration_id),
+    class: "-n-btn -n-btn-sm -n-btn-danger -n-btn-link",
+    method: :delete,
+    rel: "nofollow"
+  ) do %>
+    <%= fa_icon "times" %>
+    <%= t("dashboards.show.disconnect") %>
+  <% end %>
 
-<p>
-  <%= t("#{connection.integration_id}_connections.description.connected_html") %>
-</p>
+  <h3>
+    <%= fa_icon(
+      "check-circle",
+      class: "connected",
+      text: t("#{connection.integration_id}.name")
+    ) %>
+  </h3>
+</div>
 
-<% if connection.missing_namely_field? %>
-  <%= t(
-    "dashboards.show.missing_namely_field",
-    name: connection.required_namely_field
-  ) %>
-<% end %>
+<div class="connection-body">
+  <p>
+    <%= t(
+      "description.connected_html",
+      scope: "#{connection.integration_id}_connections"
+    ) %>
+  </p>
 
-<% if connection.found_namely_field? %>
-  <%= render(
-    "#{connection.integration_id}_connections/connected",
-    connection: connection
-  ) %>
-<% end %>
+  <% if connection.missing_namely_field? %>
+    <p>
+      <%= t(
+        "dashboards.show.missing_namely_field",
+        name: connection.required_namely_field
+      ) %>
+    </p>
+  <% end %>
 
-<%= render "edit_button", integration_id: connection.integration_id %>
-<%= render "disconnect_button", integration_id: connection.integration_id %>
+  <%= render "edit_actions", connection: connection %>
+</div>

@@ -26,6 +26,10 @@ class ConnectionsController < IntegrationController
     params.require(connection_type).permit(connection.allowed_parameters)
   end
 
+  def connection_type
+    "#{integration_id}_connection"
+  end
+
   def after_update_path
     if connection.attribute_mapper?
       edit_integration_mapping_path(integration_id)

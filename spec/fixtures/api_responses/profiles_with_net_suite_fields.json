@@ -14,7 +14,16 @@
         "title":"CEO"
       },
       "custom_field":"sally.secondary@example.com",
-      "linkedin":"http://example.com/sally"
+      "linkedin":"http://example.com/sally",
+      "home":{
+        "address1": "100 Pruder Street",
+        "address2": "Apt 123",
+        "city": "Boston",
+        "country_id":"US",
+        "state_id":"MA",
+        "zip": "02108"
+      },
+      "netsuite_id":""
     },
     {
       "id":"a759ba38-1522-443a-bdae-435d721eb316",
@@ -28,6 +37,7 @@
         "id":"7ac05eec-4b6a-4ec6-bd08-f1c1572815c6",
         "title":"COO"
       },
+      "netsuite_id":"",
       "custom_field":"secondary@example.com"
     },
     {

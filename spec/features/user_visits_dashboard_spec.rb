@@ -8,7 +8,7 @@ feature "User visits their dashboard" do
     }
   end
 
-  scenario "user can sign out after" do 
+  scenario "user can sign out after" do
     stub_namely_fields("fields_without_jobvite")
     user = create(:user)
     create(
@@ -72,7 +72,7 @@ feature "User visits their dashboard" do
   end
 
   context "with a iCIMS connection, but no iCIMS field on Namely" do
-    scenario "user is told that the iCIMS field is missing and isn't shown an import button" do
+    scenario "user is told that the iCIMS field is missing and isn't shown a webhook url" do
       stub_namely_fields("fields_without_icims")
       user = create(:user)
       create(
@@ -89,13 +89,13 @@ feature "User visits their dashboard" do
           "dashboards.show.missing_namely_field",
           name: "icims_id",
         )
-        expect(page).to have_no_button t("dashboards.show.import_now")
+        expect(page).to have_no_field t("dashboards.show.webhook_label")
       end
     end
   end
 
   context "with a iCIMS connection, and a iCIMS field on Namely" do
-    scenario "user can click an import button" do
+    scenario "user can see the webhook URL" do
       allow(SecureRandom).to receive(:hex).and_return("api_key")
       stub_namely_fields("fields_with_icims")
       user = create(:user)
@@ -113,8 +113,8 @@ feature "User visits their dashboard" do
           "dashboards.show.missing_namely_field",
           name: "icims_id",
         )
-        expect(page).
-          to have_content(icims_candidate_imports_url(connection.api_key))
+        expect(webhook_value).
+          to eq icims_candidate_imports_url(connection.api_key)
       end
     end
   end
@@ -142,7 +142,7 @@ feature "User visits their dashboard" do
   end
 
   context "with a Greenhouse connection and field exists on Namely" do
-    scenario "user can see the response url" do
+    scenario "user can see the webhook url" do
       allow(SecureRandom).to receive(:hex).and_return("secret_key")
       stub_namely_fields("fields_with_greenhouse")
       user = create(:user)
@@ -160,8 +160,8 @@ feature "User visits their dashboard" do
           "dashboards.show.missing_namely_field",
           name: "greenhouse_id",
         )
-        expect(page).
-          to have_content(greenhouse_candidate_imports_url(connection.secret_key))
+        expect(webhook_value).
+          to eq greenhouse_candidate_imports_url(connection.secret_key)
       end
     end
   end
@@ -218,5 +218,9 @@ feature "User visits their dashboard" do
 
   def have_export_button
     have_button t("dashboards.show.export_now")
+  end
+
+  def webhook_value
+    find_field(t("dashboards.show.webhook_label")).value
   end
 end

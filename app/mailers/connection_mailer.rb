@@ -1,7 +1,7 @@
 class ConnectionMailer < ApplicationMailer
-  def authentication_notification(integration_id:, email:, message:)
-    @integration = map_integration_id_to_name(integration_id)
-    @message = message
+  def authentication_notification(email:, sync_summary:)
+    @integration = map_integration_id_to_name(sync_summary.integration_id)
+    @message = sync_summary.authorization_error
 
     mail(
       to: email,

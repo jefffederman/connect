@@ -33,21 +33,11 @@ module NetSuite
       )
     end
 
-    def create_instance(params)
+    def create_instance(authentication)
       submit_json(
         :post,
         INSTANCES,
-        "configuration" => {
-          "user.username" => params[:email],
-          "user.password" => params[:password],
-          "netsuite.accountId" => params[:account_id],
-          "netsuite.sandbox" => false
-        },
-        "element" => {
-          "key" => "netsuiteerp"
-        },
-        "tags" => [],
-        "name" => "#{params[:account_id]}_netsuite"
+        Instance.new(authentication).to_h
       )
     end
 

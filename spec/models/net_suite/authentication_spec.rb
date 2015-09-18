@@ -4,7 +4,7 @@ describe NetSuite::Authentication do
   describe "#update" do
     context "with valid information" do
       it "updates the connection from the response" do
-        client = stub_client(success: true, id: "abc", token: "def")
+        client = stub_client { { "id" => "abc", "token" => "def" } }
         form_attributes = valid_form_attributes
         connection = stub_connection
         form = NetSuite::Authentication.new(
@@ -20,13 +20,13 @@ describe NetSuite::Authentication do
           authorization: "def"
         )
         expect(client).
-          to have_received(:create_instance).with(form_attributes)
+          to have_received(:create_instance).with(form)
       end
     end
 
     context "with invalid fields" do
       it "adds validation messages" do
-        client = stub_client(success: true)
+        client = stub_client { {} }
         connection = stub_connection
         form = NetSuite::Authentication.new(
           connection: connection,
@@ -48,7 +48,12 @@ describe NetSuite::Authentication do
 
     context "when the server form fails" do
       it "adds validation errors from the server" do
-        client = stub_client(success: false, message: "oops")
+        exception = double(
+          :exception,
+          response: { "message" => "oops" }.to_json,
+          http_code: 499
+        )
+        client = stub_client { raise NetSuite::ApiError, exception }
         connection = stub_connection
         form = NetSuite::Authentication.new(
           connection: connection,
@@ -75,18 +80,9 @@ describe NetSuite::Authentication do
     end
   end
 
-  def stub_client(response_attributes)
+  def stub_client(&block)
     double(NetSuite::Client).tap do |client|
-      allow(client).
-        to receive(:create_instance).
-        and_return(stub_response(response_attributes))
-    end
-  end
-
-  def stub_response(attributes)
-    success = attributes.fetch(:success, true)
-    attributes.except(:success).tap do |response|
-      allow(response).to receive(:success?).and_return(success)
+      allow(client).to receive(:create_instance, &block)
     end
   end
 end

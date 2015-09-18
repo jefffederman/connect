@@ -1,0 +1,8 @@
+  <%= form.simple_fields_for(:field_mappings, field_mappings) do |fields| %>
+    <%= render(
+      "field_mapping",
+      field_mapping: fields.object,
+      fields: fields,
+      namely_fields: namely_fields
+    ) %>
+  <% end %>

@@ -29,6 +29,10 @@ class Installation < ActiveRecord::Base
       where(association.pluralize => { found_namely_field: true })
   end
 
+  def connection_to(integration_id)
+    public_send("#{integration_id}_connection")
+  end
+
   def jobvite_connection
     super || Jobvite::Connection.create!(installation: self)
   end
@@ -43,12 +47,6 @@ class Installation < ActiveRecord::Base
 
   def net_suite_connection
     super || NetSuite::Connection.create!(installation: self)
-  end
-
-  def send_connection_notification(*arguments)
-    users.each do |user|
-      user.send_connection_notification(*arguments)
-    end
   end
 
   def namely_connection

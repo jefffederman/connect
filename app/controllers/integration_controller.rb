@@ -2,11 +2,7 @@ class IntegrationController < ApplicationController
   private
 
   def connection
-    @connection ||= current_user.send(connection_type)
-  end
-
-  def connection_type
-    "#{integration_id}_connection"
+    @connection ||= current_user.installation.connection_to(integration_id)
   end
 
   def integration_id

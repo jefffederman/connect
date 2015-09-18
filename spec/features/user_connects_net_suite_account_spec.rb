@@ -5,7 +5,7 @@ feature "user connects NetSuite account" do
     stub_namely_fields("fields_with_net_suite")
     stub_net_suite_fields
     stub_create_instance(status: 200, body: { id: "123", token: "abcxyz" })
-    stub_lookup_subsidiaries(
+    stub_net_suite_subsidiaries(
       status: 200,
       body: [
         { "internalId": "1", "name": "First" },
@@ -41,7 +41,7 @@ feature "user connects NetSuite account" do
     stub_namely_fields("fields_with_net_suite")
     stub_net_suite_fields
     stub_create_instance(status: 200, body: { id: "123", token: "abcxyz" })
-    stub_lookup_subsidiaries(
+    stub_net_suite_subsidiaries(
       status: 200,
       body: [{ "internalId": "1", "name": "First" }]
     )
@@ -52,7 +52,7 @@ feature "user connects NetSuite account" do
     select_net_suite_subsidiary("First")
     save_attribute_mappings
 
-    net_suite.click_link t("dashboards.show.edit")
+    net_suite.click_link t("dashboards.show.edit_credentials")
     submit_net_suite_account_form
     expect(net_suite).
       to have_text_from("net_suite_connections.description.connected_html")
@@ -83,23 +83,6 @@ feature "user connects NetSuite account" do
     stub_request(
       :post,
       "https://api.cloud-elements.com/elements/api-v2/instances"
-    ).to_return(status: status, body: JSON.dump(body))
-  end
-
-  def stub_net_suite_fields
-    net_suite_employee =
-      File.read("spec/fixtures/api_responses/net_suite_employee.json")
-    stub_request(
-      :get,
-      %r{.*/elements/api-v2/hubs/erp/employees\?.*}
-    ).to_return(status: 200, body: net_suite_employee)
-  end
-
-  def stub_lookup_subsidiaries(status:, body:)
-    stub_request(
-      :get,
-      "https://api.cloud-elements.com/" \
-        "elements/api-v2/hubs/erp/lookups/subsidiary"
     ).to_return(status: status, body: JSON.dump(body))
   end
 

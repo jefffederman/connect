@@ -11,9 +11,11 @@ class AttributeMapperFactory
   private
 
   def assign_attribute_mapper
-    AttributeMapper.create!.tap do |attribute_mapper|
-      @connection.update!(attribute_mapper: attribute_mapper)
-      yield attribute_mapper.field_mappings
+    AttributeMapper.transaction do
+      AttributeMapper.create!.tap do |attribute_mapper|
+        @connection.update!(attribute_mapper: attribute_mapper)
+        yield attribute_mapper.field_mappings
+      end
     end
   end
 end

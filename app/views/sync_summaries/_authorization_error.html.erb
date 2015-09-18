@@ -1,0 +1,11 @@
+<div class="error">
+  <h2><%= t(".heading") %></h2>
+  <p><%= t(
+    ".error_html",
+    error: sync_summary.authorization_error,
+    link:  link_to(
+      t(".update_authorization"),
+      edit_integration_authentication_path(sync_summary.integration_id)
+    )
+  ) %></p>
+</div>

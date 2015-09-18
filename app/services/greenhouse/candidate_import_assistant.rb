@@ -15,7 +15,8 @@ module Greenhouse
 
     def normalizer
       Normalizer.new(
-        context.installation.namely_connection.fields.all
+        attribute_mapper: connection.attribute_mapper,
+        namely_fields: context.installation.namely_connection.fields.all
       )
     end
 
@@ -72,7 +73,7 @@ module Greenhouse
     def mark_as_error_and_send_notification
       @authentication_error = true
       exception = Unauthorized.new(Unauthorized::DEFAULT_MESSAGE)
-      context.notifier.log_and_notify_of_unauthorized_exception(exception)
+      context.notify_of_unauthorized_exception(exception)
 
       raise exception
     end

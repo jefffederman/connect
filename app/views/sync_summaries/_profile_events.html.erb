@@ -1,0 +1,15 @@
+<% if profile_events.any? %>
+  <div class="<%= status %>">
+    <% if profile_events.failed.any? %>
+      <%= button_to t("profile_event.retry"),
+        sync_summary_retry_path(sync_summary),
+        method: :post %>
+    <% end %>
+    <h2>
+      <%= t "sync_summary.#{status}_heading", count: profile_events.size %>
+    </h2>
+    <ol>
+      <%= render profile_events %>
+    </ol>
+  </div>
+<% end %>

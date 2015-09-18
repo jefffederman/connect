@@ -1,5 +1,6 @@
 module Greenhouse
   class Connection < ActiveRecord::Base
+    belongs_to :attribute_mapper, dependent: :destroy
     belongs_to :installation
     validates :secret_key, uniqueness: true
     before_create :set_secret_key
@@ -17,6 +18,30 @@ module Greenhouse
     end
 
     def attribute_mapper?
+      true
+    end
+
+    def attribute_mapper
+      AttributeMapperFactory.new(attribute_mapper: super, connection: self).
+        build_with_defaults do |mappings|
+          mappings.map! "first_name", to: "first_name", name: "First name"
+          mappings.map! "middle_name", to: "middle_name", name: "Middle name"
+          mappings.map! "last_name", to: "last_name", name: "Last name"
+          mappings.map! "work_email", to: "email", name: "Work email"
+          mappings.map!(
+            "personal_email",
+            to: "personal_email",
+            name: "Personal email"
+          )
+          mappings.map! "starts_at", to: "start_date", name: "Starts at"
+        end
+    end
+
+    def configurable?
+      false
+    end
+
+    def has_activity_feed?
       false
     end
 

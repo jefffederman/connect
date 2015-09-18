@@ -5,33 +5,10 @@ describe User do
     it { is_expected.to belong_to(:installation) }
   end
 
-  describe "#send_connection_notification" do
-    it "sends an invalid authentication message" do
-      user = build_stubbed(:user)
-      mail = double(ConnectionMailer, deliver: true)
-      exception = Unauthorized.new("Whoops")
-      allow(ConnectionMailer).
-        to receive(:authentication_notification).
-        with(
-          email: user.email,
-          integration_id: "icims",
-          message: exception.message,
-        ).
-        and_return(mail)
-
-      user.send_connection_notification(
-        integration_id: "icims",
-        message: exception.message
-      )
-
-      expect(mail).to have_received(:deliver)
-    end
-  end
-
-  describe '#save_token_info' do 
+  describe '#save_token_info' do
     let(:user) { create :user }
 
-    it 'saves new access token and access token expires in info' do 
+    it 'saves new access token and access token expires in info' do
       user.save_token_info('new_token', 'new_time')
 
       expect(user.access_token).to eql 'new_token'
@@ -42,13 +19,15 @@ describe User do
     it "returns profiles from its Namely connection" do
       first_names = %w(Alice Bob)
       profile_list = first_names.map { |name| stub_namely_profile(name) }
+      field_list = [double(:field, name: "first_name", type: "text")]
 
       profiles = double(:namely_profiles, all: profile_list)
-      stub_namely_connection profiles: profiles
+      fields = double(:namely_fields, all: field_list)
+      stub_namely_connection profiles: profiles, fields: fields
       user = User.new
 
       profile_first_names = user.namely_profiles.map do |profile|
-        profile[:first_name]
+        profile["first_name"].to_raw
       end
 
       expect(profile_first_names).to match_array(first_names)
@@ -76,7 +55,7 @@ describe User do
   end
 
   describe "#namely_fields_by_label" do
-    it "returns mappable fields from a Namely connection" do
+    it "returns mappable fields from a Namely connection alphabetically" do
       models = [
         double(name: "first_name", label: "First name", type: "text"),
         double(name: "last_name", label: "Last name", type: "longtext"),
@@ -84,8 +63,8 @@ describe User do
         double(name: "email", label: "Email", type: "email"),
         double(name: "job_title", label: "Job title", type: "referencehistory"),
         double(name: "user_status", label: "Status", type: "referenceselect"),
-        double(name: "start_date", label: "Started", type: "date"),
-        stub_profile_field(type: "address"),
+        double(name: "start_date", label: "started", type: "date"),
+        double(name: "home", label: "Home address", type: "address"),
         stub_profile_field(type: "checkboxes"),
         stub_profile_field(type: "file"),
         stub_profile_field(type: "image"),
@@ -98,13 +77,14 @@ describe User do
       result = user.namely_fields_by_label
 
       expect(result).to eq([
-        ["First name", "first_name"],
-        ["Last name", "last_name"],
-        ["Gender", "gender"],
         ["Email", "email"],
+        ["First name", "first_name"],
+        ["Gender", "gender"],
+        ["Home address", "home"],
         ["Job title", "job_title"],
+        ["Last name", "last_name"],
+        ["started", "start_date"],
         ["Status", "user_status"],
-        ["Started", "start_date"],
       ])
     end
 
@@ -126,7 +106,7 @@ describe User do
   end
 
   def stub_namely_profile(first_name)
-    { first_name: first_name }
+    { "first_name" => first_name }
   end
 
   def stub_namely_connection(attributes)

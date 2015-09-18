@@ -10,7 +10,7 @@ module NetSuite
       end
 
       def submit_json(method, path, data)
-        wrap_response do
+        translate_response do
           RestClient.public_send(
             method,
             url(path),
@@ -22,7 +22,7 @@ module NetSuite
       end
 
       def get_json(path)
-        wrap_response do
+        translate_response do
           RestClient.get(
             url(path),
             authorization: authorization,
@@ -33,13 +33,17 @@ module NetSuite
 
       private
 
-      def wrap_response
+      def translate_response
         response = yield
-        Result.new(true, response)
-      rescue RestClient::BadRequest => exception
-        Result.new(false, exception.response)
+        if response.present?
+          JSON.parse(response)
+        end
       rescue RestClient::Unauthorized => exception
         raise Unauthorized, exception.message
+      rescue RestClient::Exception => exception
+        Raygun.track_exception(exception)
+        Rails.logger.error(exception)
+        raise NetSuite::ApiError, exception, exception.backtrace
       end
 
       def url(path)

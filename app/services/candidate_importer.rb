@@ -36,10 +36,10 @@ class CandidateImporter
     )
   end
 
-  def notifier
-    AuthenticationNotifier.new(
-      integration_id: assistant_class::INTEGRATION_ID,
-      installation: installation
+  def notify_of_unauthorized_exception(exception)
+    UnauthorizedNotifier.deliver(
+      connection: connection,
+      exception: exception
     )
   end
 

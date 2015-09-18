@@ -1,13 +1,25 @@
-<%= link_to new_integration_authentication_path(connection.integration_id), class: "-n-btn -n-btn-sm connect" do %>
-  <%= fa_icon "plug", text: t("dashboards.show.connect") %>
-<% end %>
-<h3>
-  <%= fa_icon(
-    "minus-circle",
-    class: "disconnected",
-    text: t("#{connection.integration_id}.name")
-  ) %>
-</h3>
-<p>
-  <%= t("#{connection.integration_id}_connections.description.disconnected_html") %>
-</p>
+<div class="connection-header">
+  <%= link_to(
+    new_integration_authentication_path(connection.integration_id),
+    class: "-n-btn -n-btn-sm connect"
+  ) do %>
+    <%= fa_icon "plug", text: t("dashboards.show.connect") %>
+  <% end %>
+
+  <h3>
+    <%= fa_icon(
+      "minus-circle",
+      class: "disconnected",
+      text: t("#{connection.integration_id}.name")
+    ) %>
+  </h3>
+</div>
+
+<div class="connection-body">
+  <p>
+    <%= t(
+      "description.disconnected_html",
+      scope: "#{connection.integration_id}_connections"
+    ) %>
+  </p>
+</div>

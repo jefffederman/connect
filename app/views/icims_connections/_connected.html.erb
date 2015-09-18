@@ -1,1 +1,17 @@
-<%= icims_candidate_imports_url(connection.api_key) %>
+<div class="webhook">
+  <button class="-n-btn -n-btn-sm">
+    <%=t ("dashboards.show.show_webhook") %>
+  </button>
+
+  <div class="webhook-value">
+    <label for="icims_webhook">
+      Webhook URL:
+    </label>
+
+    <input
+      id="icims_webhook"
+      value="<%= icims_candidate_imports_url(connection.api_key) %>"
+      class="webhook-url"
+    >
+  </div>
+</div>
