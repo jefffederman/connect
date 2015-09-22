@@ -34,6 +34,17 @@
       }
     },
     {
+      "id": "290c8179-82bf-494b-8d40-0dca23cfbfff",
+      "name": "favorite_programming_language",
+      "label": "Favorite Programming Language",
+      "type": "text",
+      "default": true,
+      "valid_format_info": "generic text",
+      "links": {
+        "section": "8433dc38-2f72-4cd6-997a-665d6c62fb79"
+      }
+    },
+    {
       "id": "0483a39f-5dd0-4080-a34a-b00f1a1b62fd",
       "name": "last_name",
       "label": "Last name",

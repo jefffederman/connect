@@ -8,10 +8,16 @@ module Greenhouse
     end
 
     def call(data)
-      candidate = Payload.new(data, namely_fields: @namely_fields).to_hash
-      imported = @attribute_mapper.import(candidate)
-      imported.merge(
-        candidate.slice(NAMELY_IDENTIFIER_FIELD, :salary, :home, :user_status)
+      payload = Payload.new(data, namely_fields: @namely_fields)
+      candidate = payload.to_hash
+      @attribute_mapper.import(candidate).merge(
+        candidate.slice(
+          NAMELY_IDENTIFIER_FIELD,
+          :salary,
+          :home,
+          :user_status,
+          *payload.custom_field_keys
+        )
       )
     end
 
@@ -51,6 +57,7 @@ module Greenhouse
 
       def custom_fields(payload)
         fields = payload.fetch("custom_fields", {})
+
         if fields.present?
           Greenhouse::CustomFields.match(
             namely_fields: @namely_fields,
@@ -59,6 +66,12 @@ module Greenhouse
         else
           {}
         end
+      end
+
+      def custom_field_keys
+        custom_fields(candidate).keys +
+          custom_fields(offer).keys +
+          custom_fields(job).keys
       end
 
       def candidate

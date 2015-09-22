@@ -26,6 +26,7 @@ describe Greenhouse::Normalizer do
           currency_type: "USD",
           date: "2015-01-23"
         },
+        favorite_programming_language: "Rails"
       )
     end
 

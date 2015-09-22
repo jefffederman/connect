@@ -58,12 +58,8 @@
             "name": "Desired Level",
             "type": "short_text",
             "value": "Senior"
-          },
-          "favorite_programming_language": {
-            "name": "Favorite Programming Language",
-            "type": "short_text",
-            "value": "Rails"
-          }}
+          }
+        }
       },
       "job": {
         "id": 20,

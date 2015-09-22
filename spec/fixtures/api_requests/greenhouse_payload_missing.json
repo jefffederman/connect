@@ -18,7 +18,7 @@
         "last_name": "Smith",
         "title": "Previous Title",
         "phone_numbers": [
-          { 
+          {
             "value": "518-555-1212",
             "type": "work"
           },
@@ -28,7 +28,7 @@
           }
         ],
         "email_addresses": [
-          { 
+          {
             "value": "personal@example.com",
             "type": "personal"
           },
@@ -52,12 +52,8 @@
             "name": "Desired Level",
             "type": "short_text",
             "value": "Senior"
-          },
-          "favorite_programming_language": {
-            "name": "Favorite Programming Language",
-            "type": "short_text",
-            "value": "Rails"
-          }}
+          }
+        }
       },
       "job": {
         "id": 20,
