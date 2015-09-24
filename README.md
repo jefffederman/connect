@@ -3,96 +3,142 @@
 [![Code Climate](https://codeclimate.com/github/namely/connect/badges/gpa.svg)](https://codeclimate.com/github/namely/connect)
 [![Circle CI](https://circleci.com/gh/namely/connect.svg?style=svg&circle-token=07c371714354bf58f4d2af8e0d92d793b5998880)](https://circleci.com/gh/namely/connect)
 
-Simple web app for connecting external apps with Namely.
+Enables integration between Namely and external HRIS apps.
 
-Planned integrations:
+## Getting Set Up
 
-* Jobvite (create new Namely Profiles based on candidate data)
+This project assumes Docker for local development. You may be able to use it in
+a more traditional local setup, but it may require some tweaking of environment
+variables or configuration.
 
-## Getting set up
+### 1. Docker Installation
 
-### 0. Install VirtualBox
+You will need a Docker environment to run this project locally. If you are on
+Linux, install `docker` and `docker-compose` with your package manager.
 
-Download from the [VirtualBox
-downloads](https://www.virtualbox.org/wiki/Downloads) page.
+If you are on OS X or Windows, you will need to install additional tools.  The
+simplest way to install these is the with [Docker Toolbox]. Once the toolbox is
+installed, we'll be interacting with it [from the shell]. You'll likely want to
+add `eval "$(docker-machine env default)"` to your shell initialization scripts
+to be sure your `docker-machine` environment is always configured.
 
-### 1. Install Docker & boot2docker  & Docker Machine & Docker Compose
+A complete docker tutorial is out of scope here, but please be sure to read the
+documentation for your platform.
 
-osx:
-```sh
-brew install docker-compose
-```
+[Docker Toolbox]: https://www.docker.com/toolbox
+[from the shell]: https://docs.docker.com/installation/mac/#from-your-shell
 
-### 2. Initialize and boot Docker container with `boot2docker`
+### 2. Building Your Docker containers
 
-osx:
-```sh
-boot2docker init
-boot2docker up
-```
-
-### 3. Build docker image
-
-```sh
-docker-compose build
-```
-
-### 4. Setup Environment Variables
+This application will use three docker containers; one each for the database,
+the web process, and the worker process. We use `docker-compose` to control them
+all in concert.
 
 ```sh
 cp .sample.env .env
+docker-compose build
+docker-compose run web rake db:setup
 ```
 
-### 5. Run all services
+### 3. Accessing the Web Application
+
+We can start all of the containers with the following command:
 
 ```sh
 docker-compose up
 ```
 
-### 6. Set-up the database
+This will make the web app available. If you are using Linux, it will be at
+http://localhost:3000.
 
-```sh
-docker-compose run web rake db:setup
-```
+If you are using OS X or Windows, you will need to know
+the IP of the virtual machine that docker is running in. You can get this with
+`docker-machine ip default`. This seems to be stable between reboots, so you may
+want to set up an entry in your hosts file for `docker.dev` or similar. On my
+machine, the app is available at http://192.168.99.100:3000.
 
-### 7. Run the tests:
+### 4. Running the Tests
+
+The tests are run via docker as well.
 
 ```sh
 docker-compose run web rake
 ```
 
-### 8. Required accounts
+To make this process as seamless as possible, you can use local binstubs to pass
+your usual development environment commands (`rake`, `rspec`, `rails`) through
+docker-compose for you.
 
-Make sure you have accounts or access for the following:
+This project includes these binstubs in the `local_bin` directory, which can be
+added to your `PATH`.
 
-* Heroku Staging
-* Namely (likely on a sandbox)
+## Required Configuration
 
-### 9. Project-specific accounts
+The app interfaces with the Namely API and external APIs for the supported
+integrations. At a minimum you will need an account on a Namely sandbox. Request
+access to a sandbox from [Attila].
 
-Depending on what manner of integration you will be working on, you may also
-need one or more of the following:
+[Attila]: mailto:attila@namely.com
 
-* NetSuite if you're adding a new NetSuite integration or working on an existing
-  NetSuite integration
-* Cloud Elements if you're working with a NetSuite integration or another
-  integration that works with Cloud Elements
-* Jobvite
+### Namely Client Configuration
 
-### Connecting API client
+Once you have access to your Namely sandbox, you will need to register your
+development environment instance with that sandbox.
 
-* Log into the Sandbox
-* Go to "API" from the profile dropdown (looks like a person's head next to the
-  search bar)
-* Click "New API Client"
-* Fill in the form
-  * Name: Connect
-  * Website: `<name>-sandbox.namely.com`
-  * Redirect URI: `http://localhost:<port>/session/oauth_callback`
-* Make a note of the Client Identifier and Client Secret and add those to the
-  `.env` file as `NAMELY_CLIENT_ID` and `NAMELY_CLIENT_SECRET`.
+1. Log in to your sandbox
+2. In the drop-down menu next to your avatar, select "API".
+3. Click "New API Client"
+4. Enter your Namely sandbox URL in Website (e.g.
+   `https://thoughtbot-sandbox.namely.com`).
+4. Enter your local development oauth callback URL in "Redirect URI" (e.g.
+   `http://docker.dev:3000/session/oauth_callback`).
+5. Click submit and note the "Client Identifier" and "Client Secret" provided.
+6. Edit your `.env` file and input the tokens from step 5 as your
+   `NAMELY_CLEINT_ID` and `NAMELY_CLIENT_SECRET`.
 
-## Test fixtures
+### Cloud Elements Client Configuration
+
+[Cloud Elements] is used to wrap NetSuite's SOAP API in a JSON REST API that is
+much easier to consume. You will need access to the Cloud Elements UI, which you
+can request from [Attila].
+
+Once you have access, you can configure your Cloud Elements client.
+
+1. Log in to [Cloud Elements]
+2. On the right side of the header, click "secrets".
+3. Copy and paste the `Org Secret` and `User Secret` to the `.env` file as
+   `CLOUD_ELEMENTS_ORGANIZATION_SECRET` and `CLOUD_ELEMENTS_USER_SECRET`,
+   respectively.
+
+[Cloud Elements]: https://console.cloud-elements.com/elements/jsp/login.jsp
+[Attila]: mailto:attila@namely.com
+
+## External Service Accounts
+
+There are shared accounts for the following services, which can be used when
+connecting to these services through the connect app or to log in to the
+external services themselves.
+
+* [NetSuite]
+* [Greenhouse]
+* [Jobvite]
+* [iCIMS]
+
+The credentials for these shared accounts can be found in the comments of this
+[Trello] card.
+
+[NetSuite]:https://system.netsuite.com/pages/customerlogin.jsp
+[Greenhouse]:https://app.greenhouse.io/users/sign_in
+[Jobvite]:https://app.jobvite.com/Login/jvLogin.aspx?role=em
+[iCIMS]: https://preview5test.icims.com/icims2/servlet/icims2?module=Root&action=login&hashed=993052824
+[Trello]: https://trello.com/c/wNianPJX/116-account-credentials
+
+## Integration Documentation
+
+Overview documentation on the integrations may be located in the `/doc`
+directory of this repository.
+
+## Regenerating Test Fixtures
 
 When changing feature specs that make API calls, you will need to rebuild one or
 more API fixtures (in `spec/fixtures`). When running these specs,
@@ -107,7 +153,7 @@ you will have to set the following environment variables in your `.env` file:
 * `TEST_NAMELY_AUTH_CODE`: An OAuth auth code for the Namely sandbox account
   specified by `TEST_NAMELY_SUBDOMAIN`.
 
-## Importing data from Jobvite to Namely
+## Rake Tasks
 
 To import newly hired Jobvite candidates for all users, run:
 
@@ -115,6 +161,11 @@ To import newly hired Jobvite candidates for all users, run:
 docker-compose run web rake jobvite:import
 ```
 
-This task can be invoked by a cron job or otherwise scheduled to regularly
-import newly hired candidates.
+To export Namely profile data to NetSuite, run:
 
+```sh
+docker-compose run web rake net_suite:export
+```
+
+These tasks can be invoked by a cron job or otherwise scheduled to regularly
+import or export data.

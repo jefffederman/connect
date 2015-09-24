@@ -67,7 +67,7 @@ module Icims
       Rails.logger.info("ICIMS request END")
       r.execute
     rescue RestClient::Unauthorized => exception
-      unauthorized_exception = Unauthorized.new(exception.message)
+      unauthorized_exception = Unauthorized.new(generate_message(exception))
       UnauthorizedNotifier.deliver(
         connection: connection,
         exception: unauthorized_exception
@@ -115,6 +115,10 @@ module Icims
 
     def hashed_payload
       digest.hexdigest(payload)
+    end
+
+    def generate_message(exception)
+      [ exception.message, exception.response.body ].join("\n\n")
     end
   end
 end
