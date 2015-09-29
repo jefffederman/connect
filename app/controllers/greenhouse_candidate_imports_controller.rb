@@ -13,7 +13,7 @@ class GreenhouseCandidateImportsController < ApplicationController
 
     render nothing: true, status: :ok
   rescue Unauthorized
-    render nothing: true, status: :unauthorized
+    render nothing: true, status: :accepted
   end
 
   private
