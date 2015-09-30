@@ -15,7 +15,7 @@ class GreenhouseCandidateImportsController < ApplicationController
 
     render json: { status: "ok" }, status: :ok
   rescue Unauthorized
-    render nothing: true, status: :accepted
+    render json: { status: "accepted" }, status: :accepted
   end
 
   private
