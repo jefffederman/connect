@@ -11,7 +11,9 @@ class GreenhouseCandidateImportsController < ApplicationController
       params: greenhouse_candidate_import_params,
     ).import
 
-    render nothing: true, status: :ok
+    logger.info("imported candidate for #{secret_key}")
+
+    render json: { status: "ok" }, status: :ok
   rescue Unauthorized
     render nothing: true, status: :accepted
   end
@@ -24,11 +26,15 @@ class GreenhouseCandidateImportsController < ApplicationController
 
   def connection
     Greenhouse::Connection.find_by!(
-      secret_key: params.fetch("secret_key")
+      secret_key: secret_key
     )
   end
 
   def greenhouse_candidate_import_params
     params.fetch(:greenhouse_candidate_import)
+  end
+
+  def secret_key
+    params.fetch("secret_key")
   end
 end

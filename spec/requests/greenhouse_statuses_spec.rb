@@ -29,7 +29,6 @@ describe "Greenhouse new candidate" do
     post(greenhouse_candidate_imports_url(connection.secret_key),
          { greenhouse_candidate_import: greenhouse_ping },
          { "Signature" => "sha256 kdkjadk92929394ajdskfjadf" })
-    expect(response.body).to be_blank
     expect(response.status).to eql 200
   end
 
@@ -38,7 +37,6 @@ describe "Greenhouse new candidate" do
     post(greenhouse_candidate_imports_url(connection.secret_key),
          { greenhouse_candidate_import: greenhouse_ping },
          { "Signature" => "sha256 kdkjadk92929394ajdskfjadf" })
-    expect(response.body).to be_blank
     expect(response.status).to eql 202
   end
 
@@ -51,7 +49,6 @@ describe "Greenhouse new candidate" do
 
     post greenhouse_candidate_imports_url(connection.secret_key), greenhouse_candidate_import: greenhouse_payload
 
-    expect(response.body).to be_blank
     expect(response.status).to eq 200
     expect(sent_email.subject).to include(
       t(
@@ -71,7 +68,6 @@ describe "Greenhouse new candidate" do
 
     post greenhouse_candidate_imports_url(connection.secret_key), greenhouse_candidate_import: greenhouse_payload
 
-    expect(response.body).to be_blank
     expect(response.status).to eq 200
     expect(sent_email.subject).to include(
       t(
