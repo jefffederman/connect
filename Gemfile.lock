@@ -56,6 +56,12 @@ GEM
     arel (6.0.3)
     awesome_print (1.6.1)
     backports (3.6.5)
+    better_errors (2.1.1)
+      coderay (>= 1.0.0)
+      erubis (>= 2.6.6)
+      rack (>= 0.9.0)
+    binding_of_caller (0.7.2)
+      debug_inspector (>= 0.0.1)
     bourbon (3.2.4)
       sass (~> 3.2)
       thor
@@ -81,6 +87,7 @@ GEM
     crack (0.4.2)
       safe_yaml (~> 1.0.0)
     database_cleaner (1.4.1)
+    debug_inspector (0.0.2)
     delayed_job (4.0.6)
       activesupport (>= 3.0, < 5.0)
     delayed_job_active_record (4.0.3)
@@ -292,6 +299,8 @@ PLATFORMS
 
 DEPENDENCIES
   awesome_print
+  better_errors (~> 2.1.1)
+  binding_of_caller (~> 0.7.2)
   bourbon (~> 3.2.1)
   byebug
   capybara-email

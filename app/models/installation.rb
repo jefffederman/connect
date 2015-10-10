@@ -57,7 +57,9 @@ class Installation < ActiveRecord::Base
     owner.namely_profiles
   end
 
-  private
+  def namely_user_id
+    owner.namely_user_id
+  end
 
   def owner
     users.first

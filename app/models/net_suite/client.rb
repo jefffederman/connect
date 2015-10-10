@@ -7,28 +7,37 @@ module NetSuite
 
     delegate :get_json, to: :request
     delegate :submit_json, to: :request
+    attr_reader :partner_id, :app_id
 
     def self.from_env
       new(
         user_secret: ENV["CLOUD_ELEMENTS_USER_SECRET"],
-        organization_secret: ENV["CLOUD_ELEMENTS_ORGANIZATION_SECRET"]
+        organization_secret: ENV["CLOUD_ELEMENTS_ORGANIZATION_SECRET"],
+        partner_id: ENV["NETSUITE_PARTNER_ID"],
+        app_id: ENV["NETSUITE_APP_ID"]
       )
     end
 
     def initialize(
       user_secret:,
       organization_secret:,
+      partner_id:,
+      app_id:,
       element_secret: nil
     )
       @user_secret = user_secret
       @organization_secret = organization_secret
       @element_secret = element_secret
+      @partner_id = partner_id
+      @app_id = app_id
     end
 
     def authorize(element_secret)
       self.class.new(
         user_secret: @user_secret,
         organization_secret: @organization_secret,
+        partner_id: @partner_id,
+        app_id: @app_id,
         element_secret: element_secret
       )
     end
@@ -37,7 +46,7 @@ module NetSuite
       submit_json(
         :post,
         INSTANCES,
-        Instance.new(authentication).to_h
+        Instance.new(authentication: authentication).to_h
       )
     end
 

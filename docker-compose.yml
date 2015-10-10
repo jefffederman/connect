@@ -8,7 +8,11 @@ web:
   volumes:
    - .:/connect
   ports:
-   - "3000:3000"
+   - "80:3000"
+  env_file:
+    - .env
+  environment:
+    WEB_CONCURRENCY: 1
   links:
    - db
 worker:
@@ -16,5 +20,7 @@ worker:
   command: bundle exec rake jobs:work
   volumes:
    - .:/connect
+  env_file:
+    - .env
   links:
    - db

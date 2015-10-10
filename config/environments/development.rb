@@ -39,4 +39,6 @@ Rails.application.configure do
   config.action_view.raise_on_missing_translations = true
 
   config.action_mailer.default_url_options = { host: 'localhost:9000' }
+
+  BetterErrors::Middleware.allow_ip! ENV['TRUSTED_IP'] if ENV['TRUSTED_IP']
 end

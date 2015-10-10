@@ -126,6 +126,8 @@ describe NetSuite::EmployeeFieldsLoader do
     request = NetSuite::Client.new(
       element_secret: "element-secret",
       organization_secret: "org-secret",
+      partner_id: "partnerid",
+      app_id: "appid",
       user_secret: "user-secret",
     ).request
 

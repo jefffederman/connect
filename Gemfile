@@ -34,6 +34,8 @@ group :development, :test do
   gem "factory_girl_rails"
   gem "pry-rails"
   gem "rspec-rails", "~> 3.3"
+  gem 'binding_of_caller', '~> 0.7.2'
+  gem 'better_errors', '~> 2.1.1'
 end
 
 group :test do

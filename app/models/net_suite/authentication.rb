@@ -1,6 +1,7 @@
 module NetSuite
   class Authentication
     include ActiveModel::Model
+    extend Forwardable
 
     attr_accessor :account_id, :email, :password
 
@@ -10,6 +11,7 @@ module NetSuite
 
     def initialize(connection:, client:)
       @connection = connection
+      @installation = connection.installation
       @client = client
     end
 
@@ -20,6 +22,22 @@ module NetSuite
     def update(attributes)
       self.attributes = attributes
       valid? && create_instance
+    end
+
+    def user_id
+      @installation.namely_user_id
+    end
+
+    def company_id
+      @installation.subdomain
+    end
+
+    def app_id
+      @client.app_id
+    end
+
+    def partner_id
+      @client.partner_id
     end
 
     private

@@ -1,6 +1,6 @@
 module NetSuite
   class Instance
-    def initialize(authentication)
+    def initialize(authentication:)
       @authentication = authentication
     end
 
@@ -10,7 +10,12 @@ module NetSuite
           "user.username" => authentication.email,
           "user.password" => authentication.password,
           "netsuite.accountId" => authentication.account_id,
-          "netsuite.sandbox" => false
+          "netsuite.sandbox" => false,
+          "netsuite.sso.roleId" => "3",
+          "netsuite.appId" => authentication.app_id,
+          "netsuite.sso.companyId" => authentication.company_id,
+          "netsuite.sso.userId" => authentication.user_id,
+          "netsuite.sso.partnerId" => authentication.partner_id,
         },
         "element" => {
           "key" => "netsuiteerp"

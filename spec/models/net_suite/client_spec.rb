@@ -5,7 +5,9 @@ describe NetSuite::Client do
     it "finds authorization from the environment" do
       env = {
         "CLOUD_ELEMENTS_USER_SECRET" => "user-secret",
-        "CLOUD_ELEMENTS_ORGANIZATION_SECRET" => "org-secret"
+        "CLOUD_ELEMENTS_ORGANIZATION_SECRET" => "org-secret",
+        "NETSUITE_PARTNER_ID" => "partnerid",
+        "NETSUITE_APP_ID" => "appid"
       }
 
       ClimateControl.modify env do
@@ -31,6 +33,8 @@ describe NetSuite::Client do
       client = NetSuite::Client.new(
         user_secret: "user-secret",
         organization_secret: "org-secret",
+        partner_id: "partnerid",
+        app_id: "appid",
       )
 
       client.
@@ -54,7 +58,7 @@ describe NetSuite::Client do
         instance_request = { configuration: "foo", elements: "bar" }
         instance_response = { "id" => "123", "token" => "abcxyz" }
         allow(NetSuite::Instance).to receive(:new).
-          with(authentication).
+          with(authentication: authentication).
           and_return(instance_request)
 
         stub_request(
@@ -72,7 +76,9 @@ describe NetSuite::Client do
 
         client = NetSuite::Client.new(
           user_secret: "user-secret",
-          organization_secret: "org-secret"
+          organization_secret: "org-secret",
+          partner_id: "partnerid",
+          app_id: "appid",
         )
 
         result = client.create_instance(authentication)
@@ -94,7 +100,9 @@ describe NetSuite::Client do
 
         client = NetSuite::Client.new(
           user_secret: "x",
-          organization_secret: "x"
+          organization_secret: "x",
+          partner_id: "partnerid",
+          app_id: "appid",
         )
 
         expect { client.create_instance(double("Authentication")) }.
@@ -116,7 +124,9 @@ describe NetSuite::Client do
 
         client = NetSuite::Client.new(
           user_secret: "x",
-          organization_secret: "x"
+          organization_secret: "x",
+          partner_id: "partnerid",
+          app_id: "appid",
         )
 
         expect { client.create_instance(double("Authentication")) }.
@@ -155,6 +165,8 @@ describe NetSuite::Client do
         client = NetSuite::Client.new(
           user_secret: "user-secret",
           organization_secret: "org-secret",
+          partner_id: "partnerid",
+          app_id: "appid",
           element_secret: "element-secret"
         )
 
@@ -204,6 +216,8 @@ describe NetSuite::Client do
         client = NetSuite::Client.new(
           user_secret: "user-secret",
           organization_secret: "org-secret",
+          partner_id: "partnerid",
+          app_id: "appid",
           element_secret: "element-secret"
         )
 
@@ -276,6 +290,8 @@ describe NetSuite::Client do
     NetSuite::Client.new(
       user_secret: "user-secret",
       organization_secret: "org-secret",
+      partner_id: "partnerid",
+      app_id: "appid",
       element_secret: "element-secret"
     )
   end

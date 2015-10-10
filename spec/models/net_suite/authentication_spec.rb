@@ -77,6 +77,7 @@ describe NetSuite::Authentication do
   def stub_connection
     double(NetSuite::Connection).tap do |connection|
       allow(connection).to receive(:update!)
+      allow(connection).to receive(:installation)
     end
   end
 

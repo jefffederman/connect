@@ -179,6 +179,10 @@ en:
     description:
       connected_html: Connected NetSuite Description
       disconnected_html: Disconnected NetSuite Description
+    authentication_form:
+      help: >
+        Please note that these credentials are needed for initial connection to
+        NetSuite and will not be stored in Namely Connect.
 
   authentications:
     new:

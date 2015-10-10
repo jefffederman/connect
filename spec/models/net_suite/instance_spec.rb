@@ -10,10 +10,14 @@ describe NetSuite::Instance do
           NetSuite::Authentication,
           email: "test@example.com",
           password: "sekret",
-          account_id: "42"
+          account_id: "42",
+          app_id: "appid",
+          partner_id: "partnerid",
+          company_id: "coid",
+          user_id: "userid",
         )
 
-        instance_hash = NetSuite::Instance.new(authentication).to_h
+        instance_hash = NetSuite::Instance.new(authentication: authentication).to_h
         config = instance_hash["configuration"]
         element = instance_hash["element"]
 
@@ -21,6 +25,11 @@ describe NetSuite::Instance do
         expect(config["user.password"]).to eq authentication.password
         expect(config["netsuite.accountId"]).to eq authentication.account_id
         expect(config["netsuite.sandbox"]).to eq false
+        expect(config["netsuite.appId"]).to eq "appid"
+        expect(config["netsuite.sso.roleId"]).to eq "3"
+        expect(config["netsuite.sso.companyId"]).to eq "coid"
+        expect(config["netsuite.sso.userId"]).to eq "userid"
+        expect(config["netsuite.sso.partnerId"]).to eq "partnerid"
         expect(element["key"]).to eq "netsuiteerp"
         expect(instance_hash["tags"]).to eq []
         expect(instance_hash["name"]).to eq(

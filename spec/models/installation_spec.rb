@@ -145,6 +145,17 @@ describe Installation do
     end
   end
 
+  describe "#owner" do
+    it "returns its first user" do
+      users = [build_stubbed(:user), build_stubbed(:user)]
+      installation = Installation.new(users: users)
+
+      result = installation.owner
+
+      expect(result).to eq(users.first)
+    end
+  end
+
   def stub_each(array, method_name)
     array.each do |item|
       allow(item).to receive(method_name)
