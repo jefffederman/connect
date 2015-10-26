@@ -22,6 +22,7 @@ describe Jobvite::Normalizer do
           first_name: "Dade",
           last_name: "Murphy",
           email: "crash.override@example.com",
+          personal_email: "crash.override@example.com",
           user_status: "active",
           start_date: "2014-01-02",
           jobvite_id: "edO1Ggwt",

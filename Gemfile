@@ -7,7 +7,7 @@ gem "delayed_job_active_record"
 gem "email_validator"
 gem "i18n-tasks"
 gem "kaminari"
-gem "namely", "~> 0.2.1"
+gem "namely", github: 'namely/ruby-client'
 gem "neat", "~> 1.5.1"
 gem "normalize-rails", "~> 3.0.0"
 gem "pg"

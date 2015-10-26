@@ -4,8 +4,15 @@ module Features
   end
 
   def stub_namely_data(path, fixture_file)
+    fixture = namely_fixture(fixture_file)
+    parsed = JSON.load(fixture)
+    resource_name = parsed.keys.first
+
     stub_request(:get, %r{.*api/v1#{Regexp.escape(path)}}).
-      to_return(status: 200, body: namely_fixture(fixture_file))
+      to_return(status: 200, body: fixture)
+
+    stub_request(:get, %r{.*api/v1#{Regexp.escape(path)}.*(after=.*)}).
+      to_return(status: 200, body: { resource_name => [] }.to_json)
   end
 
   def namely_fixture(fixture_file)

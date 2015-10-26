@@ -8,7 +8,7 @@ feature "User imports jobvite candidates" do
 
   before do
     stub_request(:get, "#{ api_host }/api/v1/profiles")
-      .with(query: {access_token: ENV['TEST_NAMELY_ACCESS_TOKEN'], limit: 'all'})
+      .with(query: {access_token: ENV['TEST_NAMELY_ACCESS_TOKEN']})
       .to_return(status: 200, body: File.read("spec/fixtures/api_responses/empty_profiles.json"))
   end
 
@@ -52,7 +52,8 @@ feature "User imports jobvite candidates" do
           profiles: a_collection_including(
             hash_including(
               "preferred_name" => "Roger",
-              "email" => "roger@gmail.com"
+              "email" => "roger@gmail.com",
+              "user_status" => "active",
             )
           )
         )
@@ -61,7 +62,7 @@ feature "User imports jobvite candidates" do
 
   scenario "successfully with failed import candidates" do
     stub_namely_fields("fields_with_jobvite")
-    stub_request(:post, "#{ api_host }/api/v1/profiles")
+    stub_request(:post, %r{#{ api_host }\/api\/v1\/profiles})
       .to_return(status: 200, body: File.read("spec/fixtures/api_responses/empty_profiles.json"))
 
     user = create(:user)

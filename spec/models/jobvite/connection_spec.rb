@@ -61,6 +61,7 @@ describe Jobvite::Connection do
           %w(first_name first_name),
           %w(last_name last_name),
           %w(email email),
+          %w(personal_email personal_email),
           %w(start_date start_date),
           %w(gender gender),
         ])
