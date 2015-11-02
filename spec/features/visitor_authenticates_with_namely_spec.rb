@@ -81,8 +81,8 @@ feature "Visitor authenticates with Namely" do
 
   scenario "unsuccessfully" do
     Capybara::Discoball.spin(FakeNamely) do |server|
-      Rails.configuration
-        .namely_authentication_domain = "#{server.host}:#{server.port}"
+      Rails.configuration.
+        namely_authentication_domain = "#{server.host}:#{server.port}"
       Rails.configuration.namely_authentication_protocol = "http"
     end
 
