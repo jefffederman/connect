@@ -34,16 +34,7 @@ module NetSuite
 
     def normalize_hash(hash)
       hash.stringify_keys.each_with_object({}) do |(key, value), h|
-        h[key] = normalize_value(value)
-      end
-    end
-
-    def normalize_value(value)
-      case value
-      when String
-        value.strip.downcase
-      else
-        value
+        h[key] = value
       end
     end
   end
