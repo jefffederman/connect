@@ -4,8 +4,13 @@ class NetSuite::Connection < ActiveRecord::Base
   has_many :sync_summaries, as: :connection
 
   validates :subsidiary_id, presence: true, allow_nil: true
+  validates :matching_type, presence: true
 
   delegate :export, to: :normalizer
+
+  enum matching_type: [ :email_matcher, :name_matcher ]
+
+  after_initialize :set_defaults
 
   def lockable?
     true
@@ -16,7 +21,7 @@ class NetSuite::Connection < ActiveRecord::Base
   end
 
   def allowed_parameters
-    [:subsidiary_id]
+    [:subsidiary_id, :matching_type]
   end
 
   def connected?
@@ -32,7 +37,7 @@ class NetSuite::Connection < ActiveRecord::Base
   end
 
   def configurable?
-    !subsidiary_optional?
+    true
   end
 
   def has_activity_feed?
@@ -137,5 +142,9 @@ class NetSuite::Connection < ActiveRecord::Base
       to: "departure_date",
       name: "Release Date"
     )
+  end
+
+  def set_defaults
+    self.matching_type ||= "email_matcher"
   end
 end

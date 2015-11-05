@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151026193914) do
+ActiveRecord::Schema.define(version: 20151105214808) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -108,6 +108,7 @@ ActiveRecord::Schema.define(version: 20151026193914) do
     t.integer  "installation_id",                     null: false
     t.boolean  "subsidiary_required"
     t.boolean  "locked",              default: false, null: false
+    t.integer  "matching_type",       default: 0,     null: false
   end
 
   add_index "net_suite_connections", ["attribute_mapper_id"], name: "index_net_suite_connections_on_attribute_mapper_id", using: :btree
