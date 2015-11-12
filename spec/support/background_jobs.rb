@@ -1,19 +1,2 @@
-module BackgroundJobs
-  def run_background_jobs_immediately
-    delay_jobs = Delayed::Worker.delay_jobs
-    Delayed::Worker.delay_jobs = false
-    yield
-  ensure
-    Delayed::Worker.delay_jobs = delay_jobs
-  end
-end
-
-RSpec.configure do |config|
-  config.around(:each, type: :request) do |example|
-    run_background_jobs_immediately do
-      example.run
-    end
-  end
-
-  config.include(BackgroundJobs, type: :request)
-end
+require 'sidekiq/testing'
+Sidekiq::Testing.inline!

@@ -3,7 +3,6 @@ ruby "2.2.2"
 
 gem "rails", "~> 4.2.4"
 gem "bourbon", "~> 3.2.1"
-gem "delayed_job_active_record"
 gem "email_validator"
 gem "i18n-tasks"
 gem "kaminari"
@@ -21,6 +20,8 @@ gem "unicorn"
 gem "font-awesome-rails"
 gem 'mailgun_rails', '~> 0.6.6'
 gem 'jquery-rails'
+
+gem 'sidekiq', '4.0.0.pre2'
 
 group :development do
   gem "spring"
