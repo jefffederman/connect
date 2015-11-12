@@ -36,7 +36,7 @@ module Fields
     end
 
     def fields
-      @namely_connection.fields.all
+      @fields ||= @namely_connection.fields.all
     end
   end
 end
