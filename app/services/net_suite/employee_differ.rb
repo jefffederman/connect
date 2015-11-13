@@ -3,6 +3,10 @@ module NetSuite
   # to figure out if there is a difference between the 2 based on simple
   # heuristics
   class EmployeeDiffer
+    # Ignored keys on the Namely export hash, some values we send we don't diff
+    # on
+    IGNORED_KEYS = %w( subsidiary )
+
     # @param namely_employee An object representing a namely profile
     # @param netsuite_employee An object representing an employee record on NetSuite
     # @param mapper [AttributeMapper] An attribute mapper to perform the correct diffs against
@@ -22,6 +26,7 @@ module NetSuite
       !netsuite_export.all? do |key, value|
         netsuite_value = normalized_netsuite_employee[key]
         next true unless netsuite_value.present?
+        next true if key.in?(IGNORED_KEYS)
 
         if value == netsuite_value
           true
@@ -46,8 +51,11 @@ module NetSuite
       case value
       when String
         value.strip.downcase
-      else
-        value
+      when Hash
+        # This normalizes hashes if they have a value key, we use that.
+        # This is because netsuite sometimes represents values with a hash.
+        # Yay.
+        value['value'] || value
       end
     end
   end
