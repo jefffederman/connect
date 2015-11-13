@@ -31,6 +31,8 @@ module NetSuite
               result.namely_employee,
               result.netsuite_employee["internalId"]
             )
+          else
+            Rails.logger.info "Identical, skipped: #{result.profile.id}"
           end
         else
           Rails.logger.info "Match failed: #{result.profile.id}"

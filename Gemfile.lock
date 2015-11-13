@@ -22,6 +22,13 @@ GIT
     capybara_discoball (0.0.1)
       capybara
 
+GIT
+  remote: https://github.com/sstephenson/global_phone.git
+  revision: dd0894061f58479884e6cfa2d00382542dc77d5a
+  ref: dd0894061f58479884e6cfa2d00382542dc77d5a
+  specs:
+    global_phone (1.0.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -324,6 +331,7 @@ DEPENDENCIES
   factory_girl_rails
   font-awesome-rails
   formulaic
+  global_phone!
   headless
   i18n-tasks
   jquery-rails
