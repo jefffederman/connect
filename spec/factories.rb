@@ -132,6 +132,7 @@ FactoryGirl.define do
         last_name: last_name,
         middle_name: middle_name,
         email: email,
+        gender: gender,
         personal_email: personal_email,
         home: home.stringify_keys,
         netsuite_id: netsuite_id,
@@ -144,6 +145,9 @@ FactoryGirl.define do
     last_name "Ross"
     middle_name "Happy Tree"
     email "bob.ross@namely.com"
+    gender "_female"
+    subsidiary_id "1066"
+    subsidiary_name "Fake Subsidiary"
     id nil
 
     initialize_with do
@@ -152,6 +156,8 @@ FactoryGirl.define do
         "lastName" => last_name,
         "middleName" => middle_name,
         "email" => email,
+        "gender" => { "value" => gender },
+        "subsidiary" => { "internalId" => subsidiary_id, "name" => subsidiary_name },
         "internalId" => id,
       }
     end

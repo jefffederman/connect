@@ -5,18 +5,20 @@ describe NetSuite::EmployeeDiffer do
     let(:attribute_mapper) { create(:attribute_mapper) }
     let(:namely_employee) do
       NetSuite::Normalizer.new(
-        attribute_mapper: attribute_mapper, 
+        attribute_mapper: attribute_mapper,
         configuration: double(subsidiary_id: 123)
       ).export(namely)
     end
-
-    # def initialize(attribute_mapper:, configuration:)
 
     before do
       create(:field_mapping,
         attribute_mapper: attribute_mapper,
         integration_field_id: "firstName",
         namely_field_name: "first_name")
+      create(:field_mapping,
+        attribute_mapper: attribute_mapper,
+        integration_field_id: "gender",
+        namely_field_name: "gender")
     end
 
     subject(:differ) do
