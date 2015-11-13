@@ -148,6 +148,7 @@ FactoryGirl.define do
     gender "_female"
     subsidiary_id "1066"
     subsidiary_name "Fake Subsidiary"
+    phone "(123) 123-1234"
     id nil
 
     initialize_with do
@@ -156,6 +157,7 @@ FactoryGirl.define do
         "lastName" => last_name,
         "middleName" => middle_name,
         "email" => email,
+        "phone" => phone,
         "gender" => { "value" => gender },
         "subsidiary" => { "internalId" => subsidiary_id, "name" => subsidiary_name },
         "internalId" => id,

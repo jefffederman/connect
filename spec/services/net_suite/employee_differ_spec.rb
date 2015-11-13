@@ -3,12 +3,13 @@ require 'rails_helper'
 describe NetSuite::EmployeeDiffer do
   describe '#different?' do
     let(:attribute_mapper) { create(:attribute_mapper) }
-    let(:namely_employee) do
+    let(:normalized_namely_employee) do
       NetSuite::Normalizer.new(
         attribute_mapper: attribute_mapper,
         configuration: double(subsidiary_id: 123)
       ).export(namely)
     end
+    let(:namely_employee) { NetSuite::DiffNormalizer.normalize(normalized_namely_employee) }
 
     before do
       create(:field_mapping,
@@ -19,6 +20,10 @@ describe NetSuite::EmployeeDiffer do
         attribute_mapper: attribute_mapper,
         integration_field_id: "gender",
         namely_field_name: "gender")
+      create(:field_mapping,
+        attribute_mapper: attribute_mapper,
+        integration_field_id: "phone",
+        namely_field_name: "home_phone")
     end
 
     subject(:differ) do
@@ -28,7 +33,6 @@ describe NetSuite::EmployeeDiffer do
     context 'when the Namely Profile has changed' do
       let(:namely) { build(:namely_profile, first_name: "Bobby") }
       let(:netsuite) { build(:netsuite_profile, first_name: "Bob") }
-
 
       it 'returns true' do
         expect(differ).to be_different

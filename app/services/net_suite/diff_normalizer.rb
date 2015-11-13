@@ -1,7 +1,7 @@
 class NetSuite::DiffNormalizer
 
   def initialize(employee)
-    @employee = employee.dup
+    @employee = employee.deep_dup
   end
 
   def self.normalize(employee)
@@ -9,6 +9,27 @@ class NetSuite::DiffNormalizer
   end
 
   def normalize
+    normalize_address
+    normalize_phone_numbers
+
+    employee
+  end
+
+
+  private
+
+  attr_reader :employee
+
+  def normalize_phone_numbers
+    %w( mobilePhone officePhone phone ).each do |phone_key|
+      next unless employee[phone_key].present?
+
+      number = GlobalPhone.parse(employee[phone_key])
+      employee[phone_key] = number.national_format
+    end
+  end
+
+  def normalize_address
     employee["defaultAddress"] = ""
 
     if (addressbook_list = employee["addressbookList"]) &&
@@ -23,11 +44,5 @@ class NetSuite::DiffNormalizer
         employee["defaultAddress"] = "#{ address["addr1"] }<br>#{ address["addr2"] }<br>#{ address["city"] } #{ address["state"] } #{ address["zip"] }<br>United States"
       end
     end
-
-    employee
   end
-
-  private
-
-  attr_reader :employee
 end
