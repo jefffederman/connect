@@ -266,26 +266,55 @@ describe NetSuite::Client do
   end
 
   describe "#employees" do
+    let(:expected_headers) do
+      {
+        "Authorization" => "User user-secret, " \
+        "Organization org-secret, " \
+        "Element element-secret",
+        "Content-Type" => "application/json"
+      }
+    end
+
     it "looks up employees" do
       stub_request(
         :get,
         "https://api.cloud-elements.com/elements/api-v2" \
-        "/hubs/erp/employees?pageSize=5000"
+        "/hubs/erp/employees"
       ).
-        with(
-          headers: {
-            "Authorization" => "User user-secret, " \
-            "Organization org-secret, " \
-            "Element element-secret",
-            "Content-Type" => "application/json"
-          }
-        ).
+        with(headers: expected_headers).
         to_return(status: 200, body: namely_fixture('net_suite_employees'))
 
       result = client.employees
 
-      expect(result.length).to eq(5)
+      expect(result.count).to eq(5)
       expect(result).to all(be_kind_of(Hash))
+    end
+
+    it "paginates through employees on Cloud Elements" do
+      next_page_token = "I_am_a_token_rwar"
+      first_page_request = stub_request(:get, "https://api.cloud-elements.com/elements/api-v2/hubs/erp/employees").
+        with(headers: expected_headers).
+        to_return(
+          status: 200,
+          body: [ internalId: "ohhai" ].to_json,
+          headers: {
+            "Elements-Next-Page-Token" => next_page_token,
+          })
+
+      second_page_request = stub_request(:get, "https://api.cloud-elements.com/elements/api-v2/hubs/erp/employees?nextPage=#{next_page_token}").
+        with(headers: expected_headers).
+        to_return(status: 200, body: [ internalId: "haioh" ].to_json)
+
+      employees = client.employees
+
+      expect(employees.count).to be(2)
+      expect(employees).to all(be_kind_of(Hash))
+      expect(
+        employees.map {|h| h['internalId'] }
+      ).to match_array(['ohhai', 'haioh'])
+
+      expect(first_page_request).to have_been_requested
+      expect(second_page_request).to have_been_requested
     end
   end
 

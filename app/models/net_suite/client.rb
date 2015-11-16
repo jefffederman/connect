@@ -52,7 +52,7 @@ module NetSuite
     end
 
     def create_employee(params)
-      Rails.logger.debug { "Creating employee: #{params.to_json}" }
+      Rails.logger.debug("Creating employee: #{params.to_json}")
       submit_json(
         :post,
         EMPLOYEE_REQUEST,
@@ -61,7 +61,7 @@ module NetSuite
     end
 
     def update_employee(id, params)
-      Rails.logger.debug { "Update employee #{id.inspect}: #{params.to_json}" }
+      Rails.logger.debug("Update employee #{id.inspect}: #{params.to_json}")
       submit_json(
         :patch,
         "#{EMPLOYEE_REQUEST}/#{id}",
@@ -70,9 +70,9 @@ module NetSuite
     end
 
     def employees
-      Rails.logger.debug { "Get employees" }
+      Rails.logger.debug("Get employees")
 
-      get_json("#{EMPLOYEE_REQUEST}?pageSize=#{PAGE_SIZE}")
+      get_json(EMPLOYEE_REQUEST, paginated: true)
     end
 
     def subsidiaries
