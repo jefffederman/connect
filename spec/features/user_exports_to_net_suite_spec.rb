@@ -8,11 +8,16 @@ feature "user exports to net suite" do
     employee_json =
       File.read("spec/fixtures/api_responses/net_suite_employee.json")
 
+    stub_request(:get, %r{#{cloud_elements}/employees\?pageSize=5}).
+      to_return(status: 200, body: employee_json)
+
     stub_request(
       :get,
       "https://api.cloud-elements.com/elements/api-v2/hubs/erp/employees?pageSize=5000"
     ).to_return(
-      body: [{internalId: "1234", firstName: "TT"}].to_json
+      body: [
+        {internalId: "1234", firstName: "TT"},
+      ].to_json
     )
     stub_namely_data("/profiles", "profiles_with_net_suite_fields")
     stub_request(:put, %r{.*api/v1/profiles/.*}).to_return(status: 200)
@@ -25,8 +30,7 @@ feature "user exports to net suite" do
     stub_request(:post, "#{cloud_elements}/employees").
       with(body: /Mickey/).
       to_return(status: 400, body: { "message" => "Bad Data" }.to_json)
-    stub_request(:get, %r{#{cloud_elements}/employees\?pageSize=.*}).
-      to_return(status: 200, body: employee_json)
+
     stub_namely_fields("fields_with_net_suite")
     stub_request(
       :post,
