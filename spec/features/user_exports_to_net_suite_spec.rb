@@ -10,7 +10,7 @@ feature "user exports to net suite" do
 
     stub_request(
       :get,
-      "https://api.cloud-elements.com/elements/api-v2/hubs/erp/employees"
+      "https://api.cloud-elements.com/elements/api-v2/hubs/erp/employees?pageSize=5000"
     ).to_return(
       body: [{internalId: "1234", firstName: "TT"}].to_json
     )
