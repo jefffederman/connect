@@ -21,17 +21,46 @@ module NetSuite
         end
       end
 
-      def get_json(path)
-        translate_response do
-          RestClient.get(
-            url(path),
-            authorization: authorization,
-            content_type: "application/json"
-          )
+      def get_json(path, paginated: false)
+        if paginated
+          get_paginated_json(path)
+        else
+          translate_response do
+            RestClient.get(
+              url(path),
+              authorization: authorization,
+              content_type: "application/json"
+            )
+          end
         end
       end
 
       private
+
+      def get_paginated_json(path)
+        objects = []
+        params = {}
+        response = nil
+
+        loop do
+          results = translate_response do
+            response = RestClient.get(
+              url("#{path}?#{params.to_query}"),
+              authorization: authorization,
+              content_type: "application/json"
+            )
+          end
+
+          results.each { |o| objects << o }
+
+          next_page_token = response.headers[:elements_next_page_token]
+          break if objects.empty? || next_page_token.blank?
+
+          params[:nextPage] = next_page_token
+        end
+
+        objects
+      end
 
       def translate_response
         response = yield

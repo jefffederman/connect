@@ -51,7 +51,7 @@ feature "User retries failed profile sync" do
   def stub_netsuite_employees
     stub_request(
       :get,
-      "https://api.cloud-elements.com/elements/api-v2/hubs/erp/employees?pageSize=5000"
+      "https://api.cloud-elements.com/elements/api-v2/hubs/erp/employees"
     ).to_return(
       body: [{internalId: "1234", firstName: "TT"}].to_json
     )

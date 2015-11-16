@@ -13,7 +13,7 @@ feature "user exports to net suite" do
 
     stub_request(
       :get,
-      "https://api.cloud-elements.com/elements/api-v2/hubs/erp/employees?pageSize=5000"
+      "https://api.cloud-elements.com/elements/api-v2/hubs/erp/employees"
     ).to_return(
       body: [
         {internalId: "1234", firstName: "TT"},
