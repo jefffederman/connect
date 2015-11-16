@@ -270,7 +270,7 @@ describe NetSuite::Client do
       stub_request(
         :get,
         "https://api.cloud-elements.com/elements/api-v2" \
-        "/hubs/erp/employees"
+        "/hubs/erp/employees?pageSize=5000"
       ).
         with(
           headers: {

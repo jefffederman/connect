@@ -4,6 +4,7 @@ module NetSuite
     EMPLOYEE_REQUEST = REQUEST_BASE + "/employees"
     SUBSIDIARY_REQUEST = REQUEST_BASE + "/lookups/subsidiary"
     INSTANCES = "/instances"
+    PAGE_SIZE = 5000
 
     delegate :get_json, to: :request
     delegate :submit_json, to: :request
@@ -71,7 +72,7 @@ module NetSuite
     def employees
       Rails.logger.debug { "Get employees" }
 
-      get_json(EMPLOYEE_REQUEST)
+      get_json("#{EMPLOYEE_REQUEST}?pageSize=#{PAGE_SIZE}")
     end
 
     def subsidiaries
