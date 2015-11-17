@@ -54,7 +54,7 @@ module NetSuite
           results.each { |o| objects << o }
 
           next_page_token = response.headers[:elements_next_page_token]
-          break if objects.empty? || next_page_token.blank?
+          break if results.empty? || next_page_token.blank?
 
           params[:nextPage] = next_page_token
         end
