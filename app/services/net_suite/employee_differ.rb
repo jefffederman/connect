@@ -31,7 +31,7 @@ module NetSuite
         if value == netsuite_value
           true
         else
-          Rails.logger.info "Difference: #{value}, Netsuite: #{netsuite_value}, ID: #{normalized_netsuite_employee["internalId"]}"
+          Rails.logger.info "Key: #{key}, Difference: #{value}, Netsuite: #{netsuite_value}, ID: #{normalized_netsuite_employee["internalId"]}"
           false
         end
       end
