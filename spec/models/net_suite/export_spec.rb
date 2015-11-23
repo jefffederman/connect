@@ -239,6 +239,7 @@ describe NetSuite::Export do
 
     double("net_suite_connection", client: client).tap do |connection|
       allow(connection).to receive(:id).and_return(22)
+      allow(connection).to receive(:subsidiary_id).and_return(1)
     end
   end
 

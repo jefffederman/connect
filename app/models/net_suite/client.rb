@@ -69,10 +69,15 @@ module NetSuite
       )
     end
 
-    def employees
+    # Retrieves all employees from CE for a specific subsidiary
+    #
+    # @param subsidiary_id [Fixnum] The Subsidiary ID on NetSuite to retrieve for
+    def employees(subsidiary_id)
       Rails.logger.debug("Get employees")
 
-      get_json(EMPLOYEE_REQUEST, paginated: true)
+      get_json(EMPLOYEE_REQUEST, paginated: true, params: {
+        where: { "subsidiary" => subsidiary_id }.to_query
+      })
     end
 
     def subsidiaries

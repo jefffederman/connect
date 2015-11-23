@@ -6,7 +6,7 @@ feature "User retries failed profile sync" do
     connection = create_connection_for(user)
     create_failed_profile_event_for(connection)
     stub_profile_update
-    stub_netsuite_employees
+    stub_netsuite_employees(connection.subsidiary_id)
     stub_namely_data("/profiles", "profiles_with_net_suite_fields")
     stub_namely_fields("fields_with_net_suite")
     stub_retry_of_failed_profile_event
@@ -48,10 +48,10 @@ feature "User retries failed profile sync" do
     ).with(body: hash_including(firstName: "Tina")).to_return(status: 200)
   end
 
-  def stub_netsuite_employees
+  def stub_netsuite_employees(subsidiary_id)
     stub_request(
       :get,
-      "https://api.cloud-elements.com/elements/api-v2/hubs/erp/employees"
+      "https://api.cloud-elements.com/elements/api-v2/hubs/erp/employees?where=subsidiary%3D#{subsidiary_id}"
     ).to_return(
       body: [{internalId: "1234", firstName: "TT"}].to_json
     )

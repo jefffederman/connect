@@ -5,6 +5,8 @@ feature "user exports to net suite" do
     user = create(:user)
     cloud_elements = "https://api.cloud-elements.com/elements/api-v2/hubs/erp"
     subsidiary_url = "#{cloud_elements}/lookups/subsidiary"
+    subsidiary_id = 52
+
     employee_json =
       File.read("spec/fixtures/api_responses/net_suite_employee.json")
 
@@ -13,7 +15,7 @@ feature "user exports to net suite" do
 
     stub_request(
       :get,
-      "https://api.cloud-elements.com/elements/api-v2/hubs/erp/employees"
+      "#{cloud_elements}/employees?where=subsidiary%3D#{subsidiary_id}"
     ).to_return(
       body: [
         {internalId: "1234", firstName: "TT"},
@@ -37,7 +39,7 @@ feature "user exports to net suite" do
       "https://api.cloud-elements.com/elements/api-v2/instances"
     ).to_return(status: 200, body: { id: "1", token: "2" }.to_json)
     stub_request(:get, subsidiary_url).
-      to_return(status: 200, body: [{ name: "hello", internalId: 1 }].to_json)
+      to_return(status: 200, body: [{ name: "hello", internalId: subsidiary_id }].to_json)
 
     visit dashboard_path(as: user)
 

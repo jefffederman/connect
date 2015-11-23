@@ -21,9 +21,9 @@ module NetSuite
         end
       end
 
-      def get_json(path, paginated: false)
+      def get_json(path, paginated: false, params: {})
         if paginated
-          get_paginated_json(path)
+          get_paginated_json(path, params.dup)
         else
           translate_response do
             RestClient.get(
@@ -37,9 +37,8 @@ module NetSuite
 
       private
 
-      def get_paginated_json(path)
+      def get_paginated_json(path, params)
         objects = []
-        params = {}
         response = nil
 
         loop do
