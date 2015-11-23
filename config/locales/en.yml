@@ -177,8 +177,8 @@ en:
 
   net_suite_connections:
     description:
-      connected_html: Connected NetSuite Description
-      disconnected_html: Disconnected NetSuite Description
+      connected_html: This connection has been setup to sync your Namely profiles to NetSuite on a daily basis.
+      disconnected_html: NetSuite is used to manage your financial operations.  This connector gives you the power to sync your Namely HR employees into your NetSuite application seamlessly on a daily basis.
     authentication_form:
       help: >
         Please note that these credentials are needed for initial connection to
