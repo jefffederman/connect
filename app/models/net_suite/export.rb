@@ -60,7 +60,7 @@ module NetSuite
         mapper: normalizer,
         fields: ["email"],
         profiles: namely_profiles,
-        employees: net_suite_client.employees)
+        employees: net_suite_client.employees(net_suite_connection.subsidiary_id))
     end
 
     def normalize(employee)

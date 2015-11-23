@@ -279,12 +279,13 @@ describe NetSuite::Client do
       stub_request(
         :get,
         "https://api.cloud-elements.com/elements/api-v2" \
-        "/hubs/erp/employees"
+        "/hubs/erp/employees" \
+        "?where=subsidiary%3D1"
       ).
         with(headers: expected_headers).
         to_return(status: 200, body: namely_fixture('net_suite_employees'))
 
-      result = client.employees
+      result = client.employees(1)
 
       expect(result.count).to eq(5)
       expect(result).to all(be_kind_of(Hash))
@@ -292,7 +293,7 @@ describe NetSuite::Client do
 
     it "paginates through employees on Cloud Elements" do
       next_page_token = "I_am_a_token_rwar"
-      first_page_request = stub_request(:get, "https://api.cloud-elements.com/elements/api-v2/hubs/erp/employees").
+      first_page_request = stub_request(:get, "https://api.cloud-elements.com/elements/api-v2/hubs/erp/employees?where=subsidiary%3D1").
         with(headers: expected_headers).
         to_return(
           status: 200,
@@ -301,11 +302,11 @@ describe NetSuite::Client do
             "Elements-Next-Page-Token" => next_page_token,
           })
 
-      second_page_request = stub_request(:get, "https://api.cloud-elements.com/elements/api-v2/hubs/erp/employees?nextPage=#{next_page_token}").
+      second_page_request = stub_request(:get, "https://api.cloud-elements.com/elements/api-v2/hubs/erp/employees?nextPage=#{next_page_token}&where=subsidiary%3D1").
         with(headers: expected_headers).
         to_return(status: 200, body: [ internalId: "haioh" ].to_json)
 
-      employees = client.employees
+      employees = client.employees(1)
 
       expect(employees.count).to be(2)
       expect(employees).to all(be_kind_of(Hash))
