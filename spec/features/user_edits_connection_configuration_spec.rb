@@ -2,6 +2,8 @@ require "rails_helper"
 
 feature "User edits connection configuration" do
   scenario "successfully" do
+    skip "Interface code is not present for this but this still needs to happen"
+
     user = create(:user)
     connection = create(
       :net_suite_connection,

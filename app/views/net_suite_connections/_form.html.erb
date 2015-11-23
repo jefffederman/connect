@@ -8,20 +8,3 @@
     ) %>
   </div>
 <% end %>
-
-<div class="form-row">
-  <%= form.input(:matching_type,
-    collection: NetSuite::Connection.matching_types.keys,
-    as: :select,
-    label: "Employee Matching Strategy",
-    include_blank: false,
-    selected: form.object.matching_type,
-    label_method: Proc.new {|o| t(".matching_type.#{o}") },
-    input_html: { class: 'half' }
-  ) %>
-  <hr />
-
-  <p>
-    <%= t(".matching_type_help") %>
-  </p>
-</div>
