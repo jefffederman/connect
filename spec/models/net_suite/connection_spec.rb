@@ -123,10 +123,10 @@ describe NetSuite::Connection do
   end
 
   describe "#configurable?" do
-    it 'returns true' do
+    it 'returns false' do
       connection = NetSuite::Connection.new
 
-      expect(connection).to be_configurable
+      expect(connection).to_not be_configurable
     end
   end
 

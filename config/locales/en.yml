@@ -183,15 +183,6 @@ en:
       help: >
         Please note that these credentials are needed for initial connection to
         NetSuite and will not be stored in Namely Connect.
-    form:
-      matching_type:
-        email_matcher: "Email"
-        name_matcher: "Name"
-      matching_type_help: >
-        The matching strategy is used when Namely Connect attempts to export
-        profiles to Netsuite. It helps ensure that all profiles that are being
-        exported won't be duplicated if NetSuite has an employee that Namely
-        does not know about.
 
   authentications:
     new:

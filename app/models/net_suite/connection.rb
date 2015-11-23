@@ -37,7 +37,7 @@ class NetSuite::Connection < ActiveRecord::Base
   end
 
   def configurable?
-    true
+    false
   end
 
   def has_activity_feed?
