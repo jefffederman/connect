@@ -13,7 +13,8 @@ module Jobvite
         user_status: "active",
         start_date: jobvite_candidate.start_date,
         gender: namely_gender(jobvite_candidate.gender),
-        namely_identifier_field => identifier(jobvite_candidate),
+      ).merge(
+        namely_identifier_field => identifier(jobvite_candidate)
       )
     end
 

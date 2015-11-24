@@ -25,7 +25,6 @@ describe Jobvite::Normalizer do
           personal_email: "crash.override@example.com",
           user_status: "active",
           start_date: "2014-01-02",
-          jobvite_id: "edO1Ggwt",
           gender: nil,
         )
     end
@@ -77,6 +76,24 @@ describe Jobvite::Normalizer do
       expect(attribute_mapper).
         to have_imported(hash_including(start_date: nil))
     end
+
+    it "returns a hash including the Jobvite identifier" do
+      attribute_mapper = build(:attribute_mapper)
+      mapper = described_class.new(attribute_mapper: attribute_mapper)
+      jobvite_candidate = double(
+        "jobvite_candidate",
+        e_id: "edO1Ggwt",
+        email: "crash.override@example.com",
+        first_name: "Dade",
+        last_name: "Murphy",
+        start_date: "2014-01-02",
+        gender: "Undefined",
+      )
+
+      hash = mapper.call(jobvite_candidate)
+
+      expect(hash[mapper.namely_identifier_field]).to eq(jobvite_candidate.e_id)
+    end
   end
 
   describe "#namely_identifier_field" do
@@ -116,7 +133,7 @@ describe Jobvite::Normalizer do
 
   def stub_attribute_mapper
     double(:attribute_mapper).tap do |attribute_mapper|
-      allow(attribute_mapper).to receive(:import)
+      allow(attribute_mapper).to receive(:import).and_return({})
     end
   end
 
