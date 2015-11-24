@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150903174313) do
+ActiveRecord::Schema.define(version: 20151105214808) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,98 +22,93 @@ ActiveRecord::Schema.define(version: 20150903174313) do
   end
 
   create_table "delayed_jobs", force: :cascade do |t|
-    t.integer  "priority",               default: 0, null: false
-    t.integer  "attempts",               default: 0, null: false
-    t.text     "handler",                            null: false
+    t.integer  "priority",   default: 0, null: false
+    t.integer  "attempts",   default: 0, null: false
+    t.text     "handler",                null: false
     t.text     "last_error"
     t.datetime "run_at"
     t.datetime "locked_at"
     t.datetime "failed_at"
-    t.string   "locked_by",  limit: 255
-    t.string   "queue",      limit: 255
+    t.string   "locked_by"
+    t.string   "queue"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
 
-  create_table "export_logs", force: :cascade do |t|
-    t.integer  "connection_id",               null: false
-    t.string   "connection_type", limit: 255, null: false
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
-  end
-
-  add_index "export_logs", ["connection_id", "connection_type"], name: "index_export_logs_on_connection_id_and_connection_type", using: :btree
-
   create_table "field_mappings", force: :cascade do |t|
-    t.string   "integration_field_name", limit: 255, null: false
-    t.string   "namely_field_name",      limit: 255
-    t.integer  "attribute_mapper_id",                null: false
+    t.string   "integration_field_name", null: false
+    t.string   "namely_field_name"
+    t.integer  "attribute_mapper_id",    null: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "integration_field_id",   limit: 255, null: false
+    t.string   "integration_field_id",   null: false
   end
 
   add_index "field_mappings", ["attribute_mapper_id"], name: "index_field_mappings_on_attribute_mapper_id", using: :btree
 
   create_table "greenhouse_connections", force: :cascade do |t|
-    t.datetime "created_at",                                      null: false
-    t.datetime "updated_at",                                      null: false
-    t.string   "secret_key",          limit: 255
-    t.string   "name",                limit: 255
-    t.boolean  "found_namely_field",              default: false, null: false
-    t.integer  "installation_id",                                 null: false
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
+    t.string   "secret_key"
+    t.string   "name"
+    t.boolean  "found_namely_field",  default: false, null: false
+    t.integer  "installation_id",                     null: false
     t.integer  "attribute_mapper_id"
   end
 
   add_index "greenhouse_connections", ["installation_id"], name: "index_greenhouse_connections_on_installation_id", using: :btree
+  add_index "greenhouse_connections", ["name"], name: "index_greenhouse_connections_on_name", using: :btree
+  add_index "greenhouse_connections", ["secret_key"], name: "index_greenhouse_connections_on_secret_key", using: :btree
 
   create_table "icims_connections", force: :cascade do |t|
-    t.datetime "created_at",                                     null: false
-    t.datetime "updated_at",                                     null: false
-    t.string   "username",           limit: 255
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+    t.string   "username"
     t.integer  "customer_id"
-    t.boolean  "found_namely_field",             default: false, null: false
-    t.string   "key",                limit: 255
-    t.string   "api_key",            limit: 255
-    t.integer  "installation_id",                                null: false
+    t.boolean  "found_namely_field", default: false, null: false
+    t.string   "key"
+    t.string   "api_key"
+    t.integer  "installation_id",                    null: false
   end
 
   add_index "icims_connections", ["installation_id"], name: "index_icims_connections_on_installation_id", using: :btree
 
   create_table "installations", force: :cascade do |t|
-    t.string   "subdomain",  limit: 255, null: false
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.string   "subdomain",  null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   add_index "installations", ["subdomain"], name: "index_installations_on_subdomain", unique: true, using: :btree
 
   create_table "jobvite_connections", force: :cascade do |t|
-    t.string   "api_key",              limit: 255
-    t.string   "secret",               limit: 255
-    t.datetime "created_at",                                                  null: false
-    t.datetime "updated_at",                                                  null: false
-    t.string   "hired_workflow_state", limit: 255, default: "Offer Accepted", null: false
-    t.boolean  "found_namely_field",               default: false,            null: false
+    t.string   "api_key"
+    t.string   "secret"
+    t.datetime "created_at",                                      null: false
+    t.datetime "updated_at",                                      null: false
+    t.string   "hired_workflow_state", default: "Offer Accepted", null: false
+    t.boolean  "found_namely_field",   default: false,            null: false
     t.integer  "attribute_mapper_id"
-    t.integer  "installation_id",                                             null: false
+    t.integer  "installation_id",                                 null: false
   end
 
   add_index "jobvite_connections", ["attribute_mapper_id"], name: "index_jobvite_connections_on_attribute_mapper_id", using: :btree
   add_index "jobvite_connections", ["installation_id"], name: "index_jobvite_connections_on_installation_id", using: :btree
 
   create_table "net_suite_connections", force: :cascade do |t|
-    t.string   "instance_id",         limit: 255
-    t.string   "authorization",       limit: 255
+    t.string   "instance_id"
+    t.string   "authorization"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "found_namely_field",              default: false, null: false
-    t.string   "subsidiary_id",       limit: 255
+    t.boolean  "found_namely_field",  default: false, null: false
+    t.string   "subsidiary_id"
     t.integer  "attribute_mapper_id"
-    t.integer  "installation_id",                                 null: false
+    t.integer  "installation_id",                     null: false
     t.boolean  "subsidiary_required"
+    t.boolean  "locked",              default: false, null: false
+    t.integer  "matching_type",       default: 0,     null: false
   end
 
   add_index "net_suite_connections", ["attribute_mapper_id"], name: "index_net_suite_connections_on_attribute_mapper_id", using: :btree
@@ -142,19 +137,27 @@ ActiveRecord::Schema.define(version: 20150903174313) do
   add_index "sync_summaries", ["connection_type", "connection_id"], name: "index_sync_summaries_on_connection_type_and_connection_id", using: :btree
 
   create_table "users", force: :cascade do |t|
-    t.datetime "created_at",                                                      null: false
-    t.datetime "updated_at",                                                      null: false
-    t.string   "namely_user_id",      limit: 255,                                 null: false
-    t.string   "access_token",        limit: 255,                                 null: false
-    t.string   "refresh_token",       limit: 255,                                 null: false
-    t.string   "subdomain",           limit: 255,                                 null: false
-    t.string   "first_name",          limit: 255
-    t.string   "last_name",           limit: 255
-    t.datetime "access_token_expiry",             default: '1970-01-01 00:00:00', null: false
-    t.string   "email",               limit: 255
-    t.integer  "installation_id",                                                 null: false
+    t.datetime "created_at",                                          null: false
+    t.datetime "updated_at",                                          null: false
+    t.string   "namely_user_id",                                      null: false
+    t.string   "access_token",                                        null: false
+    t.string   "refresh_token",                                       null: false
+    t.string   "subdomain",                                           null: false
+    t.string   "first_name"
+    t.string   "last_name"
+    t.datetime "access_token_expiry", default: '1970-01-01 00:00:00', null: false
+    t.string   "email"
+    t.integer  "installation_id",                                     null: false
   end
 
   add_index "users", ["installation_id"], name: "index_users_on_installation_id", using: :btree
 
+  add_foreign_key "field_mappings", "attribute_mappers"
+  add_foreign_key "greenhouse_connections", "installations"
+  add_foreign_key "icims_connections", "installations"
+  add_foreign_key "jobvite_connections", "attribute_mappers"
+  add_foreign_key "jobvite_connections", "installations"
+  add_foreign_key "net_suite_connections", "attribute_mappers"
+  add_foreign_key "net_suite_connections", "installations"
+  add_foreign_key "users", "installations"
 end

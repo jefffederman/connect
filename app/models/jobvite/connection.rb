@@ -5,6 +5,10 @@ module Jobvite
 
     validates :hired_workflow_state, presence: true
 
+    def lockable?
+      false
+    end
+
     def integration_id
       :jobvite
     end

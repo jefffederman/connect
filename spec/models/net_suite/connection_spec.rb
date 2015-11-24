@@ -11,6 +11,14 @@ describe NetSuite::Connection do
     it { is_expected.to belong_to(:installation) }
   end
 
+  describe "defaults" do
+    it "sets the matching type to email by default" do
+      instance = NetSuite::Connection.new
+
+      expect(instance.matching_type).to eq("email_matcher")
+    end
+  end
+
   describe "#connected?" do
     context "with saved authorization data" do
       it "returns true" do
@@ -115,20 +123,10 @@ describe NetSuite::Connection do
   end
 
   describe "#configurable?" do
-    context "with an optional subsidiary" do
-      it "returns false" do
-        connection = NetSuite::Connection.new(subsidiary_required: false)
+    it 'returns false' do
+      connection = NetSuite::Connection.new
 
-        expect(connection).not_to be_configurable
-      end
-    end
-
-    context "with a required subsidiary" do
-      it "returns true" do
-        connection = NetSuite::Connection.new(subsidiary_required: true)
-
-        expect(connection).to be_configurable
-      end
+      expect(connection).to_not be_configurable
     end
   end
 
@@ -218,9 +216,10 @@ describe NetSuite::Connection do
       connection.sync
 
       expect(NetSuite::Export).to have_received(:perform).with(
+        summary_id: SyncSummary.last.id,
         normalizer: normalizer,
         namely_profiles: namely_profiles,
-        net_suite: client
+        net_suite_connection: connection
       )
     end
   end
@@ -245,9 +244,10 @@ describe NetSuite::Connection do
       connection.retry(sync_summary)
 
       expect(NetSuite::Export).to have_received(:perform).with(
+        summary_id: SyncSummary.last.id,
         normalizer: normalizer,
         namely_profiles: namely_profiles,
-        net_suite: client
+        net_suite_connection: connection
       )
     end
   end

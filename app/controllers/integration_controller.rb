@@ -1,4 +1,6 @@
 class IntegrationController < ApplicationController
+  attr_writer :connection
+
   private
 
   def connection

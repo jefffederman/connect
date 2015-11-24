@@ -11,10 +11,10 @@ module NetSuite
           "user.password" => authentication.password,
           "netsuite.accountId" => authentication.account_id,
           "netsuite.sandbox" => false,
-          "netsuite.sso.roleId" => "3",
+          "netsuite.sso.roleId" => "3", # This will be 3 (Admin role) always
           "netsuite.appId" => authentication.app_id,
-          "netsuite.sso.companyId" => authentication.company_id,
-          "netsuite.sso.userId" => authentication.user_id,
+          "netsuite.sso.companyId" => "#{ authentication.account_id }_#{ authentication.company_id}",
+          "netsuite.sso.userId" => "#{ authentication.account_id }_#{ authentication.user_id }",
           "netsuite.sso.partnerId" => authentication.partner_id,
         },
         "element" => {

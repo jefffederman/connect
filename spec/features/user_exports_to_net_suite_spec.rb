@@ -5,9 +5,22 @@ feature "user exports to net suite" do
     user = create(:user)
     cloud_elements = "https://api.cloud-elements.com/elements/api-v2/hubs/erp"
     subsidiary_url = "#{cloud_elements}/lookups/subsidiary"
+    subsidiary_id = 52
+
     employee_json =
       File.read("spec/fixtures/api_responses/net_suite_employee.json")
 
+    stub_request(:get, %r{#{cloud_elements}/employees\?pageSize=5}).
+      to_return(status: 200, body: employee_json)
+
+    stub_request(
+      :get,
+      "#{cloud_elements}/employees?where=subsidiary%3D#{subsidiary_id}"
+    ).to_return(
+      body: [
+        {internalId: "1234", firstName: "TT"},
+      ].to_json
+    )
     stub_namely_data("/profiles", "profiles_with_net_suite_fields")
     stub_request(:put, %r{.*api/v1/profiles/.*}).to_return(status: 200)
     stub_request(:post, "#{cloud_elements}/employees").
@@ -19,15 +32,14 @@ feature "user exports to net suite" do
     stub_request(:post, "#{cloud_elements}/employees").
       with(body: /Mickey/).
       to_return(status: 400, body: { "message" => "Bad Data" }.to_json)
-    stub_request(:get, %r{#{cloud_elements}/employees\?pageSize=.*}).
-      to_return(status: 200, body: employee_json)
+
     stub_namely_fields("fields_with_net_suite")
     stub_request(
       :post,
       "https://api.cloud-elements.com/elements/api-v2/instances"
     ).to_return(status: 200, body: { id: "1", token: "2" }.to_json)
     stub_request(:get, subsidiary_url).
-      to_return(status: 200, body: [{ name: "hello", internalId: 1 }].to_json)
+      to_return(status: 200, body: [{ name: "hello", internalId: subsidiary_id }].to_json)
 
     visit dashboard_path(as: user)
 
@@ -52,22 +64,7 @@ feature "user exports to net suite" do
     expect(page).
       to have_content(t("syncs.create.title", integration: t("net_suite.name")))
 
-    open_email user.email
-    expect(current_email).to have_text(
-      t(
-        "sync_mailer.sync_notification.succeeded",
-        count: 2,
-        integration: "NetSuite"
-      )
-    )
 
-    expect(current_email).to have_text(
-      t(
-        "sync_mailer.sync_notification.failed",
-        count: 1,
-        integration: "NetSuite"
-      )
-    )
     expect(WebMock).
       to have_requested(:post, "#{cloud_elements}/employees").
       with(

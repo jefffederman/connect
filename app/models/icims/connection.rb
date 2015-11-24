@@ -4,6 +4,10 @@ module Icims
     validates :api_key, uniqueness: true
     before_create :set_api_key
 
+    def lockable?
+      false
+    end
+
     def integration_id
       :icims
     end

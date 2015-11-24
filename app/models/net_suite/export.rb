@@ -4,121 +4,67 @@ module NetSuite
       new(args).perform
     end
 
-    def initialize(normalizer:, namely_profiles:, net_suite:)
+    def initialize(summary_id:, normalizer:, namely_profiles:, net_suite_connection:)
+      @summary_id = summary_id
       @normalizer = normalizer
       @namely_profiles = namely_profiles
-      @net_suite = net_suite
+      @net_suite_client = net_suite_connection.client
+      @net_suite_connection = net_suite_connection
     end
 
     def perform
-      namely_profiles.map do |profile|
-        export(profile)
+      matcher.results.each do |result|
+        if result.matched?
+          Rails.logger.info "Matched result: #{result.profile.id}"
+
+          differ = NetSuite::EmployeeDiffer.new(
+            namely_employee: normalize(result.namely_employee),
+            netsuite_employee: result.netsuite_employee)
+          if differ.different?
+            Rails.logger.info "Different result: #{result.profile.id}"
+            NetSuiteExportJob.perform_later(
+              "update",
+              summary_id,
+              net_suite_connection.id,
+              result.profile.id,
+              result.profile.name,
+              result.namely_employee,
+              result.netsuite_employee["internalId"]
+            )
+          else
+            Rails.logger.info "Identical, skipped: #{result.profile.id}"
+          end
+        else
+          Rails.logger.info "Match failed: #{result.profile.id}"
+          NetSuiteExportJob.perform_later(
+            "create",
+            summary_id,
+            net_suite_connection.id,
+            result.profile.id,
+            result.profile.name,
+            result.namely_employee
+          )
+        end
       end
+
+      []
     end
-
-    protected
-
-    attr_reader :namely_profiles
 
     private
 
-    def export(profile)
-      Employee.new(
-        profile,
-        normalizer: @normalizer,
-        net_suite: @net_suite
-      ).export
+    attr_reader :namely_profiles, :net_suite_client, :net_suite_connection,
+                :normalizer, :summary_id
+
+    def matcher
+      @matcher ||= Matcher.new(
+        mapper: normalizer,
+        fields: ["email"],
+        profiles: namely_profiles,
+        employees: net_suite_client.employees(net_suite_connection.subsidiary_id))
     end
 
-    class Employee
-      def initialize(profile, normalizer:, net_suite:)
-        @normalizer = normalizer
-        @profile = profile
-        @net_suite = net_suite
-      end
-
-      def export
-        if persisted?
-          update
-        else
-          create
-        end
-      end
-
-      private
-
-      def persisted?
-        id.present?
-      end
-
-      def update
-        request(updated: true) do
-          @net_suite.update_employee(id.to_s, attributes)
-        end
-      end
-
-      def create
-        request(updated: false) do
-          response = @net_suite.create_employee(attributes)
-          @profile.update(netsuite_id: response["internalId"])
-          response
-        end
-      end
-
-      def id
-        @profile["netsuite_id"].to_s
-      end
-
-      def attributes
-        @normalizer.export(@profile)
-      end
-
-      def request(updated:)
-        yield
-        Result.new(
-          success: true,
-          error: nil,
-          updated: updated,
-          profile: @profile
-        )
-      rescue NetSuite::ApiError => exception
-        Result.new(
-          success: false,
-          error: exception.to_s,
-          updated: updated,
-          profile: @profile
-        )
-      end
+    def normalize(employee)
+      NetSuite::DiffNormalizer.normalize(employee)
     end
-
-    class Result
-      def initialize(success:, error:, updated:, profile:)
-        @success = success
-        @error = error
-        @updated = updated
-        @profile = profile
-      end
-
-      attr_reader :error
-      delegate :email, :name, to: :profile
-
-      def profile_id
-        @profile.id
-      end
-
-      def success?
-        @success == true
-      end
-
-      def updated?
-        @updated
-      end
-
-      protected
-
-      attr_reader :profile
-    end
-
-    private_constant :Result
   end
 end

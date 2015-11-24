@@ -5,6 +5,10 @@ module Greenhouse
     validates :secret_key, uniqueness: true
     before_create :set_secret_key
 
+    def lockable?
+      false
+    end
+
     def connected?
       name.present?
     end

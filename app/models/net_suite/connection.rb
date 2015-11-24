@@ -4,15 +4,24 @@ class NetSuite::Connection < ActiveRecord::Base
   has_many :sync_summaries, as: :connection
 
   validates :subsidiary_id, presence: true, allow_nil: true
+  validates :matching_type, presence: true
 
   delegate :export, to: :normalizer
+
+  enum matching_type: [ :email_matcher, :name_matcher ]
+
+  after_initialize :set_defaults
+
+  def lockable?
+    true
+  end
 
   def integration_id
     :net_suite
   end
 
   def allowed_parameters
-    [:subsidiary_id]
+    [:subsidiary_id, :matching_type]
   end
 
   def connected?
@@ -28,7 +37,7 @@ class NetSuite::Connection < ActiveRecord::Base
   end
 
   def configurable?
-    !subsidiary_optional?
+    false
   end
 
   def has_activity_feed?
@@ -55,7 +64,10 @@ class NetSuite::Connection < ActiveRecord::Base
   end
 
   def sync
+    update_attribute(:locked, true)
     perform_export(installation.namely_profiles)
+  ensure
+    update_attribute(:locked, false)
   end
 
   def retry(sync_summary)
@@ -69,10 +81,14 @@ class NetSuite::Connection < ActiveRecord::Base
   private
 
   def perform_export(profiles)
+    summary = SyncSummary.create(
+      connection: self
+    )
     NetSuite::Export.perform(
+      summary_id: summary.id,
       normalizer: normalizer,
       namely_profiles: profiles,
-      net_suite: client
+      net_suite_connection: self,
     )
   end
 
@@ -126,5 +142,9 @@ class NetSuite::Connection < ActiveRecord::Base
       to: "departure_date",
       name: "Release Date"
     )
+  end
+
+  def set_defaults
+    self.matching_type ||= "email_matcher"
   end
 end

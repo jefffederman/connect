@@ -1,0 +1,192 @@
+[
+  {
+    "eligibleForCommission": false,
+    "lastName": "Wolfe",
+    "isInactive": false,
+    "lastModifiedDate": "2015-11-02T19:00:11+0000",
+    "initials": "AW",
+    "entityId": "Alex Wolfe",
+    "isSupportRep": false,
+    "purchaseOrderLimit": 0,
+    "subsidiary": {
+      "internalId": "1",
+      "name": "Parent Company"
+    },
+    "expenseLimit": 0,
+    "isSalesRep": false,
+    "internalId": "-5",
+    "firstName": "Alex",
+    "billPay": false,
+    "dateCreated": "2015-11-02T19:00:11+0000",
+    "phone": "(800) 123-4567",
+    "isJobResource": false,
+    "globalSubscriptionStatus": {
+      "value": "_softOptOut"
+    },
+    "currency": {
+      "internalId": "1",
+      "name": "US Dollar"
+    },
+    "email": "gjacobo@netsuite.com",
+    "giveAccess": true
+  },
+  {
+    "eligibleForCommission": false,
+    "lastName": "Fer",
+    "gender": {
+      "value": "_omitted"
+    },
+    "isInactive": false,
+    "isSupportRep": false,
+    "purchaseOrderLimit": 0,
+    "title": "Jumper",
+    "expenseLimit": 0,
+    "isSalesRep": false,
+    "internalId": "3",
+    "billPay": false,
+    "dateCreated": "2015-11-03T17:09:25+0000",
+    "isJobResource": false,
+    "currency": {
+      "internalId": "1",
+      "name": "US Dollar"
+    },
+    "fax": "(444) 444-4444",
+    "email": "Joe@example.com",
+    "giveAccess": false,
+    "hireDate": "2014-10-20T07:00:00+0000",
+    "lastModifiedDate": "2015-11-04T20:04:28+0000",
+    "initials": "JF",
+    "workCalendar": {
+      "internalId": "1",
+      "name": "Default Work Calendar"
+    },
+    "entityId": "Joe Ferris",
+    "subsidiary": {
+      "internalId": "1",
+      "name": "Parent Company"
+    },
+    "firstName": "Joe",
+    "phone": "(515) 123-1234",
+    "globalSubscriptionStatus": {
+      "value": "_softOptIn"
+    },
+    "defaultAddress": "Joe Fer<br>123 Main Street<br>Suite 222<br>Boston MA 11213<br>United States"
+  },
+  {
+    "eligibleForCommission": false,
+    "lastName": "netsuite",
+    "hireDate": "2014-10-20T07:00:00+0000",
+    "gender": {
+      "value": "_omitted"
+    },
+    "isInactive": false,
+    "lastModifiedDate": "2015-11-04T20:07:09+0000",
+    "initials": "SN",
+    "workCalendar": {
+      "internalId": "1",
+      "name": "Default Work Calendar"
+    },
+    "entityId": "samsung netsuite",
+    "isSupportRep": false,
+    "purchaseOrderLimit": 0,
+    "title": "Jumper",
+    "subsidiary": {
+      "internalId": "1",
+      "name": "Parent Company"
+    },
+    "expenseLimit": 0,
+    "isSalesRep": false,
+    "internalId": "4",
+    "firstName": "samsung",
+    "billPay": false,
+    "dateCreated": "2015-11-03T17:12:15+0000",
+    "isJobResource": false,
+    "globalSubscriptionStatus": {
+      "value": "_softOptIn"
+    },
+    "currency": {
+      "internalId": "1",
+      "name": "US Dollar"
+    },
+    "email": "namely.test+1@gmail.com",
+    "giveAccess": false
+  },
+  {
+    "eligibleForCommission": false,
+    "lastName": "LastNameTest13",
+    "hireDate": "2014-10-20T07:00:00+0000",
+    "gender": {
+      "value": "_omitted"
+    },
+    "isInactive": false,
+    "lastModifiedDate": "2015-11-04T20:08:42+0000",
+    "initials": "FL",
+    "workCalendar": {
+      "internalId": "1",
+      "name": "Default Work Calendar"
+    },
+    "entityId": "FirstNameTest13 LastNameTest13",
+    "isSupportRep": false,
+    "purchaseOrderLimit": 0,
+    "title": "UX",
+    "subsidiary": {
+      "internalId": "1",
+      "name": "Parent Company"
+    },
+    "expenseLimit": 0,
+    "isSalesRep": false,
+    "internalId": "5",
+    "firstName": "FirstNameTest13",
+    "billPay": false,
+    "dateCreated": "2015-11-03T17:13:42+0000",
+    "isJobResource": false,
+    "globalSubscriptionStatus": {
+      "value": "_softOptIn"
+    },
+    "currency": {
+      "internalId": "1",
+      "name": "US Dollar"
+    },
+    "email": "firstnametest13@gmail.com",
+    "giveAccess": false
+  },
+  {
+    "eligibleForCommission": false,
+    "lastName": "LastNameTest46",
+    "hireDate": "2014-10-20T07:00:00+0000",
+    "gender": {
+      "value": "_omitted"
+    },
+    "isInactive": false,
+    "lastModifiedDate": "2015-11-04T20:11:43+0000",
+    "initials": "FL",
+    "workCalendar": {
+      "internalId": "1",
+      "name": "Default Work Calendar"
+    },
+    "entityId": "FirstNameTest46 LastNameTest46",
+    "isSupportRep": false,
+    "purchaseOrderLimit": 0,
+    "title": "UX",
+    "subsidiary": {
+      "internalId": "1",
+      "name": "Parent Company"
+    },
+    "expenseLimit": 0,
+    "isSalesRep": false,
+    "internalId": "6",
+    "firstName": "FirstNameTest46",
+    "billPay": false,
+    "dateCreated": "2015-11-03T17:16:48+0000",
+    "isJobResource": false,
+    "globalSubscriptionStatus": {
+      "value": "_softOptIn"
+    },
+    "currency": {
+      "internalId": "1",
+      "name": "US Dollar"
+    },
+    "email": "firstnametest46@gmail.com",
+    "giveAccess": false
+  }
+]

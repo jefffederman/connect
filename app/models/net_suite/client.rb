@@ -4,6 +4,7 @@ module NetSuite
     EMPLOYEE_REQUEST = REQUEST_BASE + "/employees"
     SUBSIDIARY_REQUEST = REQUEST_BASE + "/lookups/subsidiary"
     INSTANCES = "/instances"
+    PAGE_SIZE = 5000
 
     delegate :get_json, to: :request
     delegate :submit_json, to: :request
@@ -51,7 +52,7 @@ module NetSuite
     end
 
     def create_employee(params)
-      Rails.logger.debug { "Creating employee: #{params.to_json}" }
+      Rails.logger.debug("Creating employee: #{params.to_json}")
       submit_json(
         :post,
         EMPLOYEE_REQUEST,
@@ -60,12 +61,23 @@ module NetSuite
     end
 
     def update_employee(id, params)
-      Rails.logger.debug { "Update employee #{id.inspect}: #{params.to_json}" }
+      Rails.logger.debug("Update employee #{id.inspect}: #{params.to_json}")
       submit_json(
         :patch,
         "#{EMPLOYEE_REQUEST}/#{id}",
         params
       )
+    end
+
+    # Retrieves all employees from CE for a specific subsidiary
+    #
+    # @param subsidiary_id [Fixnum] The Subsidiary ID on NetSuite to retrieve for
+    def employees(subsidiary_id)
+      Rails.logger.debug("Get employees")
+
+      get_json(EMPLOYEE_REQUEST, paginated: true, params: {
+        where: { "subsidiary" => subsidiary_id }.to_query
+      })
     end
 
     def subsidiaries

@@ -27,6 +27,10 @@ FactoryGirl.define do
       with_namely_field
       subsidiary_id "45z"
     end
+
+    trait :locked do
+      locked true
+    end
   end
 
   factory :icims_connection, class: "Icims::Connection" do
@@ -105,5 +109,59 @@ FactoryGirl.define do
     sync_summary
     sequence(:profile_id) { |n| "namely-#{n}-id" }
     profile_name "Example Name"
+  end
+
+  # These factories are not backed by a database
+  factory :namely_profile, class: "Namely::Model" do
+    id "123-123-123"
+    first_name "Bob"
+    last_name "Ross"
+    middle_name "Happy Tree"
+    email "bob.ross@namely.com"
+    personal_email "bobross@pbs.org"
+    home({})
+    netsuite_id nil
+    start_date "07/18/2013"
+    gender "Female"
+    home_phone "123-123-1234"
+
+    initialize_with do
+      Namely::Model.new(nil, {
+        id: id,
+        first_name: first_name,
+        last_name: last_name,
+        middle_name: middle_name,
+        email: email,
+        gender: gender,
+        personal_email: personal_email,
+        home: home.stringify_keys,
+        netsuite_id: netsuite_id,
+      })
+    end
+  end
+
+  factory :netsuite_profile, class: Hash do
+    first_name "Bob"
+    last_name "Ross"
+    middle_name "Happy Tree"
+    email "bob.ross@namely.com"
+    gender "_female"
+    subsidiary_id "1066"
+    subsidiary_name "Fake Subsidiary"
+    phone "(123) 123-1234"
+    id nil
+
+    initialize_with do
+      {
+        "firstName" => first_name,
+        "lastName" => last_name,
+        "middleName" => middle_name,
+        "email" => email,
+        "phone" => phone,
+        "gender" => { "value" => gender },
+        "subsidiary" => { "internalId" => subsidiary_id, "name" => subsidiary_name },
+        "internalId" => id,
+      }
+    end
   end
 end
