@@ -159,6 +159,7 @@ describe NetSuite::Connection do
         %w(mobilePhone mobile_phone),
         %w(officePhone office_phone),
         %w(phone home_phone),
+        %w(hireDate start_date),
         %w(releaseDate departure_date),
         %w(title job_title),
         %w(address home),
