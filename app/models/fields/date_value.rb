@@ -1,7 +1,7 @@
 module Fields
   # Converts date values from Namely.
   class DateValue
-    DATE_FORMAT = "%m/%d/%Y"
+    DATE_FORMAT = "%Y-%m-%d"
 
     def initialize(value)
       @value = value

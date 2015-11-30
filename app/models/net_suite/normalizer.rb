@@ -40,6 +40,7 @@ class NetSuite::Normalizer
         "isInactive" => user_status,
         "subsidiary" => subsidiary,
         "releaseDate" => release_date,
+        "hireDate" => hire_date,
       }
     end
 
@@ -73,6 +74,14 @@ class NetSuite::Normalizer
 
       if date.present?
         date.to_datetime.to_i * 1.second.in_milliseconds
+      end
+    end
+
+    def hire_date
+      date = @attributes.fetch("hireDate", Fields::NullValue.new).to_date
+
+      if date.present?
+        date.to_datetime.iso8601
       end
     end
 
