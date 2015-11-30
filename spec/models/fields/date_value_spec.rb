@@ -15,7 +15,7 @@ describe Fields::DateValue do
 
   describe "#to_date" do
     it "parses a Namely date string" do
-      expect(Fields::DateValue.new("08/26/1986").to_date).
+      expect(Fields::DateValue.new("1986-08-26").to_date).
         to eq(Date.new(1986, 8, 26))
     end
 
