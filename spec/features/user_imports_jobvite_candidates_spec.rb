@@ -8,7 +8,7 @@ feature "User imports jobvite candidates" do
 
   before do
     stub_request(:get, "#{ api_host }/api/v1/profiles")
-      .with(query: {access_token: ENV['TEST_NAMELY_ACCESS_TOKEN']})
+      .with(query: {access_token: ENV['TEST_NAMELY_ACCESS_TOKEN'], profile_format: "full"})
       .to_return(status: 200, body: File.read("spec/fixtures/api_responses/empty_profiles.json"))
   end
 

@@ -181,7 +181,7 @@ describe NetSuite::Normalizer do
     context "releaseDate" do
       it "maps departure date string to milliseconds since epoch" do
         date = Date.today
-        date_string = date.strftime("%m/%d/%Y")
+        date_string = date.iso8601
         profile_data = stubbed_profile_data.merge(
           "departure_date" => Fields::DateValue.new(date_string)
         )
@@ -236,14 +236,16 @@ describe NetSuite::Normalizer do
     context "null scalar fields" do
       it "moves keys with null scalar values to the nullFieldList" do
         profile_data = stubbed_profile_data.merge(
-          "departure_date" => Fields::DateValue.new(nil)
+          "departure_date" => Fields::DateValue.new(nil),
+          "hire_date" => Fields::DateValue.new(nil),
         )
 
         export_attributes = export(profile_data)
 
-        expect(export_attributes.keys).not_to include("releaseDate")
+        expect(export_attributes.keys).not_to include("releaseDate", "hireDate")
         expect(export_attributes["nullFieldList"]).to match_array([
-          "releaseDate"
+          "releaseDate",
+          "hireDate",
         ])
       end
     end
@@ -277,7 +279,7 @@ describe NetSuite::Normalizer do
         "home_phone" => "212-555-1212",
         "last_name" => "Last",
       }.merge(overrides)
-    ).merge("departure_date" => Fields::DateValue.new("01/01/2016"))
+    ).merge("departure_date" => Fields::DateValue.new("2016-01-01"))
   end
 
   def stub_string_values(values)

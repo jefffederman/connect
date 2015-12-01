@@ -27,7 +27,7 @@ describe Fields::Collection do
 
     describe "for a date value" do
       it "parses into a date object" do
-        result = export(type: "date", value: "08/26/1986")
+        result = export(type: "date", value: "1986-08-26")
 
         expect(result.to_date).to eq(Date.new(1986, 8, 26))
       end
