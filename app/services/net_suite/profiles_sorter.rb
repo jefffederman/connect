@@ -31,10 +31,6 @@ module NetSuite
       def <=>(other_guid)
         guid <=> other_guid
       end
-
-      private
-
-      attr_reader :guid
     end
 
     attr_reader :profiles
