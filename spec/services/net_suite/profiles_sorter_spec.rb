@@ -39,18 +39,15 @@ describe NetSuite::ProfilesSorter do
       end
       let(:profile_without_manager) do
         double :profile_without_manager,
-          guid: "profile_guid",
-          reports_to: [ ]
+          guid: "profile_guid"
       end
       let(:another_profile_without_manager) do
         double :another_profile_without_manager,
-          guid: "another_profile_guid",
-          reports_to: [ ]
+          guid: "another_profile_guid"
       end
       let(:profile_manager) do
         double :manager,
-          guid: "my_guid",
-          reports_to: [ ]
+          guid: "my_guid"
       end
 
       it "returns an array with the profiles" do
@@ -60,6 +57,35 @@ describe NetSuite::ProfilesSorter do
           another_profile_without_manager
         ]
       end
+    end
+  end
+
+  context "when profiles has a nil reports to" do
+    let(:profiles) do
+      [profile_without_manager, profile_manager, another_profile_without_manager]
+    end
+    let(:profile_without_manager) do
+      double :profile_without_manager,
+        guid: "profile_guid",
+        reports_to: nil
+    end
+    let(:another_profile_without_manager) do
+      double :another_profile_without_manager,
+        guid: "another_profile_guid",
+        reports_to: nil
+    end
+    let(:profile_manager) do
+      double :manager,
+        guid: "my_guid",
+        reports_to: nil
+    end
+
+    it "returns an array with the profiles" do
+      expect(sorter.call).to match_array [
+        profile_without_manager,
+        profile_manager,
+        another_profile_without_manager
+      ]
     end
   end
 end

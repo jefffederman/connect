@@ -65,7 +65,9 @@ class NetSuite::Connection < ActiveRecord::Base
 
   def sync
     update_attribute(:locked, true)
-    perform_export(installation.namely_profiles)
+    perform_export(
+      NetSuite::ProfilesSorter.new(profiles: installation.namely_profiles).call
+    )
   ensure
     update_attribute(:locked, false)
   end
