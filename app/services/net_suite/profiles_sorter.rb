@@ -5,8 +5,12 @@ module NetSuite
     end
 
     def call
-      profiles.sort_by do |profile|
-        ReportTo.for(profile) <=> profile
+      profiles.group_by do |profile|
+        ReportTo.for(profile).guid
+      end.sort do |grouped|
+        grouped[1].size
+      end.flat_map do |sorted|
+        sorted[1]
       end
     end
 
@@ -16,17 +20,14 @@ module NetSuite
       include Comparable
 
       def self.for(profile)
-        if profile.respond_to? :reports_to
-          unless Array(profile.reports_to).empty?
-            new(report_to: profile.reports_to.first)
-          end
-        end
+        reports_to = Array(profile.reports_to)
+        new(report_to: reports_to.first || {id: 0})
       end
 
       attr_reader :report_to, :guid
       def initialize(report_to:)
         @report_to = report_to
-        @guid = report_to.fetch(:id, -1)
+        @guid = report_to.fetch(:id)
       end
 
       def <=>(other_profile)
