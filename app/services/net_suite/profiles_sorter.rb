@@ -20,8 +20,11 @@ module NetSuite
       include Comparable
 
       def self.for(profile)
-        reports_to = Array(profile.reports_to)
-        new(report_to: reports_to.first || {id: 0})
+        if profile.respond_to? :reports_to
+          new(report_to: Array(profile.reports_to).first || {id: 0})
+        else
+          new(report_to: {id: 0})
+        end
       end
 
       attr_reader :report_to, :guid

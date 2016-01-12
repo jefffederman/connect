@@ -39,18 +39,15 @@ describe NetSuite::ProfilesSorter do
       end
       let(:profile_without_manager) do
         double :profile_without_manager,
-          guid: "12fe28cc-7a44-43b0-8062-cad75e2b41ce",
-          reports_to: nil
+          guid: "12fe28cc-7a44-43b0-8062-cad75e2b41ce"
       end
       let(:another_profile_without_manager) do
         double :another_profile_without_manager,
-          guid: "66303d81-7dae-4759-866b-4b66689dcc0b",
-          reports_to: nil
+          guid: "66303d81-7dae-4759-866b-4b66689dcc0b"
       end
       let(:profile_manager) do
         double :manager,
-          guid: "154da20f-870e-4a5b-9ef8-b1f0bbd890cb",
-          reports_to: nil
+          guid: "154da20f-870e-4a5b-9ef8-b1f0bbd890cb"
       end
 
       it "returns an array with the profiles" do
