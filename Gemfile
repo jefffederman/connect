@@ -49,7 +49,7 @@ group :test do
   gem "formulaic"
   gem "headless"
   gem "launchy"
-  gem "shoulda-matchers", require: false
+  gem "shoulda-matchers", "~> 2.8", require: false
   gem "timecop"
   gem "webmock"
   gem 'rspec_junit_formatter', github: 'circleci/rspec_junit_formatter'
