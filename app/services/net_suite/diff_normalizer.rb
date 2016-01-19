@@ -27,6 +27,10 @@ class NetSuite::DiffNormalizer
       number = GlobalPhone.parse(employee[phone_key])
       employee[phone_key] = number.national_format
     end
+  rescue StandardError => e
+    Rails.logger.info "normalize failure: #{employee.to_json}"
+    Rails.logger.info "tracking exception"
+    Raygun.track_exception(e)
   end
 
   def normalize_address
