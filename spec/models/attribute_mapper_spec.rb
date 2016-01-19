@@ -2,7 +2,7 @@ require "rails_helper"
 
 describe AttributeMapper do
   describe "associations" do
-    it { expect have_many(:field_mappings).dependent(:destroy) }
+    it { should have_many(:field_mappings).dependent(:destroy) }
   end
 
   describe "#import" do
