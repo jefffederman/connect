@@ -30,7 +30,7 @@ class NetSuite::DiffNormalizer
   rescue StandardError => e
     Rails.logger.info "normalize failure: #{employee.to_json}"
     Rails.logger.info "tracking exception"
-    Raygun.track_exception(e)
+    Raygun.track_exception(e, custom_data: employee)
   end
 
   def normalize_address
