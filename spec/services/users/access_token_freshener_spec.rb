@@ -6,11 +6,11 @@ describe Users::AccessTokenFreshener do
       double :user,
         access_token_expiry: expires,
         access_token: 'token',
-        subdomain: 'https://example.com',
+        subdomain: 'https://example.com', 
         refresh_token: 'refresh_token'
     end
     let(:authenticator) { double :authenticator }
-    let(:authenticator_class) do
+    let(:authenticator_class) do 
       double :authenticator_class,
         new: authenticator
     end
@@ -21,8 +21,8 @@ describe Users::AccessTokenFreshener do
 
     context 'when expire access token' do
       let(:expires) { 1.day.ago }
-      let(:tokens) do
-        { 'access_token' => 'refreshed_token',
+      let(:tokens) do 
+        { 'access_token' => 'refreshed_token', 
           'expires_in' => 'refreshed_expires' }
       end
 
@@ -41,7 +41,7 @@ describe Users::AccessTokenFreshener do
       let(:expires) { Time.now }
 
       it 'does not refresh access token' do
-        Timecop.freeze Time.now do
+        Timecop.freeze Time.now do 
           expect(authenticator).to_not receive(:refresh_access_token)
           expect(user).to_not receive(:save_token_info)
 

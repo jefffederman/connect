@@ -197,7 +197,7 @@ describe NetSuite::Connection do
 
   describe "#sync" do
     it "exports all namely profiles to NetSuite" do
-      namely_profiles = [double(:namely_profile, reports_to: nil, guid: nil)]
+      namely_profiles = double(:namely_profiles)
       connection = create(:net_suite_connection, authorization: "x")
       allow(connection.installation).
         to receive(:namely_profiles).
