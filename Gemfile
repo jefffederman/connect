@@ -22,7 +22,7 @@ gem 'mailgun_rails', '~> 0.6.6'
 gem 'jquery-rails'
 
 gem 'sidekiq', '4.0.0.pre2'
-gem 'global_phone', :git => 'https://github.com/sstephenson/global_phone.git', :ref => 'dd0894061f58479884e6cfa2d00382542dc77d5a'
+gem 'phonelib', '~> 0.5.5'
 
 group :development do
   gem "spring"

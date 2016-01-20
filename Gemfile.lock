@@ -22,13 +22,6 @@ GIT
     capybara_discoball (0.0.1)
       capybara
 
-GIT
-  remote: https://github.com/sstephenson/global_phone.git
-  revision: dd0894061f58479884e6cfa2d00382542dc77d5a
-  ref: dd0894061f58479884e6cfa2d00382542dc77d5a
-  specs:
-    global_phone (1.0.1)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -179,6 +172,7 @@ GEM
       mini_portile (~> 0.6.0)
     normalize-rails (3.0.1)
     pg (0.18.1)
+    phonelib (0.5.5)
     pry (0.10.1)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -331,7 +325,6 @@ DEPENDENCIES
   factory_girl_rails
   font-awesome-rails
   formulaic
-  global_phone!
   headless
   i18n-tasks
   jquery-rails
@@ -342,6 +335,7 @@ DEPENDENCIES
   neat (~> 1.5.1)
   normalize-rails (~> 3.0.0)
   pg
+  phonelib (~> 0.5.5)
   pry-rails
   rack-timeout
   rails (~> 4.2.4)

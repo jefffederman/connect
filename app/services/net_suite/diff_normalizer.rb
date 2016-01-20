@@ -24,11 +24,11 @@ class NetSuite::DiffNormalizer
     %w( mobilePhone officePhone phone ).each do |phone_key|
       next unless employee[phone_key].present?
 
-      number = GlobalPhone.parse(employee[phone_key])
-      employee[phone_key] = number.national_format
+      number = Phonelib.parse(employee[phone_key])
+      employee[phone_key] = number.national
     end
   rescue StandardError => e
-    Rails.logger.info "normalize failure: #{employee.to_json}"
+    Rails.logger.info "phone normalize failure: #{employee.to_json}"
     Rails.logger.info "tracking exception"
     Raygun.track_exception(e, custom_data: employee)
   end
@@ -48,5 +48,9 @@ class NetSuite::DiffNormalizer
         employee["defaultAddress"] = "#{ address["addr1"] }<br>#{ address["addr2"] }<br>#{ address["city"] } #{ address["state"] } #{ address["zip"] }<br>United States"
       end
     end
+  rescue StandardError => e
+    Rails.logger.info "address normalize failure: #{employee.to_json}"
+    Rails.logger.info "tracking exception"
+    Raygun.track_exception(e, custom_data: employee)
   end
 end
