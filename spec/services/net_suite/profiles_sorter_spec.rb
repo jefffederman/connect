@@ -39,7 +39,11 @@ describe NetSuite::ProfilesSorter do
       end
 
       it "generates a new netsuite supervisor id field" do
-        expect(sorter.call.map(&:netsuite_supervisor_id)).to include(-1)
+        expect(
+          sorter.call.map do |profile|
+            [profile.id, profile.netsuite_supervisor_id]
+          end.last
+        ).to eql ["12fe28cc-7a44-43b0-8062-cad75e2b41ce", -1]
       end
     end
 
