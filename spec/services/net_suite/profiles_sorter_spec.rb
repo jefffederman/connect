@@ -15,11 +15,13 @@ describe NetSuite::ProfilesSorter do
       let(:profile_with_manager) do
         double :profile_with_manager,
           id: "12fe28cc-7a44-43b0-8062-cad75e2b41ce",
-          reports_to: [ id: profile_manager.id ]
+          netsuite_id: -2,
+          reports_to: [ double(:reports_to, id: profile_manager.id) ]
       end
       let(:profile_manager) do
         double :manager,
           id: "66303d81-7dae-4759-866b-4b66689dcc0b",
+          netsuite_id: -1,
           reports_to: []
       end
       let(:profiles) do
@@ -35,13 +37,17 @@ describe NetSuite::ProfilesSorter do
           profile_with_manager
         ]
       end
+
+      it "generates a new netsuite supervisor id field" do
+        expect(sorter.call.map(&:netsuite_supervisor_id)).to include(-1)
+      end
     end
 
     context "when a manager has two dependant profiles not in the proper order" do
       let(:profile_with_manager) do
         double :profile_with_manager,
           id: "12fe28cc-7a44-43b0-8062-cad75e2b41ce",
-          reports_to: [ id: profile_manager.id ]
+          reports_to: [ double(:reports_to, id: profile_manager.id) ]
       end
       let(:profile_manager) do
         double :manager,
@@ -51,7 +57,7 @@ describe NetSuite::ProfilesSorter do
       let(:another_profile_with_manager) do
         double :another_profile_with_manager,
           id: "154da20f-870e-4a5b-9ef8-b1f0bbd890cb",
-          reports_to: [ id: profile_manager.id]
+          reports_to: [ double(:reports_to, id: profile_manager.id) ]
       end
 
       context "proper order" do
@@ -106,17 +112,17 @@ describe NetSuite::ProfilesSorter do
       let(:profile_with_manager) do
         double :profile_with_manager,
           id: "12fe28cc-7a44-43b0-8062-cad75e2b41ce",
-          reports_to: [ id: profile_manager.id ]
+          reports_to: [ double(:reports_to, id: profile_manager.id) ]
       end
       let(:another_profile_with_manager) do
         double :another_profile_with_manager,
           id: "154da20f-870e-4a5b-9ef8-b1f0bbd890cb",
-          reports_to: [ id: profile_with_manager.id]
+          reports_to: [ double(:reports_to, id: profile_with_manager.id) ]
       end
       let(:yet_another_profile) do
         double :yet_another_profile,
           id: "154da20f-870e-4a5b-9ef8-b1f0bbd890cb",
-          reports_to: [ id: another_profile_with_manager.id]
+          reports_to: [ double(:reports_to, id: another_profile_with_manager.id) ]
       end
 
       it "returns an array with the manager before the one who reports to" do

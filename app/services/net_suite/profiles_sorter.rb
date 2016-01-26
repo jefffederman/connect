@@ -12,24 +12,44 @@ module NetSuite
         end + [profile] + sorted_profiles.drop_while do |p|
           p.id != report_to.id
         end
-      end.reverse
+      end.reverse.map do |profile|
+        ProfileWithSupervisorId.new(profile)
+      end
     end
 
     private
 
+    class ProfileWithSupervisorId < SimpleDelegator
+      def class
+        __getobj__.class
+      end
+
+      def netsuite_supervisor_id
+        netsuite_id
+      end
+    end
+
     class ReportTo
       def self.for(profile)
         if profile.respond_to? :reports_to
-          new(report_to: Array(profile.reports_to).first || {id: 0})
+          new(report_to: Array(profile.reports_to).first || NoReportTo.new)
         else
-          new(report_to: {id: 0})
+          new(report_to: NoReportTo.new)
         end
       end
 
       attr_reader :report_to, :id
       def initialize(report_to:)
         @report_to = report_to
-        @id = report_to.fetch(:id)
+        @id = report_to.id
+      end
+
+      private
+
+      class NoReportTo
+        def id
+          0
+        end
       end
     end
 
