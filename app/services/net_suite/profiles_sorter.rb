@@ -5,25 +5,38 @@ module NetSuite
     end
 
     def call
-      sorted = profiles.reduce([]) do |sorted_profiles, profile|
-        report_to = ReportTo.for(profile)
-        sorted_profiles.take_while do |p|
-          p.id != report_to.id
-        end + [profile] + sorted_profiles.drop_while do |p|
-          p.id != report_to.id
-        end
-      end
-      sorted.map do |sorted_profile|
-        ProfileWithSupervisorId.new(
-          profile: sorted_profile,
-          reports_to: sorted.find do |profile|
-            ReportTo.for(sorted_profile).id == profile.id
-          end
-        )
-      end.reverse
+      build_profiles_with_supervisor_id(
+        profiles.reduce([]) do |sorted_profiles, profile|
+          report_to = ReportTo.for(profile)
+          sort(sorted_profiles, report_to, profile)
+        end.reverse
+      )
     end
 
     private
+
+    def sort(sorted_profiles, report_to, profile)
+      sorted_profiles.take_while do |p|
+        p.id != report_to.id
+      end + [profile] + sorted_profiles.drop_while do |p|
+        p.id != report_to.id
+      end
+    end
+
+    def build_profiles_with_supervisor_id(sorted)
+      sorted.map do |sorted_profile|
+        ProfileWithSupervisorId.new(
+          profile: sorted_profile,
+          reports_to: find_reports_to_profile(sorted, sorted_profile)
+        )
+      end
+    end
+
+    def find_reports_to_profile(sorted, sorted_profile)
+      sorted.find do |profile|
+        ReportTo.for(sorted_profile).id == profile.id
+      end
+    end
 
     class ProfileWithSupervisorId < SimpleDelegator
       def initialize(profile:, reports_to:)
@@ -36,7 +49,7 @@ module NetSuite
       end
 
       def netsuite_supervisor_id
-       reports_to.netsuite_id if reports_to.respond_to? :netsuite_id
+        reports_to.netsuite_id if reports_to.respond_to? :netsuite_id
       end
 
       private
