@@ -42,8 +42,11 @@ describe NetSuite::ProfilesSorter do
         expect(
           sorter.call.map do |profile|
             [profile.id, profile.netsuite_supervisor_id]
-          end.last
-        ).to eql ["12fe28cc-7a44-43b0-8062-cad75e2b41ce", -1]
+          end
+        ).to eql [
+          ["66303d81-7dae-4759-866b-4b66689dcc0b", nil],
+          ["12fe28cc-7a44-43b0-8062-cad75e2b41ce", -1]
+        ]
       end
     end
 
