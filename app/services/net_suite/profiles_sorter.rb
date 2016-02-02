@@ -1,40 +1,58 @@
+require 'pqueue'
+
 module NetSuite
+  class DepthAndProfile < Struct.new(:depth, :profile); end
+
   class ProfilesSorter
     def initialize(profiles:)
       @profiles = profiles
+      @queue = PQueue.new() { |a,b| b.depth < a.depth }
     end
 
     def call
-      build_profiles_with_supervisor_id(
-        profiles.reduce([]) do |sorted_profiles, profile|
-          report_to = ReportTo.for(profile)
-          sort(sorted_profiles, report_to, profile)
-        end.reverse
-      )
+      queue.clear
+
+      profiles.each do |p|
+        depth = find_depth(p)
+        tuple = DepthAndProfile.new(depth, p)
+
+        queue.push(tuple)
+      end
+
+      build_profiles_with_supervisor_id(queue.to_a)
     end
 
     private
 
-    def sort(sorted_profiles, report_to, profile)
-      sorted_profiles.take_while do |p|
-        p.id != report_to.id
-      end + [profile] + sorted_profiles.drop_while do |p|
-        p.id != report_to.id
+    attr_reader :queue
+
+    def mapped_profiles
+      @mapped_profiles ||= profiles.each_with_object({}) do |p, hash|
+        hash[p.id] = p
       end
     end
 
     def build_profiles_with_supervisor_id(sorted)
-      sorted.map do |sorted_profile|
+      sorted.map do |tuple|
         ProfileWithSupervisorId.new(
-          profile: sorted_profile,
-          reports_to: find_reports_to_profile(sorted, sorted_profile)
+          profile: tuple.profile,
+          reports_to: find_reports_to_profile(tuple.profile)
         )
       end
     end
 
-    def find_reports_to_profile(sorted, sorted_profile)
-      sorted.find do |profile|
-        ReportTo.for(sorted_profile).id == profile.id
+    def find_reports_to_profile(sorted_profile)
+      mapped_profiles[ ReportTo.for(sorted_profile).id ]
+    end
+
+    def find_depth(profile, depth = 1)
+      report_to = ReportTo.for(profile)
+
+      if report_to.id.present?
+        depth += 1
+        find_depth(mapped_profiles[report_to.id], depth)
+      else
+        depth
       end
     end
 
@@ -76,11 +94,11 @@ module NetSuite
 
       class NoReportTo
         def id
-          0
+          nil
         end
 
         def netsuite_id
-          0
+          nil
         end
       end
     end
