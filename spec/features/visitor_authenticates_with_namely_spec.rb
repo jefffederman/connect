@@ -79,6 +79,20 @@ feature "Visitor authenticates with Namely" do
     expect(page).to have_content "Test Test"
   end
 
+  scenario "unsuccessfully" do
+    Capybara::Discoball.spin(FakeNamely) do |server|
+      Rails.configuration.
+        namely_authentication_domain = "#{server.host}:#{server.port}"
+      Rails.configuration.namely_authentication_protocol = "http"
+    end
+
+    visit root_path
+    fill_in "namely_authentication[subdomain]", with: ""
+    click_button button("namely_authentication.submit")
+
+    expect(page.current_path).to eq root_path
+  end
+
   after(:all) do
     Rails.configuration.namely_authentication_domain = ENV.fetch("NAMELY_DOMAIN", "%{subdomain}.namely.com")
     Rails.configuration.namely_authentication_protocol = ENV.fetch("NAMELY_PROTOCOL", "https")

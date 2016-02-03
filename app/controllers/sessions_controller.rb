@@ -2,10 +2,14 @@ class SessionsController < ApplicationController
   skip_before_action :require_login, only: [:new, :oauth_callback, :destroy]
 
   def new
-    if logged_in?
-      redirect_to dashboard_path
+    if namely_subdomain.present?
+      if logged_in?
+        redirect_to dashboard_path
+      else
+        redirect_to namely_authentication_url
+      end
     else
-      redirect_to namely_authentication_url
+      redirect_to root_path
     end
   end
 
