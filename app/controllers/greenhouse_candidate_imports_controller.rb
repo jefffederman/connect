@@ -2,6 +2,15 @@ class GreenhouseCandidateImportsController < ApplicationController
   skip_before_filter :require_login
   skip_before_filter :verify_authenticity_token
 
+  # Raised when the secret key provided isn't found. Useful for
+  # knowing that a webhook is still being dispatched to us that we don't
+  # know about.
+  GreenhouseNotFound = Class.new(StandardError)
+
+  rescue_from GreenhouseNotFound do |exception|
+    render json: { status: "ok" }
+  end
+
   def create
     CandidateImporter.new(
       assistant_arguments: assistant_arguments,
@@ -25,9 +34,9 @@ class GreenhouseCandidateImportsController < ApplicationController
   end
 
   def connection
-    Greenhouse::Connection.find_by!(
-      secret_key: secret_key
-    )
+    Greenhouse::Connection.find_by!(secret_key: secret_key)
+  rescue ActiveRecord::RecordNotFound => exception
+    raise GreenhouseNotFound, "greenhouse connection not found"
   end
 
   def greenhouse_candidate_import_params
